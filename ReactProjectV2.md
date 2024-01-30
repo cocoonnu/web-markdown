@@ -281,7 +281,7 @@ class Routers extends React.Component<any, RoutersState> {
 
 - `final`修饰的方法可以阻止被覆写；
 - `final`修饰的class可以阻止被继承；
-- `final`修饰的字段必须在创建对象时初始化，随后不可修改。
+- `**final`修饰的字段必须在创建对象时初始化，随后不可修改。**
 - https://www.liaoxuefeng.com/wiki/1252599548343744/1260455778791232
 
 
@@ -300,6 +300,10 @@ class Routers extends React.Component<any, RoutersState> {
 - 如果一个抽象类没有字段，所有方法全部都是抽象方法，就可以把该抽象类改写为接口：`interface`。
 - 在接口中，可以定义`default`方法，实现类时可以不必覆写`default`方法。
 
+- `interface`是可以有静态字段的，并且静态字段必须为`final`类型：`public static final int MALE = 1;`
+
+- `interface`定义抽象方法：`public abstract void num();`
+
 - https://www.liaoxuefeng.com/wiki/1252599548343744/1260456790454816
 
 
@@ -310,3 +314,39 @@ class Routers extends React.Component<any, RoutersState> {
 - 调用实例方法必须通过一个实例变量，而调用静态方法则不需要实例变量，通过类名就可以调用。
 - **因为静态方法不属于实例，因此，静态方法内部，无法访问`this`变量，也无法访问实例字段，它只能访问静态字段。**
 - https://www.liaoxuefeng.com/wiki/1252599548343744/1260464690677856
+
+
+
+输入和输出以及占位符：
+
+- %s、%f、%d 占位符
+
+- https://www.liaoxuefeng.com/wiki/1252599548343744/1255887264020640
+
+
+
+字符串核心方法：
+
+- join、split、replace、isBlank、isEmpty、substring、equalsIgnoreCase、equals、indexOf、contains
+
+- 格式化字符串：`s.formatted("cocoon", 12)`、`String.format("%s...%d", "cocoon", 12)`
+
+- 更高效的字符串拼接：StringBuilder（链式拼接）、StringJoiner（已固定分隔符链式拼接）
+
+- https://www.liaoxuefeng.com/wiki/1252599548343744/1260469698963456
+
+
+
+java 包与 import：
+
+- 默认自动 import 当前 package 的其他 class
+- 默认自动 `import java.lang.*`
+- https://www.liaoxuefeng.com/wiki/1252599548343744/1260467032946976
+
+
+
+枚举类 enum：
+
+- 枚举类既是类型又是常量，使用双等于号既会判断类型又会判断变量的值
+- 默认定义为字符串，可以通过私有化构造函数给每个枚举常量添加字段
+- https://www.liaoxuefeng.com/wiki/1252599548343744/1260473188087424

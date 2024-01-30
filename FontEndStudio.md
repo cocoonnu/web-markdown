@@ -1575,9 +1575,58 @@ URL 对象：https://juejin.cn/post/7033570440224178189
 
 
 
-# 第四章 Windows 设置
+# 第四章 macos
 
-## 4.1 Typora 使用记录
+## 4.1 开发环境配置
+**brew**
+
+- 下载方式：https://zhuanlan.zhihu.com/p/111014448
+- 常用命令：https://blog.csdn.net/ace15824843202/article/details/115347348
+
+
+
+**git**
+
+- 下载方式：`brew install git`，在 .zshrc 中设置 git 签名
+
+- vscode 的 setting.json 添加：`git.path: /usr/bin/git`
+- 连接 gitlab 仓库：`ssh-keygen -t rsa -b 2048 -C ‘macbook air cocoon’`，一直按回车。进入 .ssh 文件夹中查看 `id_rsa.pub` 文件，复制到仓库的 `ssh key` 中即可
+
+
+
+**nvm**
+
+- 参考文档：https://blog.csdn.net/Cavin80/article/details/132831839
+
+
+
+**zsh**
+
+- mac 默认安装了 zsh、bash 两个终端工具，配置文件对应 .zshrc、.bashrc
+
+- 配置文件通常用于添加环境变量和执行初始化脚本，每次启动终端窗口时会执行一次 .zshrc 文件中的脚本
+- 另外还有更多全局的配置文件：https://blog.csdn.net/qq_31805821/article/details/121278790
+- 使用规范：只使用 zsh，仅针对 .zshrc 配置环境变量和脚本即可，想要初始化设置的脚本都可以放里面
+
+
+
+**oh my zsh**
+
+- 这款工具可以拓展 zsh，安装插件使命令行高亮、命令提示等、显示分支、切换主题等
+- 下载：直接使用官网的第一个命令并且需要翻墙，https://ohmyz.sh/#install
+- 下载完之后 .zshrc 文件会被替换，但是会生成一份历史备份文件，可将以前的复制过去
+- 常用插件：zsh-autosuggestions（左箭头命令填充） 、zsh-syntax-highlighting（命令高亮）
+
+
+
+**终端翻墙**
+
+- export https_proxy=http://127.0.0.1:7897 http_proxy=http://127.0.0.1:7897 all_proxy=socks5://127.0.0.1:7897
+- 参考文档：https://www.cfmem.com/2021/08/github.html
+
+
+
+## 4.2 Typora 使用设置
 
 - [x] **图像配置**
 
@@ -1611,519 +1660,5 @@ URL 对象：https://juejin.cn/post/7033570440224178189
 
 
 
-## 4.2 VScode 设置
 
-
-###  4.2.1 VScode 快捷键
-
-```
-ctrl + i: 触发建议
-
-ctrl + h: 合并行
-
-ctrl + /: 设置注释
-
-ctrl + `: 打开终端
-
-ctrl + ,: 打开设置
-
-ctrl + j: 切换面板（终端和编辑器）
-
-ctrl + [: 调整缩进
-
-ctrl + d: 删除整行
-
-ctrl + p: Open Live Server
-
-ctrl + l: 选中该行
-
-ctrl + g: 跳转行号
-
-ctrl + '': 移动到行尾
-
-ctrl + ;: 移动到行头
-
-ctrl + shift + z: 取消撤销
-
-ctrl+ shift + v: 预览Markdown
-
-按住 alt 键: 实现多选
-
-ctrl + b: 空了
-```
-
-
-
-### 4.2.2 VScode 插件介绍
-
-Pritter - Code formatter - 代码格式化，https://blog.csdn.net/qq_45981075/article/details/114551233
-
-
-
-Vue Language Features (Volar) + TypeScript Vue Plugin - Vue3 和 TS 代码支持，Vetur - Vue2 代码支持
-
-
-
-Tabnine - 免费版 AI 代码自动补全，https://blog.csdn.net/RetroFlux/article/details/125773360
-
-
-
-GitHub Copilot：AI 代码自动补全，https://blog.csdn.net/RetroFlux/article/details/124205948
-
-
-
-Code Spell Checker - 单词拼写检查，https://blog.csdn.net/qq_42078081/article/details/115014474
-
-
-
-DotENV - .env 环境变量文件语法高亮，https://blog.csdn.net/qq_45905655/article/details/130680442
-
-
-
-EditorConfig for VS Code - .editorconfig 文件高亮效果
-
-
-
-Beautify css/sass/scss/less - css/sass/scss/less 等文件实现格式化
-
-
-
-HTML CSS Support - 在 HTML 编写中提示 CSS 的类名和 id 名 
-
-
-
-JavaScript (ES6) code snippets - ES6 代码片段，https://github.com/xabikos/vscode-javascript
-
-
-
-language-stylus、stylus supremacy：Stylus CSS 预处理器代码支持和一键格式化
-
-
-npm Intellisense：自动补全引入 node modules 里面所安装的依赖，Path Intellisense：自动补全文件名
-
-
-
-Git History - 在文件中右键可以查看该文件的所有 Git 历史
-
-
-
-GitLens - 在每行代码后面都会显示最近一次的 Git 提交，另外在终端中还有单独的
-
-
-
-Project Manager - 项目管理插件，https://cloud.tencent.com/developer/article/2196913
-
-
-
-
-### 4.2.3 VScode 设置记录
-
-- 在 VScode 中关闭对 js、ts 文件校验：搜索 validate 点击 TypeScript
-- Volar 关闭箭头函数和 CSS 的 reference：搜索一下即可
-- 关闭 VScode Git 功能： 设置中搜索 `git:Enabled`
-- 关闭 VScode ESlint 检查：设置中搜索 `eslint.enable` 
-- 显示为文件在上，文件夹在下：搜索 `Explorer Sort Order`，选择 `filesFirst`
-
-
-
-### 4.2.4 VScode 配置代码片段
-
-1. 快捷键：Ctrl + Shift + P 打开搜索，搜索 snippets 选择配置用户代码片段
-
-2. 给当前项目单独配置，输入配置文件的名字如 `react` 回车，会在 .vscode 文件夹下指定生成 `react.code-snippets` 文件
-
-3. 进入网站：https://snippet-generator.app，配置之后然后粘贴到哪个文件对象下即可
-
-4. 一个配置文件可以使用多个代码片段。选择 vue.json 可以配置全局的代码片段
-
-5. 自主配置可以参考：https://zhuanlan.zhihu.com/p/475137755
-
-
-
-### 4.2.5 终端更新环境变量
-
-问题：修改了windows环境变量，但vscode内置终端并不能获取最新的环境变量。
-
-解决：关闭所有的 vscode 进程，进入 cmd 输入 code 会自动打开 vscode
-
-
-
-## 4.3 修改浏览器缓存地址
-
-删除这几个文件夹
-
-```
-C:\Users\LENOVO\AppData\Local\Microsoft\Edge\User Data\Default\Cache
-C:\Users\LENOVO\AppData\Local\Microsoft\Edge\User Data\Default\Code Cache
-
-C:\Users\LENOVO\AppData\Local\Google\Chrome\User Data\Default\Cache
-C:\Users\LENOVO\AppData\Local\Google\Chrome\User Data\Default\Code Cache
-```
-
-
-
-新建 D 盘
-
-```
-D:\Browser_cache\chrome
-D:\Browser_cache\edge
-```
-
-
-
-进入 CMD 输入
-
-```
-mklink /d "C:\Users\LENOVO\AppData\Local\Microsoft\Edge\User Data\Default\Cache" "D:\Browser_cache\edge"
-
-mklink /d "C:\Users\LENOVO\AppData\Local\Microsoft\Edge\User Data\Default\Code Cache" "D:\Browser_cache\edge"
-```
-
-```
-mklink /d "C:\Users\LENOVO\AppData\Local\Google\Chrome\User Data\Default\Cache" "D:\Browser_cache\chrome"
-
-mklink /d "C:\Users\LENOVO\AppData\Local\Google\Chrome\User Data\Default\Code Cache" "D:\Browser_cache\chrome"
-```
-
-
-
-## 4.4 AOC 显示器设置
-
-显示器型号：Q24P3C  首先下载 I-menu 软件：https://www.aocmonitor.com.cn/download，在软件里实现 OSD 配置的效果。G-menu 是游戏模式下的配置软件，剩下的两个软件在 I-menu 里面已经整合了
-
-- 亮度模式使用标准模式，选择伽马二，色温模式选择正常模式
-- DCR 开启之后会自动设置亮度和对比度，通常亮度会设置的很高（无法手动调节亮度了）
-- HDR 模式开启后会模拟 HDR 效果，这时候亮度对比度色彩都会被自动调节
-- Overdrive 越强，响应时间越短，但是可能产生灰影，非游戏模式下不建议开启
-- Clear Vision 越强，文字色彩越重越深，自行判断设置的强度
-
-
-
-**色彩校准**
-
-搜索校准显示器颜色和启用 ClearType 文本，使 Window11 对显示器起到更高的支持 
-
-设置原厂色彩校准教程：https://www.bilibili.com/read/cv3013179，感觉原厂的色彩太淡了，建议使用默认
-
-
-
-**缩放比例**
-
-首先进入设置 - 屏幕 - 缩放 选择系统推荐的缩放即可。然后进入辅助功能 - 文本大小 设置文本放大，这样文本的锯齿感会降低一点，大小没有定论，自行设置即可
-
-
-
-## 4.5 Chrome 调试技巧
-
-参考视频 ：https://www.bilibili.com/video/BV1KM4y1G7EF
-
-**快捷键**
-
-`shift ctrl p`：打开命令菜单
-
-`shift ctrl c`：选择 DOM 节点快捷键
-
-`ctrl f`：打开搜索 DOM 节点
-
-
-
-**命令菜单**
-
-screen：获取网页截屏。full screen 为网页全截屏，包括滚动区域。node screen 选择一个 DOM 节点进行截屏
-
-dock：控制控制台的位置
-
-
-
-**固定某个 DOM 节点的 CSS 伪类选择器状态**
-
-点击 :hov 再勾选下面的 :hover 可以使该 DOM 元素一直保持 hover 状态
-<img src="mark-img/image-20231027185923875.png"  align="left"  />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 4.6 powershell 使用方法
-
-参考文档：https://blog.csdn.net/K346K346/article/details/128793878
-
-PowerShell 和命令提示符（cmd）是 Windows 操作系统中的两种不同的命令行工具。它们之间的主要区别在于以下几点：
-
-1. **语言和架构**：
-   - PowerShell 是由 Microsoft 开发的用于自动化任务和配置管理的脚本语言和命令行壳。
-   - 命令提示符（cmd）使用 Windows NT 命令处理器，并提供了一些用于执行简单任务和操作系统命令的命令行环境。
-
-2. **脚本语言**：
-   - PowerShell 使用基于 .NET Framework 的脚本语言，支持更丰富的数据类型和功能，包括对象、方法、属性和管道等。
-   - 命令提示符使用批处理脚本语言，功能相对较弱。
-
-3. **对象导向**：
-   - PowerShell 是基于对象的，并支持通过管道传递对象，可以更灵活地处理数据。
-   - 命令提示符主要基于文本输出。
-
-4. **兼容性**：
-   - PowerShell 更加现代化和功能丰富，在处理任务和管理系统时更加强大和灵活。
-   - 命令提示符虽然功能有限，但一些传统的命令和脚本在旧版本的 Windows 上可能更容易迁移和执行。
-
-总的来说，PowerShell 是 Windows 系统中更强大和现代的命令行工具，适用于更丰富的自动化和管理需求，而命令提示符更适用于一些简单的命令执行和批处理操作。
-
-
-
-
-
-# 第五章 数据结构与算法
-
-设计模式：1-2题
-
-数据库：1-3题
-
-Http协议、计算机网络：1-2题
-
-数据结构与算法：2-4题
-
-
-
-## 5.1 二叉树知识点
-
-**二叉树概念**
-
-1. 二叉树的高度（深度）：从根节点到最远叶节点所经过的边的数量
-2. 节点的度：节点的子节点的数量，度为  0 的节点称为叶子节点
-2. 节点的权：节点的 val，即往这个节点上赋予的数值
-3. 节点的深度：从根节点到该节点所经过的边的数量
-4. 节点的高度：从最远叶节点到该节点所经过的边的数量
-5. https://www.hello-algo.com/chapter_tree/binary_tree/
-
-
-
-**树与二叉树的性质**
-
-假设 n0、n1、n2 分别代表节点的度数为 0、1、2。n为总结点数，那么就会满足一下性质
-
-1. 只要是树，就满足 **节点总数 = 所有节点的度之和 + 1**
-2. 二叉树满足：**n = n0 + n1 + n2，n = n0 + 2n2 + 1**
-3. 二叉树满足：**叶子节点总数 = 度为 2 的节点总数加 1**
-3. 拥有 n 个节点的二叉树的种类数为 `N = (2n)! / ((n+1)! * n!)`
-
-
-
-**满二叉树的性质**
-
-1. 满二叉树（完美二叉树），每层节点均填满，每层都拥有最大节点数
-2. 深度为 H 的满二叉树 **总节点数 N = 2^H - 1** 、**叶子节点数 N0 = 2^(H - 1)**
-2. 满二叉树的 **第 K 层的节点数为 2^(K - 1)**
-
-
-
-**完全二叉树的性质**
-
-1. 完全二叉树，只有最底层的节点未被填满，且最底层节点尽量靠左填充
-2. 具有 N 个节点的完全二叉树深度 **H = [log2N] + 1**（向下取整）
-
-
-
-**平衡二叉树和二叉排序树**
-
-1. 平衡二叉树：https://www.hello-algo.com/chapter_tree/binary_tree/#4
-
-2. 二叉排序树：https://www.hello-algo.com/chapter_tree/binary_search_tree/
-3. 平衡二叉排序树（AVL 树、平衡二叉树）：https://www.hello-algo.com/chapter_tree/avl_tree/#751-avl
-4. 平衡二叉树和二叉排序树一致，各项操作的**时间复杂度为 O(log(n))**
-5. 平衡二叉树节点的平衡因子：节点左子树的高度减去右子树的高度
-6. 深度为 H 的平衡二叉树最小节点数为 F(H)：**F(n) = F(n - 1) + F(n - 2) + 1，F(0) = 0，F(1) = 1** 
-7. 深度为 H 的平衡二叉树最大节点数为：满二叉树的情况 N = 2^H - 1
-
-
-
-**哈夫曼树的性质**
-
-1. 节点的带权路径长度 = 根节点到该结点的路径长度（经过的边） * 该结点的权值
-2. **树的带权路径长度（WPL）：所有 叶结点 带权路径长度之和**
-3. 哈夫曼树是 n 个带权叶子结点构成的所有二叉树中，WPL 最小的二叉树
-3. 哈夫曼树的构建思路：https://blog.csdn.net/u012535132/article/details/84331864
-
-
-
-**线索二叉树的性质**
-
-1. 在 n 个结点的二叉树中，总链域 2n，有 n+1 个空链域（指针指向空），n - 1 个非空链域
-2. n = n0 + n1 + n2，n0 = n2 + 1 => N =2 * n0 + n1 = n + 1（公式推导）
-3. 线索二叉树规定：https://blog.csdn.net/weixin_54186646/article/details/124435916
-
-
-
-**二叉树遍历**
-
-1. https://www.hello-algo.com/chapter_tree/binary_tree_traversal/
-
-2. 如果是**二叉树**，那么必须要先序+中序，或者中序+后序可以确定一棵树，树的话一般都可以直接确定
-
-
-
-**例题一：已知后序、中序，求前序**
-
-已知某二叉树的后序遍历序列是dabec，中序遍历序列是deabc，它的前序遍历序列是什么？
-
-> 关键点一：后序遍历的最后一个节点是根节点
->
-> 关键点二：由中序遍历加根节点，可以一分为二分别求左右两个树的，由此可不断简化
-
-由题可推出 c 的左节点树后序遍历为 dabe，中序遍历为 deab，右节点树为空
-
-
-
-
-
-## 5.2 排序算法知识点
-
-**选择排序**
-
-1. **时间复杂度 O(n^2)**，选取区间 [i, n−1] 中的最小元素，将其与索引 i 处元素交换，前 i 项已完成排序
-2. https://www.hello-algo.com/chapter_sorting/selection_sort/
-
-
-
-**冒泡排序**
-
-1. **时间复杂度 O(n^2)，当输入数组完全有序时为 O(n)**，通过连续地比较与交换相邻元素实现排序，最大的元素会被移动到数组的最右端
-2. https://www.hello-algo.com/chapter_sorting/bubble_sort/
-
-
-
-**插入排序**
-
-1. **时间复杂度 O(n^2) ，当输入数组完全有序时为 O(n)**，我们在未排序区间选择一个基准数，将该元素与其左侧已排序区间的元素逐一比较大小，并将该元素插入到正确的位置。**数据量较小的情况下，插入排序通常更快**
-2. https://www.hello-algo.com/chapter_sorting/insertion_sort/
-
-
-
-**快速排序**
-
-1. 快速排序的核心操作是**哨兵划分**，其目标是：选择数组中的某个元素作为“基准数”，将所有小于基准数的元素移到其左侧，而大于基准数的元素移到其右侧。**分治 + 递归**
-2. **时间复杂度 O(nlogn)，最差为 O(n^2)**，空间复杂度 O(n)
-3. https://www.hello-algo.com/chapter_sorting/quick_sort/
-
-
-
-# 第六章 ECharts 概念入门
-
-只需使用一个 DOM 和配置 echarts 对象，即可快速生成一个图表
-
-https://echarts.apache.org/handbook/zh/basics/import
-
-
-
-## 6.1 数据集 dataset
-
-**不使用数据集则是直接在 series 里面的 data 中写数据项**
-
-这样的话就是最直接的写法，数据分离。定义了三个 bar（树状图），分别有四个数据然后映射到 x 坐标
-
-
-
-**数据集的使用：https://echarts.apache.org/handbook/zh/concepts/dataset**
-
-在 dataset 里面定义数据集，**可以把它当成是一个二维数组，或者一个二维坐标系**。第一行的有四列，对应了四个维度。xAxis、series 会按顺序自动映射每个维度，默认以第一行作为维度
-
-在 series 使用 seriesLayoutBy 属性可以调整为以第一列作为维度
-
-```js
-const option = {
-  dataset: {
-    source: [
-      ['product', '2015', '2016', '2017'],
-      ['Matcha Latte', 43.3, 85.8, 93.7],
-      ['Milk Tea', 83.1, 73.4, 55.1],
-      ['Cheese Cocoa', 86.4, 65.2, 82.5],
-      ['Walnut Brownie', 72.4, 53.9, 39.1]
-    ]
-  },
-  xAxis: { type: 'category' }, // 默认映射第一列（第一个维度）
-  yAxis: {},
-  // 声明多个 bar 系列，默认情况下，每个系列会自动对应到 dataset 的每一列。
-  series: [{ type: 'bar' }, { type: 'bar' }, { type: 'bar' }]
-};
-```
-
-
-
-## 6.2 维度 dimensions
-
-**维度可以有单独的名字，便于在图表中显示，**理解：就是把所有数据进行一个整合，然后再作为一个个维度进行分散使用，比如在 series、xAxis 中使用
-
-**维度名通常在定义在 dataset 的第一行**。例如上面的例子中，`'product', '2015', '2016', '2017'` 就是维度名。从第二行开始，才是正式的数据。
-
-`dataset.source` 中第一行到底包含不包含维度名，ECharts 默认会自动探测。当然也可以设置 `dataset.sourceHeader: true` 显示声明第一行就是维度
-
-https://echarts.apache.org/handbook/zh/concepts/dataset/#%E7%BB%B4%E5%BA%A6%EF%BC%88dimension%EF%BC%89
-
-```js
-dataset: {
-  dimensions: [
-    { name: 'score' },
-    // 可以简写为 string ，表示 dimension name 。
-    'amount',
-    // 可以在 type 中指定维度类型。
-    { name: 'product', type: 'ordinal' }
-  ]
-}
-```
-
-> 我们定义了维度之后，每个维度都有对应的一列数据，然后在 xAxis、series、tooltip 中分配维度的使用
-
-
-
-**在 series 中使用 encode 实现数据到图形的映射**
-
-encode 会默认按顺序进行维度的映射，不过这可以实现自定义
-
-https://echarts.apache.org/handbook/zh/concepts/dataset#%E6%95%B0%E6%8D%AE%E5%88%B0%E5%9B%BE%E5%BD%A2%E7%9A%84%E6%98%A0%E5%B0%84%EF%BC%88series.encode%EF%BC%89
-
-
-
-**常用数据格式**
-
-数据可以从 Excel 中导出成 JSON 文件输入到 `dataset.source` 中，因此这边 dataset 只需要定义好维度即可，既取表格的每一列作为一个维度
-
-```ts
-dataset: {
-  dimensions: [
-    'Income',
-    'Life Expectancy',
-    'Population',
-    'Country',
-    { name: 'Year', type: 'ordinal' }
-  ],
-  source: data
-},
-```
-
-
-
-## 6.3 坐标轴 xAxis
-
-我们通常会给 x 轴分配一个维度，该维度一般用来指数据的类别，是观察数据的角度。在 xAxis 属性中进行设置。
-
-不过最好懂的就是直接定义坐标轴的配置，https://echarts.apache.org/handbook/zh/concepts/axis
-
-
-
-
-## 6.4 Echarts 应用
-
-1. 要用哪些图形现查就行，先去示例中找类似的图：https://echarts.apache.org/examples/zh/index.html 
-2. 再根据配置项规则，自定义配置即可：https://echarts.apache.org/zh/option.html#title
 
