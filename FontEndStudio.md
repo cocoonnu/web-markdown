@@ -1573,11 +1573,17 @@ URL 对象：https://juejin.cn/post/7033570440224178189
 
 
 
+# 第四章 Http
+
+参考文档：https://juejin.cn/post/7329433979808071714
 
 
-# 第四章 macos
 
-## 4.1 开发环境配置
+
+
+# 第五章 macos
+
+## 5.1 开发环境配置
 **brew**
 
 - 下载方式：https://zhuanlan.zhihu.com/p/111014448
@@ -1626,7 +1632,44 @@ URL 对象：https://juejin.cn/post/7033570440224178189
 
 
 
-## 4.2 Typora 使用设置
+**Java sdk**
+
+- https://www.liaoxuefeng.com/wiki/1252599548343744/1280507291631649
+- 实际存放位置：`/Library/Java/JavaVirtualMachines/jdk-21.jdk`
+
+
+
+**IDEA**
+
+- 安装与破解：https://blog.lupf.cn/articles/2023/12/01/1701405135406.html
+- `/Library/IdeaCrack`
+
+
+
+**Maven**
+
+- 看下这个安装教程：https://blog.csdn.net/hzqit520/article/details/129166916
+- IDEA 配置：更改默认的 `.m2` 路径，但是最好在那个路径下复制一份 `setting.xml`
+
+![image-20240208211133974](mark-img/image-20240208211133974.png)
+
+
+
+**MySQL**
+
+- 下载与配置：https://developer.aliyun.com/article/1148500，root 2002CZYczy
+- 终端连接 mysql：`mysql -uroot -p2002CZYczy`
+
+
+
+**Navicat Premium**
+
+- https://macapp.org.cn/app/navicat-premium.html
+- https://blog.csdn.net/weixin_42107504/article/details/131036475
+
+
+
+## 5.2 Typora 使用设置
 
 - [x] **图像配置**
 
