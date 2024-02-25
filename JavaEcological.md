@@ -11,10 +11,12 @@ Java中 JDK8（JDK1.8）、JDK11、JDK17，该怎么选择：https://cloud.tence
 这里记录一下个人 Java 生态的课程学习路线：
 
 - Java 基础：https://www.bilibili.com/video/BV12J41137hu
+- Java 泛型：https://www.bilibili.com/video/BV1xJ411n77R
 - Java 注解与反射：https://www.bilibili.com/video/BV1p4411P7V3
 - Java 多线程：https://www.bilibili.com/video/BV1V4411p7EF
-- Java Web（SpringBoot、Maven、Mybatis）：https://www.bilibili.com/video/BV1m84y1w7Tb
-- Mybatis-Plus：https://www.bilibili.com/video/BV1Xu411A7tL
+- Java Web（SpringBoot+Maven+Mybatis）：https://www.bilibili.com/video/BV1m84y1w7Tb
+- SSM 框架（Spring+SpringMVC+Maven+SpringBoot+MyBatisPlus）：https://www.bilibili.com/video/BV1Fi4y1S7ix
+- MyBatisPlus 高级：https://www.bilibili.com/video/BV1Xu411A7tL
 - 瑞吉外卖业务开发：https://www.bilibili.com/video/BV13a411q753
 
 
@@ -55,6 +57,37 @@ Java中 JDK8（JDK1.8）、JDK11、JDK17，该怎么选择：https://cloud.tence
 - `interface`定义抽象方法：`public abstract void num();`
 
 - https://www.liaoxuefeng.com/wiki/1252599548343744/1260456790454816
+
+```java
+@SpringBootApplication
+public class SpringbootLearnApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(SpringbootLearnApplication.class, args);
+        // 创建接口实例的两种方式
+        TestInterface t1 = new TestInterfaceImpl();
+        TestInterface t2 = new TestInterface() {
+            @Override
+            public String getStr() {
+                return null;
+            }
+        };
+    }
+}
+
+interface TestInterface {
+    String getStr();
+}
+
+class TestInterfaceImpl implements TestInterface {
+    @Override
+    public String getStr() {
+        return null;
+    }
+}
+```
+
+
 
 
 
@@ -127,62 +160,25 @@ java 包与 import：
 
 
 
-### 1.1.2 SpringBoot 语法
+方法引用：
 
-JavaWeb 课程：https://www.bilibili.com/video/BV1m84y1w7Tb
+1. 在 Java 8 中，方法引用（Method Reference）是一种新的语法，用于简化 Lambda 表达式。它提供了一种简洁的方式来表示已经存在的方法或构造函数的引用。
+
+2. 方法引用的语法是 `类名::方法名` 或 `对象名::方法名`。这里的 `类名` 可以是类名，也可以是接口名；`对象名` 是一个对象的引用。例如，`String::length` 表示对于给定的 String 对象，引用其 length 方法；`System.out::println` 表示引用 System.out 类的 out 对象的 println 方法。
 
 
 
-Springboot 接口开发三层架构
+### 1.1.2 SpringBoot 入门
+
+**Springboot 接口开发三层架构**
 
 - controller：控制层，接收前端发送的请求，对请求进行处理，并响应数据
 - service：业务逻辑层，处理具体的业务逻辑
-- dao：数据访问层（Data Access Object），负责数据访问操作，包括数据的增删改查
+- dao：数据访问层（Data Access Object），负责数据访问操作，包括数据的增删改
 
 
 
-数据访问层多态的实现逻辑示例
-
-```java
-public interface EmpDao {
-    public List<Emp> getEmpDaoList();
-}
-```
-
-```java
-public class EmpDaoInstance implements EmpDao {
-    @Override
-    public List<Emp> getEmpDaoList() {
-        String file = Objects.requireNonNull(this.getClass().getClassLoader().getResource("emp.xml")).getFile();
-        System.out.println(file);
-        List<Emp> empDaoList = XmlParserUtils.parse(file, Emp.class);
-        return empDaoList;
-    }
-}
-```
-
-
-
-业务处理层调用 dao 的实例
-
-```java
-public class EmpServiceInstance implements EmpService {
-    private final EmpDao empDao = new EmpDaoInstance();
-
-    @Override
-    public List<Emp> getEmpServiceList() {
-        List<Emp> empServiceList = empDao.getEmpDaoList();
-        empServiceList.forEach(emp -> {
-          ......
-        });
-        return empServiceList;
-    }
-}
-```
-
-
-
-IOC&DI 控制反转与依赖注入
+**IOC&DI 控制反转与依赖注入**
 
 将对象的控制权交给Spring的IOC容器，由IOC容器创建及管理对象。IOC容器创建的对象称为bean对象。在之前的入门案例中，要把某个对象交给IOC容器管理，需要在类上添加一个注解：@Component 。而Spring框架为了更好的标识web应用程序开发当中，bean对象到底归属于哪一层，又提供了@Component的衍生注解：
 
@@ -212,6 +208,93 @@ public class EmpServiceInstance implements EmpService {
     }
 }
 ```
+
+
+
+**请求响应参数解析**
+
+```java
+@RestController
+public class RequestController {
+
+    // 原始方式
+    @RequestMapping("/simpleParam")
+    public String simpleParam(HttpServletRequest request){
+        //获取请求参数
+        String name = request.getParameter("name");
+        String ageStr = request.getParameter("age");
+        int age = Integer.parseInt(ageStr);
+        System.out.println(name+ ":" + age);
+        return "OK";
+    }
+
+    // springboot方式
+    @RequestMapping("/simpleParam")
+    public String simpleParam(String name, Integer age){
+        System.out.println(name+ ":" + age);
+        return "OK";
+    }
+
+  	// @RequestParam注解上name对应路径参数上字段，required = false则是没对上就不会报错，否则的话会报错
+    @RequestMapping("/simpleParam")
+    public String simpleParam(@RequestParam(name = "name", required = false) String username) {
+        System.out.println(username);
+        return "OK";
+    }
+
+
+    // 实体参数（GET、POST请求的封装params对象）
+    @RequestMapping("/simplePojo")
+    public String simplePojo(User user) {
+        System.out.println(user);
+        return "OK";
+    }
+
+    // 普通数组参数
+    @RequestMapping("/arrayParam")
+    public String arrayParam(String[] hobby) {
+        System.out.println(Arrays.toString(hobby));
+        return "OK";
+    }
+
+  	// 列表集合参数（路径上显示的是字符串，但是@RequestParam可以进行解析）
+    @RequestMapping("/listParam")
+    public String listParam(@RequestParam List<String> hobby) {
+        System.out.println(hobby);
+        return "OK";
+    }
+
+    // 日期时间参数（路径上显示的是字符串，依然通过注解进行解析）
+    @RequestMapping("/dateParam")
+    public String dateParam(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime time) {
+        System.out.println(time);
+        return "OK";
+    }
+
+    // JSON参数(通常是 POST 请求中的请求体参数)
+    @RequestMapping("/jsonParam")
+    public String jsonParam(@RequestBody User user){
+        System.out.println(user);
+        return "OK";
+    }
+
+    // 路径参数
+    @RequestMapping("/path/{id}")
+    public String pathParam(@PathVariable Integer id){
+        System.out.println(id);
+        return "OK";
+    }
+
+    @RequestMapping("/path/{id}/{name}")
+    public String pathParam2(@PathVariable Integer id , @PathVariable String name){
+        System.out.println(id);
+        System.out.println(name);
+        return "OK";
+    }
+}
+```
+
+
 
 
 
@@ -417,11 +500,19 @@ select  *  from  student  order  by  math  desc, english  desc;
 
 首先要知道项目的 JDK 环境，然后是项目的 jar 包版本都依赖与 JDK 版本。新建一个 SpringBoot 项目，必须先使用 IDEA 构建框架， 勾选默认的依赖，试试看初始化项目是否跑的起来。然后 IDEA 会根据 `pom.xml` 自动下载项目的依赖。然后在 IDEA 中配置项目的 Maven 运行的 JDK 版本和 Java 的JDK 版本。配置好之后应该就可以跑通了。
 
+IDEA 默认将 Maven 的配置和依赖放在了：`/Users/cocoon/.m2` 文件夹下，如果需要修改 Maven 的一些配置（比如修改镜像源）就可以在该文件夹下创建一个 `setting.xml` 文件
+
+其他配置参考（不需要和文档一样用一个新的仓库地址）：https://blog.csdn.net/hzqit520/article/details/129166916
+
 
 
 ### 1.1.5 MyBatis 学习
 
+- 官方文档：https://baomidou.com/
+- 参考文档：https://cyborg2077.github.io/2022/09/20/MyBatisPlus
+
 当构建 SpringBoot 项目时，勾选 MyBatis 依赖必须初始化 `application.properties`  里面的配置才能够启动项目，该配置的作用是链接数据库的。这里推荐下载插件：MyBatisX
+
 ```properties
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.datasource.url=jdbc:mysql://localhost:3306/springboot
@@ -626,6 +717,40 @@ public void batchDelete(Integer[] ids);
 
 
 
+### 1.1.6 JavaWeb 学习
+
+**Session和Cookie**
+
+- 参考文档：https://cyborg2077.github.io/2022/08/20/JavaWeb07
+
+```java
+request.getSession().getAttribute(GlobalConstant.EMPLOYEE_ID)
+request.getSession().setAttribute(GlobalConstant.EMPLOYEE_ID, queriedEmployee.getId());
+```
+
+
+
+**Http和Servlet**
+
+- 参考文档：https://cyborg2077.github.io/2022/08/16/JavaWeb04/
+
+- 视频链接：https://www.bilibili.com/video/BV1Qf4y1T7Hx?p=94
+
+
+
+**Filter和Listener**
+
+- 参考文档：https://cyborg2077.github.io/2022/08/21/JavaWeb08/
+- 视频链接：https://www.bilibili.com/video/BV1Qf4y1T7Hx?p=134
+
+
+
+### 1.1.7 SSM 框架学习
+
+统一异常处理：https://cyborg2077.github.io/2022/09/10/SSMIntegration/#%E7%BB%9F%E4%B8%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86
+
+
+
 
 ## 1.2 后端项目业务笔记
 
@@ -645,6 +770,8 @@ public void batchDelete(Integer[] ids);
 ![image-20240209132913031](mark-img/image-20240209132913031.png)
 
 ![image-20240209133024686](mark-img/image-20240209133024686.png)
+
+
 
 然后在 `pom.xml` 导入以下依赖，项目就直接可以运行了！然后参考课程再配置其他数据库和前端静态资源。
 
@@ -710,7 +837,1120 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
 
 
-### 1.2.2 构建三层架构步骤
+### 1.2.2 项目前期开发记录
+
+关于 SSM 框架的三层架构个人理解
+
+1. `controller`：这一层位于最顶层，是直接用于响应接口的。基本用于调用 mp 的条件构造器和 `service` 层的`demoService` 实例封装好的业务方法，然后返回响应数据
+1. `service`：这一层位于中间层，是用于封装操作数据库和业务逻辑的具体方法，实现 `controller` 层的高效复用
+1. `mapper`：这一层位于最底层，基本上是继承 mp 提供好的父类然后用于构建 `service` 层的，无脑写死就行，没有其他逻辑
 
 
+
+BUG 问题处理和开发记录
+
+1. 遇到 bug：` Error attempting to get column 'create_time' from result set.` 解决方案：升级 druid 数据连接池版本 https://blog.csdn.net/niuzaiwenjie/article/details/124724330
+2. 修改静态文件自动热更新：https://blog.csdn.net/qq_38680405/article/details/124753971
+3. 修改静态文件里的 js 文件立刻生效：https://blog.csdn.net/qq_43039392/article/details/107591254
+4. JSON.toJSONString 中文乱码：https://blog.csdn.net/m0_61594817/article/details/128678276
+
+
+
+项目前期只是用于学习，部分接口业务并没有实现，如最后的用户下单功能和用户个人中心等。
+
+剩余业务开发可以跟着参考文档进行开发
+
+
+
+### 1.2.3 员工管理业务代码编写
+
+#### 1.2.3.1 登录业务代码
+
+登录接口代码逻辑
+
+```java
+@PostMapping("/login")
+public R<Employee> login(HttpServletRequest request, @RequestBody Employee employee) {
+    // 密码加密
+    String password = employee.getPassword();
+    password = DigestUtils.md5DigestAsHex(password.getBytes());
+
+    // mp条件构造器
+    LambdaQueryWrapper<Employee> lqw = new LambdaQueryWrapper<Employee>();
+    lqw.eq(Employee::getUsername, employee.getUsername());
+    Employee queriedEmployee = employeeService.getOne(lqw);
+
+    // 分情况判断
+    if (queriedEmployee == null) return R.error("该用户不存在");
+    if (!queriedEmployee.getPassword().equals(password)) return R.error("密码错误");
+    if (queriedEmployee.getStatus() == 0) return R.error("该用户已被禁用");
+
+    request.getSession().setAttribute(GlobalConstant.EMPLOYEE_ID, queriedEmployee.getId());
+    return R.success(queriedEmployee);
+}
+```
+
+
+
+开启请求拦截器（JavaWeb 知识点），除了请求静态资源和登录登出两个接口时，其余接口一律返回用户未登录响应
+
+```java
+@WebFilter(filterName = "LoginCheckFilter", urlPatterns = "/*")
+public class LoginCheckFilter implements Filter {
+    // 路径字符串匹配对象
+    public static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
+        String requestURI = request.getRequestURI();
+        // 不需要拦截的请求路径
+        String[] urls = new String[]{
+                "/employee/login", // 登录退出登录两个接口
+                "/employee/logout",
+                "/backend/**", // 静态页面资源
+                "/front/**"
+        };
+
+        // 如果请求路径不需要拦截则放行
+        if (checkoutRequestURI(requestURI, urls)) {
+            filterChain.doFilter(request,response);
+            return;
+        }
+
+        // 如果用户存在session登录状态则放行
+        if (request.getSession().getAttribute(GlobalConstant.EMPLOYEE_ID) != null) {
+            filterChain.doFilter(request,response);
+            return;
+        }
+
+        // 否则的话一律响应为用户未登录
+        response.getWriter().write(JSON.toJSONString(R.error("用户未登录"), SerializerFeature.BrowserCompatible));
+    }
+
+    public static boolean checkoutRequestURI(String requestURI, String[] urls) {
+        for (String url : urls) {
+            boolean match = PATH_MATCHER.match(url, requestURI);
+            if (match) return true;
+        }
+        return false;
+    }
+}
+```
+
+```js
+// 前端响应拦截器
+service.interceptors.response.use(res => {
+  const code = res.data.code;
+  const msg = res.data.msg
+  // 如果接口响应为用户未登录则直接跳转到登录页
+  if (res.data.code === 0 && res.data.msg === '用户未登录') {
+    console.log('---/backend/page/login/login.html---',code)
+    localStorage.removeItem('userInfo')
+    window.top.location.href = '/backend/page/login/login.html'
+  } else {
+    return res.data
+  }
+}
+```
+
+
+
+#### 1.2.3.2 全局异常响应处理
+
+control 层业务逻辑
+
+```java
+@PostMapping
+public GlobalResult<Employee> save(HttpServletRequest request, @RequestBody Employee employee) {
+    // 除了前端传过来的属性还需要封装其他属性，id的话mp会自动随机生成
+    employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+    employee.setCreateTime(LocalDateTime.now());
+    employee.setUpdateTime(LocalDateTime.now());
+    Long employeeId = (Long)request.getSession().getAttribute(GlobalConstant.EMPLOYEE_ID);
+    employee.setCreateUser(employeeId);
+    employee.setUpdateUser(employeeId);
+
+    // mp新增员工，每个属性都不允许为null
+    employeeService.save(employee);
+    return GlobalResult.success(employee);
+}
+```
+
+
+
+全局异常响应处理，基于 SpringBoot 框架
+
+```java
+@Slf4j
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    public GlobalResult<String> exceptionHandler(SQLIntegrityConstraintViolationException exception) {
+        String exceptionMsg = exception.getMessage();
+        log.error(exceptionMsg);
+
+        // 处理“条目存在”SQL语句异常
+        if (exceptionMsg.contains("Duplicate entry")) {
+            String[] splitStr = exceptionMsg.split(" ");
+            return GlobalResult.error(splitStr[2] + "已存在");
+        }
+
+        // 未知异常统一返回系统接口异常
+        return GlobalResult.error("系统接口异常");
+    }
+}
+```
+
+
+
+#### 1.2.3.3 分页查询业务代码
+
+我们现在可以用 MyBatisPlus 来简化分页查询的代码实现，关于 mp 的分页插件使用的官方文档：https://baomidou.com/pages/97710a/#paginationinnerinterceptor
+
+
+
+首先我们拓展一下 mp 的插件支持 `config/MybatisPlusConfig.java`
+
+```java
+@Configuration
+public class MybatisPlusConfig {
+   /** mp分页插件 **/
+    @Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        MybatisPlusInterceptor mybatisPlusInterceptor = new MybatisPlusInterceptor();
+        mybatisPlusInterceptor.addInnerInterceptor(new PaginationInnerInterceptor());
+        return mybatisPlusInterceptor;
+    }
+}
+```
+
+
+
+然后就可以直接使用了
+
+```java
+@GetMapping("/page")
+public GlobalResult<Page> page(int page, int pageSize, @RequestParam(required = false) String name) {
+    log.info("page={},pageSize={},name={}", page, pageSize, name);
+    Page pageInfo = new Page(page, pageSize);
+
+    // 添加name搜索查询和按更新时间排序
+    LambdaQueryWrapper<Employee> lqw = new LambdaQueryWrapper<>();
+    lqw.like(!StringUtils.isEmpty(name), Employee::getName, name);
+    lqw.orderByDesc(Employee::getUpdateTime);
+
+    // 直接进行分页查询，mp会自动将结果帮我们封装到pageInfo对象中
+    employeeService.page(pageInfo, lqw);
+    return GlobalResult.success(pageInfo);
+}
+```
+
+
+
+#### 1.2.3.4 配置数据状态转换器
+
+我们会发现响应请求的时的 JSON 中输出了 Long 类型和 LocalDateTime 类型，但这并不是前端想要的 JSON 格式，前端需要将 Long 转换为字符串、LocalDateTime 类型转换为日期格式字符串，因此我们需要配置状态转换器
+
+
+
+配置对象映射器 JacksonObjectMapper，继承 ObjectMapper `common/JacksonObjectMapper.java`
+```java
+......
+
+/**
+ * 对象映射器:基于jackson将Java对象转为json，或者将json转为Java对象
+ * 将JSON解析为Java对象的过程称为 [从JSON反序列化Java对象]
+ * 从Java对象生成JSON的过程称为 [序列化Java对象到JSON]
+ */
+public class JacksonObjectMapper extends ObjectMapper {
+
+    public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+    public static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
+
+    /**
+     * 将Long转换为字符串
+     * 将LocalDateTime类型转换为日期格式字符串
+     */
+    public JacksonObjectMapper() {
+        super();
+        //收到未知属性时不报异常
+        this.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        //反序列化时，属性不存在的兼容处理
+        this.getDeserializationConfig().withoutFeatures(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        SimpleModule simpleModule = new SimpleModule()
+                .addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT)))
+                .addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)))
+                .addDeserializer(LocalTime.class, new LocalTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_TIME_FORMAT)))
+
+                .addSerializer(BigInteger.class, ToStringSerializer.instance)
+                .addSerializer(Long.class, ToStringSerializer.instance)
+                .addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT)))
+                .addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)))
+                .addSerializer(LocalTime.class, new LocalTimeSerializer(DateTimeFormatter.ofPattern(DEFAULT_TIME_FORMAT)));
+
+        //注册功能模块 例如，可以添加自定义序列化器和反序列化器
+        this.registerModule(simpleModule);
+    }
+}
+```
+
+
+
+扩展 MVC 框架的消息转换器
+
+```java
+@Configuration
+public class WebMvcConfig extends WebMvcConfigurationSupport {
+		......
+    /** 拓展json数据转换器 **/
+    @Override
+    protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
+        // 设置对象转化器，底层使用jackson将java对象转为json
+        messageConverter.setObjectMapper(new JacksonObjectMapper());
+        // 将上面的消息转换器对象追加到mvc框架的转换器集合当中(index设置为0，表示设置在第一个位置，避免被其它转换器接收，从而达不到想要的功能)
+        converters.add(0, messageConverter);
+    }
+}
+```
+
+
+
+JSON 数据转换效果
+
+```json
+{
+    "id": 1759482252352401410,
+    "username": "cocoon",
+    "name": "cocoon",
+    "password": "e10adc3949ba59abbe56e057f20f883e",
+    "phone": "18579152306",
+    "sex": "1",
+    "idNumber": "360502200205130019",
+    "status": 1,
+    "createTime": [
+        2024,
+        2,
+        19,
+        15,
+        37,
+        13
+    ],
+    "updateTime": [
+        2024,
+        2,
+        19,
+        15,
+        37,
+        13
+    ],
+    "createUser": 1,
+    "updateUser": 1
+},
+{
+    "id": "1759489689688055810",
+    "username": "czy",
+    "name": "cocoon",
+    "password": "e10adc3949ba59abbe56e057f20f883e",
+    "phone": "18579152306",
+    "sex": "1",
+    "idNumber": "360502200205130019",
+    "status": 1,
+    "createTime": "2024-02-19 16:06:46",
+    "updateTime": "2024-02-19 16:06:46",
+    "createUser": "1759482252352401410",
+    "updateUser": "1759482252352401410"
+}
+```
+
+
+
+#### 1.2.3.5 更新员工业务代码
+
+```java
+/** 更新员工 **/
+@PutMapping()
+public GlobalResult<String> update(HttpServletRequest request, @RequestBody Employee employee) {
+    // 需要另外再封装一些更新属性
+    Long employeeId = (Long)request.getSession().getAttribute(GlobalConstant.EMPLOYEE_ID);
+    employee.setUpdateUser(employeeId);
+    employee.setUpdateUser(employeeId);
+ 
+    // mp会根据主键id匹配更新
+    employeeService.updateById(employee);
+    return GlobalResult.success("更新员工成功");
+}
+```
+
+
+
+#### 1.2.3.6 通用列表查询方式
+
+通过前端传入的 GET 请求查询条件查询数据库
+
+```java
+@GetMapping("/list")
+public GlobalResult<List<Dish>> getList(Dish dish) {
+    // 查询条件，需要其他条件直接在后面加就行
+    LambdaQueryWrapper<Dish> lqw = new LambdaQueryWrapper<>();
+    lqw.eq(dish.getCategoryId() != null ,Dish::getCategoryId, dish.getCategoryId());
+    lqw.eq(Dish::getStatus, 1);
+
+    List<Dish> dishList = dishService.list(lqw);
+    return GlobalResult.success(dishList);
+}
+```
+
+
+
+### 1.2.4 分类管理业务代码编写
+
+#### 1.2.4.1 公共字段自动填充
+
+前面我们已经完成了对员工数据的添加与修改，在添加/修改员工数据的时候，**都需要指定一下创建人、创建时间、修改人、修改时间等字段，而这些字段又属于公共字段**，不仅员工表有这些字段，在菜品表、分类表等其他表中，也拥有这些字段。那我们有没有办法让这些字段在一个地方统一管理呢？这样可以简化我们的开发，答案就是使用 MybatisPlus 给我们提供的公共字段自动填充功能
+
+
+
+首先去实体类中通过 `TableField` 注解标记某些属性需要自动化填充
+
+```java
+/** 创建时间，插入时自动填充 **/
+@TableField(fill = FieldFill.INSERT)
+private LocalDateTime createTime;
+
+/** 更新时间，插入和更新时自动填充 **/
+@TableField(fill = FieldFill.INSERT_UPDATE)
+private LocalDateTime updateTime;
+
+/** 创建人id，插入时自动填充 **/
+@TableField(fill = FieldFill.INSERT)
+private Long createUser;
+
+/** 更新人id，插入和更新时自动填充 **/
+@TableField(fill = FieldFill.INSERT_UPDATE)
+private Long updateUser;
+```
+
+
+
+然后创建 `MyMetaObjectHandler` 工具类实现公共字段自动填充
+
+```java
+@Component
+public class MyMetaObjectHandler implements MetaObjectHandler {
+    /** 插入时自动填充字段 **/
+    @Override
+    public void insertFill(MetaObject metaObject) {
+        metaObject.setValue("updateTime", LocalDateTime.now());
+        metaObject.setValue("createTime", LocalDateTime.now());
+        metaObject.setValue("updateUser", EmployeeIdThread.getEmployeeId());
+        metaObject.setValue("createUser", EmployeeIdThread.getEmployeeId());
+    }
+
+    /** 更新时自动填充字段 **/
+    @Override
+    public void updateFill(MetaObject metaObject) {
+        metaObject.setValue("updateTime", LocalDateTime.now());
+        metaObject.setValue("updateUser", EmployeeIdThread.getEmployeeId());
+    }
+}
+```
+
+
+
+这样是完成了，然后可以在新增、更新员工时省略哪些封装公共字段的代码
+
+
+
+#### 1.2.4.2 ThreadLocal 的使用
+
+现在存在一个问题，如何获取当前登录用户的 id 值，我们可以使用ThreadLocal来解决这个问题，在学习ThreadLocal之前，我们需要先确认一个事情，就是客户端发送的每次 http 请求，对应的在服务端都会分配一个新的线程来处理，在处理过程中涉及到下面类中的方法都属于相同的一个线程（按顺序依次执行）：
+
+```markdown
+1. LoginCheckFilter 中的 doFilter 方法
+2. EmployeeController中的 update 方法
+3. MyMetaObjectHandler 中的 updateFill 方法
+```
+
+
+因此我们可以在 LoginCheckFilter 的 doFilter 方法中获取当前登录用户 id，并调用 ThreadLocal 的 set 方法来设置当前线程的线程局部变量的值（用户id)，然后在 MyMetaObjectHandler 的 updateFill 方法中调用 ThreadLocal 的 get 方法来获得当前线程所对应的线程局部变量的值（用户id)
+
+
+
+首先我创建一个工具类 BaseContext 实现全局的统一使用
+```java
+package com.cocoon.reggieTakeout.common;
+
+/** 基于ThreadLocal的封装工具类，用于当前线程内共享用户id **/
+public class BaseContext {
+    private static final ThreadLocal<Long> threadLocal = new ThreadLocal<>();
+
+    public static void setCurrentId(Long id) {
+        threadLocal.set(id);
+    }
+
+    public static Long getCurrentId() {
+        return threadLocal.get();
+    }
+}
+```
+
+
+
+然后再之前提到的地方使用即可
+
+```java
+// src/main/java/com/cocoon/reggieTakeout/filter/LoginCheckFilter.java
+if (employeeId != null) {
+    BaseContext.setCurrentId(employeeId);
+    filterChain.doFilter(request,response);
+    return;
+}
+
+// src/main/java/com/cocoon/reggieTakeout/common/MyMetaObjectHandler.java
+metaObject.setValue("createUser", BaseContext.getCurrentId());
+```
+
+
+
+#### 1.2.4.3 删除分类业务代码
+
+业务需求：在分类管理列表页面，可以对某个分类进行删除操作并且当分类关联了菜品或者套餐时，此分类将不允许被删除
+
+具体实现：在 `service` 层删除分类的业务逻辑方法，查询当前分类是否关联了菜品和套餐，关联了则抛出自定义异常
+
+```java
+// src/main/java/com/cocoon/reggieTakeout/service/impl/CategoryServiceImpl.java
+@Service
+public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> implements CategoryService {
+    @Autowired
+    private DishService dishService;
+
+    @Autowired
+    private SetmealService setmealService;
+
+    /** 删除分类的业务逻辑方法 **/
+    @Override
+    public void remove(Long id) {
+        // 查询当前分类是否关联了菜品和套餐
+        LambdaQueryWrapper<Dish> lqwByDish = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<Setmeal> lqwBySetmeal = new LambdaQueryWrapper<>();
+        lqwByDish.eq(Dish::getCategoryId, id);
+        lqwBySetmeal.eq(Setmeal::getCategoryId, id);
+      
+        if (dishService.count(lqwByDish) != 0) {
+            throw new CustomException("当前分类下关联了菜品，不能删除");
+        }
+        if (setmealService.count(lqwBySetmeal) != 0) {
+            throw new CustomException("当前分类下关联了套餐，不能删除");
+        }
+        // 都没有关联则按id删除
+        super.removeById(id);
+    }
+}
+```
+
+```java
+// src/main/java/com/cocoon/reggieTakeout/controller/CategoryController.java
+@DeleteMapping()
+public GlobalResult<String> delete(Long ids) {
+    categoryService.remove(ids);
+    return GlobalResult.success("分类信息删除成功");
+}
+```
+
+
+
+#### 1.2.4.4 抛出自定义异常方式
+
+定义一个自定义业务异常类，用于输出业务异常错误信息
+
+```java
+// src/main/java/com/cocoon/reggieTakeout/common/CustomException.java
+package com.cocoon.reggieTakeout.common;
+
+/** 自定义业务异常类，用于输出业务异常错误信息 **/
+public class CustomException extends RuntimeException {
+    public CustomException(String errorMsg) {
+        super(errorMsg);
+    }
+}
+```
+
+
+
+在之前定义过的全局异常响应处理中捕获一下自定义业务异常即可
+
+```java
+// src/main/java/com/cocoon/reggieTakeout/common/GlobalExceptionHandler.java
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+		......
+    /** 捕获自定义业务异常 **/
+    @ExceptionHandler(CustomException.class)
+    public GlobalResult<String> exceptionHandler(CustomException customException) {
+        String exceptionMsg = customException.getMessage();
+        log.error(exceptionMsg);
+        return GlobalResult.error(exceptionMsg);
+    }
+}
+```
+
+
+
+然后随时随地即可抛出异常！
+
+```java
+throw new CustomException("当前分类下关联了菜品，不能删除");
+````
+
+
+
+### 1.2.5 菜品管理业务代码编写
+
+#### 1.2.5.1 文件上传和下载功能
+
+文件上传：
+
+1. 前端利用组件上传功能会发送一个 POST 文件请求
+2. 后端直接利用 SpringBoot 封装好的 `MultipartFile file` 接收即可，最后响应的数据为保存的文件名
+3. 文件上传后暂存本地文件夹下，`bashPath` 路径是使用的 `application.yml` 导出的配置 `reggie.path`
+
+```java
+@PostMapping("/upload")
+public GlobalResult<String> upload(MultipartFile file) throws IOException {
+    // 如果文件存储的文件夹不存在则新建
+    File dir = new File(basePath);
+    if (!dir.exists()) dir.mkdirs();
+
+    // 重命名文件
+    String originalFilename = file.getOriginalFilename();
+    String suffix = null;
+    if (originalFilename != null) {
+        suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+    }
+    String fileName = UUID.randomUUID() + suffix;
+
+    // 实现文件上传，文件暂存本地磁盘
+    try {
+        file.transferTo(new File(basePath + fileName));
+    } catch (IOException exception) {
+        throw new RuntimeException(exception);
+    }
+
+    return GlobalResult.success(fileName);
+}
+```
+
+![image-20240222111950823](mark-img/image-20240222111950823.png)
+
+文件下载：
+
+1. 这里是直接通过 GET 请求了一个静态资源，传入一个文件名
+2. 后端是直接响应之前文件上传那里存储的资源
+3. 主要是看输入流和输出流之间是如何传输的
+
+```java
+@GetMapping("/download")
+public void download(HttpServletResponse response, String name) {
+    try {
+        // 输入流，通过输入流读取文件内容
+        FileInputStream fileInputStream = new FileInputStream(new File(basePath + name));
+        // 输出流，通过输出流将文件写回浏览器
+        ServletOutputStream outputStream =response.getOutputStream();
+      
+        int length = 0;
+        byte[] bytes = new byte[1024];
+        while (length != -1) {
+            length = fileInputStream.read(bytes);
+            outputStream.write(bytes, 0, length); // 写入
+            outputStream.flush(); // 刷新
+        }
+
+        outputStream.close();
+        fileInputStream.close();
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    }
+}
+```
+
+
+
+#### 1.2.5.2 菜品分页业务代码编写
+
+这里主要是分页查询菜品列表业务，但是返回值中还需要返回菜品对应的分类名称，因此逻辑稍微复杂化了
+
+```java
+/** 分页查询菜品列表 **/
+@GetMapping("/page")
+public GlobalResult<Page<DishDto>> page(int page, int pageSize, String name) {
+    // 封装好dishPageInfo对象
+    Page<Dish> dishPageInfo = new Page<>(page, pageSize);
+    LambdaQueryWrapper<Dish> lqw = new LambdaQueryWrapper<>();
+    lqw.like(!StringUtils.isEmpty(name), Dish::getName, name);
+    lqw.orderByDesc(Dish::getUpdateTime);
+    dishService.page(dishPageInfo, lqw);
+
+    // 封装dishDtoPageInfo对象，列表中添加categoryName属性
+    Page<DishDto> dishDtoPageInfo = new Page<>();
+    // 除了record属性，其余属性都拷贝dishPageInfo
+    BeanUtils.copyProperties(dishPageInfo, dishDtoPageInfo, "records");
+    List<Dish> records = dishPageInfo.getRecords();
+    // 基于records封装dishDtoList
+    List<DishDto> dishDtoList = records.stream().map(item -> {
+        DishDto dishDto = new DishDto();
+        BeanUtils.copyProperties(item, dishDto);
+        Category category = categoryService.getById(item.getCategoryId());
+        if (category != null) dishDto.setCategoryName(category.getName());
+        return dishDto;
+    }).collect(Collectors.toList());
+
+    dishDtoPageInfo.setRecords(dishDtoList);
+    return GlobalResult.success(dishDtoPageInfo);
+}
+```
+
+
+
+#### 1.2.5.3 更新菜品业务编写
+
+和新增菜品类似，不仅要更新 dish 表还需要更新 dish_flavor 表。这里是直接实现覆盖更新，而不是根据 id 更新（因为没有 dishFlavorId 属性），因此是先清除该菜品的口味数据，再更新该菜品的口味数据
+
+```java
+public void updateWithFlavor(DishDto dishDto) {
+    this.updateById(dishDto);
+    Long dishId = dishDto.getId();
+
+    // 先清除该菜品的口味数据
+    LambdaQueryWrapper<DishFlavor> lqw = new LambdaQueryWrapper<>();
+    lqw.eq(DishFlavor::getDishId, dishId);
+    dishFlavorService.remove(lqw);
+
+    // 再更新该菜品的口味数据
+    List<DishFlavor> dishFlavorList = dishDto.getFlavors();
+    for (DishFlavor dishFlavor : dishFlavorList) {
+        dishFlavor.setDishId(dishId);
+    }
+
+    // 最后保存口味数据列表
+    dishFlavorService.saveBatch(dishFlavorList);
+}
+```
+
+
+
+#### 1.2.5.4 批量删除和更新状态
+
+前端发送请求进行批量删除：`http://localhost:8080/dish?ids=1413385247889891330,1413384757047271425`
+
+同时还可以解决单个删除响应，一举两得！
+
+```java
+@DeleteMapping
+public GlobalResult<String> batchDelete(@RequestParam List<Long> ids) {
+    dishService.batchDeleteWithFlavor(ids);
+    return GlobalResult.success("批量删除成功");
+}
+```
+
+```java
+@Override
+public void batchDeleteWithFlavor(List<Long> ids) {
+    // 首先判断选中的数组中是否有启售的
+    LambdaQueryWrapper<Dish> dishLambdaQueryWrapper = new LambdaQueryWrapper<>();
+    dishLambdaQueryWrapper.in(Dish::getId, ids).eq(Dish::getStatus, 1);
+    int count = this.count(dishLambdaQueryWrapper);
+    if (count > 0) {
+        throw new CustomException("套餐正在售卖中，请先停售再进行删除");
+    }
+
+    // 删除关联的dish_flavor表
+    LambdaQueryWrapper<DishFlavor> dishFlavorLambdaQueryWrapper = new LambdaQueryWrapper<>();
+    dishFlavorLambdaQueryWrapper.in(DishFlavor::getDishId, ids);
+    dishFlavorService.remove(dishFlavorLambdaQueryWrapper);
+
+    // 删除dish表数据
+    this.removeByIds(ids);
+}
+```
+
+
+
+批量更新状态同理：`http://localhost:8080/dish/status/0?ids=1413385247889891330,1413384757047271425`
+
+```java
+@PostMapping("/status/{status}")
+public GlobalResult<String> batchUpdateStatus(@PathVariable Integer status, @RequestParam List<Long> ids) {
+    LambdaUpdateWrapper<Dish> lqw = new LambdaUpdateWrapper<>();
+    lqw.in(Dish::getId, ids);
+    lqw.set(Dish::getStatus, status);
+    dishService.update(lqw);
+    String statusStr = status == 1 ? "启售" : "停售";
+    return GlobalResult.success("批量" + statusStr + "成功");
+}
+```
+
+
+
+#### 1.2.5.5 @Transactional
+
+如果一个 `ServiceImpl` 层操作了其他表，则最好添加这个注解，要么一起成功修改表结构，要么一起失败
+
+```java
+// src/main/java/com/cocoon/reggieTakeout/service/impl/DishServiceImpl.java
+@Service
+@Transactional
+public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements DishService {
+    @Autowired
+    private DishFlavorService dishFlavorService;
+}
+```
+
+```java
+// 记得去启动函数中再加上@EnableTransactionManagement
+@Slf4j
+@SpringBootApplication
+@ServletComponentScan
+@EnableTransactionManagement
+public class ReggieTakeoutApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(ReggieTakeoutApplication.class, args);
+        log.info("项目启动成功...");
+    }
+}
+```
+
+
+
+### 1.2.6 移动端用户登录业务代码
+
+#### 1.2.6.1 阿里云短信业务注册
+
+使用阿里云账号注册阿里云密钥
+
+```java
+AccessKey ID
+LTAI5tPVkwyZWWDjEj4Jatkz
+
+AccessKey Secret
+lJ4A5XVg0JEYfbLMJpoc1NKEcWfQxT
+```
+
+
+
+进入短信服务：https://dysms.console.aliyun.com/overview 先购买套餐包，有条件的话就去申请签名、模板
+
+想偷懒就直接使用快速学习测试：https://dysms.console.aliyun.com/quickstart 添加手机号，选择专用测试签名、模板
+
+然后点击调用 API 发送短信，得到：`TemplateCode`、`SignName`
+
+
+
+去 `application.yml` 填写你前面得到的配置
+```yml
+message:
+  accessKeyId: LTAI5tPVkwyZWWDjEj4Jatkz
+  accessKeySecret: lJ4A5XVg0JEYfbLMJpoc1NKEcWfQxT
+  signName: 阿里云短信测试
+  templateCode: SMS_154950909
+```
+
+
+
+然后新建一个用于发送短信的工具类
+
+```xml
+<dependency>
+    <groupId>com.aliyun</groupId>
+    <artifactId>dysmsapi20170525</artifactId>
+    <version>2.0.24</version>
+</dependency>
+```
+
+```java
+package com.cocoon.reggieTakeout.constant;
+
+import com.aliyun.dysmsapi20170525.Client;
+import com.aliyun.dysmsapi20170525.models.SendSmsRequest;
+import com.aliyun.dysmsapi20170525.models.SendSmsResponse;
+import com.aliyun.dysmsapi20170525.models.SendSmsResponseBody;
+import com.aliyun.teaopenapi.models.Config;
+import com.aliyun.teautil.models.RuntimeOptions;
+import lombok.Data;
+import lombok.SneakyThrows;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+@Data
+@Component
+@ConfigurationProperties(prefix = "message")
+public class SendCode {
+    private String accessKeyId;
+    private String accessKeySecret;
+    private String signName;
+    private String templateCode;
+
+    @SneakyThrows
+    public Client createClient(String accessKeyId, String accessKeySecret) {
+        Config config = new Config()
+                // 必填，您的 AccessKey ID
+                .setAccessKeyId(accessKeyId)
+                // 必填，您的 AccessKey Secret
+                .setAccessKeySecret(accessKeySecret);
+        // 访问的域名
+        config.endpoint = "dysmsapi.aliyuncs.com";
+        return new Client(config);
+    }
+
+    /** 选择手机号发送短信验证码 **/
+    @SneakyThrows
+    public void sendMessage(String phoneNumber, String code) {
+        Client client = createClient(accessKeyId, accessKeySecret);
+        SendSmsRequest sendSmsRequest = new SendSmsRequest()
+                .setSignName(signName)
+                .setTemplateCode(templateCode)
+                .setPhoneNumbers(phoneNumber)
+                .setTemplateParam("{\"code\":\"" + code + "\"}");
+
+        // 发送短信异常响应处理
+        RuntimeOptions runtime = new RuntimeOptions();
+        SendSmsResponse response = client.sendSmsWithOptions(sendSmsRequest, runtime);
+        SendSmsResponseBody body = response.getBody();
+        if (!body.getCode().equals("OK")) {
+            throw new RuntimeException(body.getMessage());
+        }
+    }
+}
+```
+
+
+
+最后在 Springboot 项目中实际使用
+
+```java
+@Slf4j
+@RestController
+@RequestMapping("/user")
+public class UserController {
+    @Autowired
+    private SendCode sendCode;
+
+    @PostMapping("/sendMsg")
+    private GlobalResult<String> sendMsg(HttpSession session, @RequestBody User user) {
+        String code = RandomUtil.buildCheckCode(4);
+        sendCode.sendMessage("18579152306", code);
+        session.setAttribute(GlobalConstant.USER_CODE, code);
+        log.info("短信验证码：{}", code);
+        return GlobalResult.success("手机验证码短信发送成功");
+    }
+}
+```
+
+```java
+public class RandomUtil {
+    /** 随机生成验证码，默认为4位 **/
+    public static String buildCheckCode(Integer digit){
+        String str = "0123456789";
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        int digitValue = digit == null ? 4 : digit;
+        for (int i = 0; i < digitValue; i++) {
+            char ch = str.charAt(random.nextInt(str.length()));
+            sb.append(ch);
+        }
+        return sb.toString();
+    }
+}
+```
+
+
+
+#### 1.2.6.2 前台用户登录业务
+
+登录拦截器需要添加一些功能，首先是放行用户登录登出两个接口，其次是如果用户登录了则可以从 session 中获取 userId，则用户登录了也放行，`LoginCheckFilter.java`
+
+```java
+// 不需要拦截的请求路径
+String[] urls = new String[]{
+        "/employee/login", // 员工登录退出登录
+        "/employee/logout",
+        "/backend/**",
+        "/front/**",
+        "/common/**",
+        "/user/sendMsg", // 用户登录退出登录
+        "/user/login"
+};
+
+Long userId = (Long) request.getSession().getAttribute(GlobalConstant.USER_ID);
+
+// 如果用户存在session登录状态则放行（前台已登录）
+if (userId != null) {
+    BaseContext.setCurrentId(userId);
+    filterChain.doFilter(request,response);
+    return;
+}
+```
+
+
+
+用户登录接口业务代码
+
+```java
+@PostMapping("/login")
+private GlobalResult<User> login(HttpSession session, @RequestBody UserLoginDto userLoginDto) {
+    String phone = userLoginDto.getPhone();
+    String codeInSession = (String) session.getAttribute(phone);
+    // 验证手机号和验证是否正确
+    if (!StringUtils.isEmpty(codeInSession) && codeInSession.equals(userLoginDto.getCode())) {
+        session.removeAttribute(phone);
+        LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(User::getPhone, phone);
+        User user = userService.getOne(lqw);
+        if (user == null) {
+            user = new User();
+            user.setPhone(phone);
+            userService.save(user);
+        }
+        session.setAttribute(GlobalConstant.USER_ID, user.getId());
+        return GlobalResult.success(user);
+    }
+    return GlobalResult.error("用户登录失败");
+}
+```
+
+
+
+#### 1.2.6.3 菜品列表查询逻辑
+
+根据传过来的分类 id 查询，并且还要封装分类名称和口味列表两个属性
+
+```java
+@GetMapping("/list")
+public GlobalResult<List<DishDto>> getList(Dish dish) {
+    // 先封装dishList
+    LambdaQueryWrapper<Dish> lqw = new LambdaQueryWrapper<>();
+    lqw.eq(dish.getCategoryId() != null ,Dish::getCategoryId, dish.getCategoryId());
+    lqw.eq(Dish::getStatus, 1);
+    List<Dish> dishList = dishService.list(lqw);
+
+    // 再封装dishDtoList
+    List<DishDto> dishDtoList = dishList.stream().map(item -> {
+        DishDto dishDto = new DishDto();
+        BeanUtils.copyProperties(item, dishDto);
+
+        // 获取categoryName
+        Category category = categoryService.getById(item.getCategoryId());
+        if (category != null) dishDto.setCategoryName(category.getName());
+
+        // 获取flavors
+        LambdaQueryWrapper<DishFlavor> dishFlavorLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        dishFlavorLambdaQueryWrapper.eq(DishFlavor::getDishId, item.getId());
+        List<DishFlavor> dishFlavorList = dishFlavorService.list(dishFlavorLambdaQueryWrapper);
+        if (dishFlavorList != null) dishDto.setFlavors(dishFlavorList);
+
+        return dishDto;
+    }).collect(Collectors.toList());
+
+    return GlobalResult.success(dishDtoList);
+}
+```
+
+
+
+
+## 1.3 Java 实际开发应用笔记
+
+这里主要记录个人 Java 实际开发应用笔记
+
+
+
+### 1.3.1 Java 语法与工具类
+
+StringUtils
+
+1. 参考文档：https://juejin.cn/post/7111704706870673444
+1. `StringUtils.isEmpty(name)`：判断字符串是否为 null 或者为空
+
+
+
+BeanUtils
+1. 参考文档：https://juejin.cn/post/6882757994744905735
+2. `BeanUtils.copyProperties(obj1, obj2, "params")`：将第一项的属性拷贝到第二项中，最后一项填的是忽略属性
+
+
+
+### 1.3.2 实体类列表赋值操作
+
+针对一个实体类的对象列表进行一个属性的赋值可以参考以下代码
+
+```java
+Long dishId = dishDto.getId();
+List<DishFlavor> dishFlavorList = dishDto.getFlavors();
+// 这里是给dishFlavorList列表中每一个对象赋予dishId属性
+for (DishFlavor dishFlavor : dishFlavorList) {
+    dishFlavor.setDishId(dishId);
+}
+```
+
+
+
+针对一个实体类的对象列表**添加一个属性**的赋值可以参考以下代码
+
+```java
+// DishDto比Dish多一个categoryName属性
+List<Dish> records = dishPageInfo.getRecords();
+List<DishDto> dishDtoList = records.stream().map(item -> {
+    Long categoryId = item.getCategoryId();
+    String categoryName = categoryService.getById(categoryId).getName();
+    DishDto dishDto = new DishDto();
+  	// 先拷贝其他属性
+    BeanUtils.copyProperties(item, dishDto);
+  	// 再添加属性
+    dishDto.setCategoryName(categoryName);
+    return dishDto;
+}).collect(Collectors.toList());
+```
+
+
+
+### 1.3.3 MyBatisPlus 使用
+
+mp 条件构造器介绍：https://baomidou.com/pages/10c804/
+
+1. 条件构造器：等效与 SQL 语句后面的 `where` 查询语法
+2. AbstractWrapper：LambdaQueryWrapper 和 LambdaUpdateWrapper 的父类
+3. LambdaQueryWrapper：新增 `select` 函数，用于选择性返回实体类的某些字段
+4. LambdaUpdateWrapper：新增 `set` 函数，用于设置某些实体类的某些字段的值
+
+```java
+dishLambdaQueryWrapper.in(Dish::getId, ids)
+  
+dishLambdaQueryWrapper.eq(Dish::getStatus, 1);
+
+dishLambdaQueryWrapper.like(name != null, Dish::getName, name);
+
+dishLambdaQueryWrapper.select(Dish::getStatus, Dish::getId, Dish::getName);
+
+dishLambdaUpdateWrapper.set(Dish::getStatus, status);
+```
+
+
+
+条件构造器和 `service` 层实例搭配，直接操作数据库
+
+```java
+dishFlavorService.remove(lqw);
+
+dishFlavorService.removeByIds(ids);
+
+dishFlavorService.saveBatch(dishFlavorList);
+
+List<Dish> dishList = dishService.list(lqw);
+```
 

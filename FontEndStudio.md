@@ -1646,15 +1646,6 @@ URL 对象：https://juejin.cn/post/7033570440224178189
 
 
 
-**Maven**
-
-- 看下这个安装教程：https://blog.csdn.net/hzqit520/article/details/129166916
-- IDEA 配置：更改默认的 `.m2` 路径，但是最好在那个路径下复制一份 `setting.xml`
-
-![image-20240208211133974](mark-img/image-20240208211133974.png)
-
-
-
 **MySQL**
 
 - 下载与配置：https://developer.aliyun.com/article/1148500，root 2002CZYczy
