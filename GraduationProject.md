@@ -1,16 +1,12 @@
-# 第一章 多功能问卷系统开发
+# 第一章 前端问卷系统开发
 
-开源工具库收集：
-
-dnd-kit 可拖拽组件：https://juejin.cn/post/7163620889924206629
+项目底层依赖一个公司前辈搭建一套代码，已具备代码检查、状态管理、路由导航、路由拦截、请求拦截、反向代理、全局弹窗配置、组件库初始化等基础配置，依赖的源码地址如下：https://github.com/cocoonnu/questionnaire-survey-web/tree/87716d40c2b3842bdd2eb9afcd3a5f4243df7ae5
 
 
 
-## 1.1 项目初始化构建
+## 1.1 项目初始化搭建指南
 
 项目初始化主要学习一下 Webpack5 项目的搭建（包括前端环境搭建、底层代码打包、环境变量导出、静态资源加载、各种开发语言的支持等），Prettier、Eslint 和 Husky 搭配实现代码检查，React 主架构搭建（包括依赖包安装、组件库安装、React-Router 路由系统搭建、Zustand 状态管理库安装等），最后是一些常用工具库的安装（包括 Echarts、Axios、@ekd/enhance-layer-manager 等）
-
-> 下面的项目笔记书写顺序不一定按上面描述顺序来写
 
 
 
@@ -265,4 +261,4 @@ class Routers extends React.Component<any, RoutersState> {
 
 
 
-# 第二章 项目后端构建
+# 第二章 后端问卷系统开发

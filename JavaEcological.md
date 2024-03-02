@@ -751,13 +751,50 @@ request.getSession().setAttribute(GlobalConstant.EMPLOYEE_ID, queriedEmployee.ge
 
 
 
+### 1.1.8 Redis 的使用方法
+
+Redis 安装：https://developer.aliyun.com/article/1148552
+
+记得修改 `/Applications/Redis/redis.conf` 里面两个配置
+
+```
+# 设置后台运行，关闭终端不会杀死进程
+daemonize yes
+
+# 设置快照文件地址，默认为执行命令所在地址
+dir /Applications/Redis/
+```
+
+
+
+Redis GUI：https://macapp.org.cn/app/medis.html
+
+终端启动本地 Redis 命令：`/Applications/Redis/src/redis-server /Applications/Redis/redis.conf`
+
+Redis 常用命令大全：https://juejin.cn/post/6844904051377700871
+
+瑞吉项目的使用方式查看：[1.2.7.1 登录验证码和ID缓存](#1.2.7.1 登录验证码和ID缓存)
+
+
+
+### 1.1.9 Spring Cache 配置
+
+这是一种在 SpringBoot 项目中使用缓存的策略，这里主要是搭配 Redis 进行缓存的开发
+
+瑞吉项目的使用方式查看：[1.2.7.3 Spring Cache 缓存](1.2.7.3 Spring Cache 缓存)
+
+Spring Cache 参考文档：https://juejin.cn/post/7330512499173572649
+
+
+
 
 ## 1.2 后端项目业务笔记
 
 这里主要记录第一次后端项目的编写和构建笔记
 
 - 学习视频：https://www.bilibili.com/video/BV13a411q753
-- 参考文档：https://cyborg2077.github.io/2022/09/29/ReggieTakeOut/
+- 瑞吉外卖项目基础：https://cyborg2077.github.io/2022/09/29/ReggieTakeOut/
+- 瑞吉外卖项目优化：https://cyborg2077.github.io/2022/10/18/ReggieOptimization/
 
 
 
@@ -856,6 +893,13 @@ BUG 问题处理和开发记录
 
 
 
+SpringBoot 整合 Redis 示例
+
+1.  观看瑞吉项目的 Redis 入门篇
+2. 示例代码位置：`/Users/cocoon/WorkMaterial/ReggieTakeout/Redis课程/代码/springdataredis_demo`
+
+
+
 项目前期只是用于学习，部分接口业务并没有实现，如最后的用户下单功能和用户个人中心等。
 
 剩余业务开发可以跟着参考文档进行开发
@@ -864,7 +908,7 @@ BUG 问题处理和开发记录
 
 ### 1.2.3 员工管理业务代码编写
 
-#### 1.2.3.1 登录业务代码
+#### 1.2.3.1 登录拦截过滤器
 
 登录接口代码逻辑
 
@@ -1863,12 +1907,212 @@ public GlobalResult<List<DishDto>> getList(Dish dish) {
 
 
 
+### 1.2.7 项目优化篇业务代码编写
+
+#### 1.2.7.1 登录验证码和ID缓存
+
+我们之前使用的是 Session 缓存策略，该缓存是窗口级别的当关闭浏览器窗口之后重新打开的话缓存就失效了，**因此这一章节统一替换成 Redis 缓存模式。Redis 是一种 nosql 的缓存策略。**首先导入 Redis 依赖，然后添加配置连接本地 Redis。
+
+添加 Spring Redis 依赖
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+```
+
+添加 Spring Redis 配置
+
+```yml
+spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 0 # 存储0号数据库
+```
+
+全局的 RedisConfig 用与修改 Redis Key 的序列化器
+
+```java
+package com.cocoon.reggieTakeout.config;
+
+@Configuration
+public class RedisConfig extends CachingConfigurerSupport {
+    @Bean
+    public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
+        // 修改Redis Key的序列化器
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setConnectionFactory(connectionFactory);
+        return redisTemplate;
+    }
+}
+```
+
+
+
+Redis 缓存遵循 `key-value` 模式，使用 ` RedisTemplate` 设置和获取 String 类型缓存的方式如下
+
+```java
+@Autowired
+private RedisTemplate redisTemplate;
+
+redisTemplate.opsForValue().set(GlobalConstant.USER_ID, user.getId(), 7, TimeUnit.DAYS);
+Long userId = (Long) redisTemplate.opsForValue().get(GlobalConstant.USER_ID);
+redisTemplate.delete(GlobalConstant.USER_ID);
+```
+
+
+
+#### 1.2.7.2 根据套餐查询菜品缓存
+
+由于 Redis value 存储方案开启了按 Spring 内置的序列器存储，因此当一个实体类继承了 `Serializable` 之后它就可以被 Redis 的 Spring 存储方式和设置和获取，查看如下代码会更加直观！
+
+
+
+
+实现菜品列表缓存代码
+
+```java
+// 根据菜品分类获取缓存，如果存在则直接返回
+List<DishDto> dishDtoList = null;
+String dishDtoListRedisKey = "dish_" + dish.getCategoryId();
+dishDtoList = (List<DishDto>) redisTemplate.opsForValue().get(dishDtoListRedisKey);
+if (dishDtoList != null) return GlobalResult.success(dishDtoList);
+
+// 不存在则正常查询流程然后手动缓存
+......
+redisTemplate.opsForValue().set(dishDtoListRedisKey, dishDtoList, 30, TimeUnit.MINUTES);
+```
+
+
+
+当更新菜品、更新菜品状态、删除菜品时需要清理缓存
+
+```java
+// 针对菜品分类清除缓存
+String dishDtoListRedisKey = "dish_" + dishDto.getCategoryId();
+redisTemplate.delete(dishDtoListRedisKey);
+
+// 一键删除所有该类型缓存
+Set keys = redisTemplate.keys("dish_*");
+redisTemplate.delete(keys);
+```
+
+
+
+#### 1.2.7.3 Spring Cache 缓存
+
+前面使用 Redis 缓存主要是使用 `RedisTemplate` 进行开发，然后在查询和更新删除操作时都需要手动进行代码编写缓存设置。因此如果我们再配置一下 `Spring Cache` 时，就可以直接使用注解的方式进行 Redis 缓存了！！！
+
+首先添加依赖
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-cache</artifactId>
+</dependency>
+```
+
+然后添加 Spring Cache 配置
+
+```yml
+spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 0
+  cache:
+    redis:
+      time-to-live: 1800000 # 设置缓存数据的过期时间
+```
+
+最后在启动类上添加 @EnableCaching 注解既可完成缓存配，另外我们需要认识三个注解：@CacheEvict、@Cacheable、@CachePut，学习文档：https://juejin.cn/post/7330512499173572649
+
+
+
+当列表查询使使用 @Cacheable，这里会默认生成一个键名，value 就是 GlobalResult.success(list) 序列化后的字符串类型
+
+```java
+@GetMapping("/list")
+// value 为缓存分类名称 key 为缓存分类下的键名
+@Cacheable(value = "setmealCache", key = "#setmeal.categoryId")
+public GlobalResult<List<Setmeal>> list(Setmeal setmeal){
+    LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
+    queryWrapper.eq(setmeal.getCategoryId() != null,Setmeal::getCategoryId,setmeal.getCategoryId());
+    queryWrapper.eq(setmeal.getStatus() != null,Setmeal::getStatus,setmeal.getStatus());
+    queryWrapper.orderByDesc(Setmeal::getUpdateTime);
+    List<Setmeal> list = setmealService.list(queryWrapper);
+    return GlobalResult.success(list);
+}
+```
+
+
+
+当列表删除某个数据时使用 @CacheEvict，这里是当函数执行完毕就会自动删除键里的缓存
+
+```java
+@DeleteMapping
+// 删除该分类下的所有键
+@CacheEvict(value = "setmealCache", allEntries = true)
+public GlobalResult<String> delete(@RequestParam List<Long> ids) {
+    setmealService.deleteWithSetmealDish(ids);
+    return GlobalResult.success("删除套餐成功");
+}
+```
+
+
+
+#### 1.2.7.4 MySql 主从复制配置
+
+这一节首先是需要两个数据库：master、slave，写入数据库数据时使用 master，读取数据库数据时使用 slave。这样可以分担数据库的压力并且还可以起到备份作用。 
+
+具体操作步骤：https://cyborg2077.github.io/2022/10/18/ReggieOptimization/#%E9%A1%B9%E7%9B%AE%E5%AE%9E%E7%8E%B0%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB
+
+
+
+### 1.2.8 项目后期部署环节配置
+
+#### 1.2.8.1 项目接口文档生成
+
+使用 Swagger 框架在项目中添加相应的配置即可自动生成一份可读性 API 在线文档，另外再在接口上添加相应注解既可规范接口文档样式，参考文档：https://cyborg2077.github.io/2022/10/18/ReggieOptimization/#Swagger
+
+
+
+#### 1.2.8.2 前端项目 Nginx 部署
+
+将前端项目打包好后回得到一份 dist 文件夹，我们进入服务器的 Nginx 的配置文件：`/usr/local/nginx/conf/nginx.conf`，之后启动命令 `ngnix` 既可访问到前端项目地址：http://192.168.10.123/#/login
+
+```conf
+server {
+    listen 80;
+    server_name localhost;
+
+    location / {
+        root html/dist;
+        index index.html;
+    }
+
+	 # 反向代理
+    location ^~ /api/ {
+        rewrite ^/api/(.*)$ /$1 break;
+        proxy_pass http://192.168.10.179:8080; # 后端项目根地址
+    }
+}
+```
+
+https://cyborg2077.github.io/2022/10/18/ReggieOptimization/#%E9%83%A8%E7%BD%B2%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE
+
+
+
+#### 1.2.8.3 后端项目服务器部署
+
+如果是手动打包部署的话需要下载：Maven、JDK、MySql、Redis 等软件然后配置好环境。在电脑本地打包好一份 jar 包导入到服务器中，通过 JDK 命令执行 jdr 包即可（这个项目没有通过虚拟机模拟打包流程）。
+
+
 
 ## 1.3 Java 实际开发应用笔记
-
-这里主要记录个人 Java 实际开发应用笔记
-
-
 
 ### 1.3.1 Java 语法与工具类
 

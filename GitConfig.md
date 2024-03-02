@@ -1,19 +1,5 @@
 # 第一章 Git 命令行操作指南
 
-**首先全局设置一下**
-
-新版 Git 拉取代码时，默认是 crlf，如果每个文件行尾序列都被设置为 crlf，某些项目的 Eslint 会发出 warning，需要每个文件行尾序列都被设置为 lf。修复方式一：修改项目的 eslint 和 prettier 配置，**修复方式二：直接修改一下 Git 的全局配置**
-
-```
-vscode: files.eol:
-```
-
-```bash
-$ git config --global core.autocrlf false # 取消自动设置行尾序列
-```
-
-
-
 **对 Git 仓库的理解**
 
 首先一个文件有四种操作：跟踪、修改、删除、新增
@@ -99,7 +85,15 @@ git config 单项
 
 
 
-**连接远程仓库的指令在后面**
+**换行符冲突**
+
+可参考文章：https://blog.csdn.net/Gabriel576282253/article/details/108599255
+
+vscode 的换行符配置使用 auto 就行：`files.eol: auto`
+
+window 的话最好还是全局配置一下：`git config --global core.autocrlf false`
+
+mac 的话就不需要额外全局配置，但是如果某个项目 clone 的时候换行符有问题的话就需要单独设置：`git config --local core.autocrlf input`
 
 
 

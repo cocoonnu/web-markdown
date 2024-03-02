@@ -1,4 +1,4 @@
-# 第一章 HTML
+# 第一章 HTML 学习笔记
 
 ## 1.1 HTML 备忘清单
 
@@ -146,7 +146,7 @@ React 脚手架中使用 `%PUBLIC_URL%` 则固定从服务器根路径 `http://l
 
 
 
-# 第二章 CSS
+# 第二章 CSS 学习笔记
 
 ## 2.1 CSS 速记链接
 
@@ -433,7 +433,7 @@ Less 官网：https://less.bootcss.com/
 
 
 
-# 第三章 JavaScript
+# 第三章 JavaScript 笔记
 
 推荐阅读文档专栏，包含 JS 大部分语法和知识点复习：https://juejin.cn/column/6991485674788487205
 
@@ -1573,17 +1573,9 @@ URL 对象：https://juejin.cn/post/7033570440224178189
 
 
 
-# 第四章 Http
+# 第四章 Macbook Air M2 配置
 
-参考文档：https://juejin.cn/post/7329433979808071714
-
-
-
-
-
-# 第五章 macos
-
-## 5.1 开发环境配置
+## 4.1 开发环境配置
 **brew**
 
 - 下载方式：https://zhuanlan.zhihu.com/p/111014448
@@ -1642,7 +1634,7 @@ URL 对象：https://juejin.cn/post/7033570440224178189
 **IDEA**
 
 - 安装与破解：https://blog.lupf.cn/articles/2023/12/01/1701405135406.html
-- `/Library/IdeaCrack`
+- 破解配置文件存放目录：`/Library/IdeaCrack`
 
 
 
@@ -1656,13 +1648,41 @@ URL 对象：https://juejin.cn/post/7033570440224178189
 **Navicat Premium**
 
 - https://macapp.org.cn/app/navicat-premium.html
-- https://blog.csdn.net/weixin_42107504/article/details/131036475
+- 基本操作指南：https://blog.csdn.net/weixin_42107504/article/details/131036475
 
 
 
-## 5.2 Typora 使用设置
+**VMware Fusion 13**
 
-- [x] **图像配置**
+- 官网下载：https://www.vmware.com/products/fusion/fusion-evaluation.html
+- 序列号：HF200-0W05K-089X8-4R1EK-032J0、4A4RR-813DK-M81A9-4U35H-06KND
+
+
+
+**CentOS 7 虚拟机**
+
+- 参考文章：https://juejin.cn/post/7216707319643471930
+- 自行前往百度网盘下载镜像文件
+
+
+
+**Termius**
+
+- 破解版下载：https://macapp.org.cn/app/termius.html
+
+
+
+**神速down 网盘加速**
+
+- Motrix 下载：https://motrix.app/
+- 脚本安装路径：https://greasyfork.org/zh-CN/scripts/480255-%E7%99%BE%E5%BA%A6%E7%BD%91%E7%9B%98%E4%B8%8D%E9%99%90%E5%88%B6%E4%B8%8B%E8%BD%BD-%E7%A5%9E%E9%80%9Fdown
+- 需要点击小齿轮配置 Motrix 下载路径和端口：`/Users/cocoon/Downloads`、`http://localhost:16800/jsonrpc`
+
+
+
+## 4.2 Typora 使用设置
+
+**图像配置**
 
 去偏好设置中设置图片指定路径：`./mark-img`，另外把下面的框全部勾选上即可
 
@@ -1673,7 +1693,7 @@ URL 对象：https://juejin.cn/post/7033570440224178189
 
 
 
-- [x] **图片位置调整**
+**图片位置调整**
 
 ```html
 <!-- 直接作为 html 标签使用即可 -->
@@ -1682,17 +1702,15 @@ URL 对象：https://juejin.cn/post/7033570440224178189
 
 
 
-- [x] **Latex 数学公式语法**
+**Latex 数学公式语法**
 
 参考文档：https://juejin.cn/post/6844903605720317959
 
 
 
-- [x] Markdown 语法学习
+**设置标题锚点**
 
-1. 设置标题锚点：`[任意内容](#标题名称)`，生成顶部标题栏：右键 - 插入 - 链接引用
-
-
+代码语法：`[任意内容](#标题名称)`
 
 
 
