@@ -769,7 +769,7 @@ dir /Applications/Redis/
 
 Redis GUI：https://macapp.org.cn/app/medis.html
 
-终端启动本地 Redis 命令：`/Applications/Redis/src/redis-server /Applications/Redis/redis.conf`
+终端启动本地 Redis 命令：/Applications/Redis/src/redis-server /Applications/Redis/redis.conf
 
 Redis 常用命令大全：https://juejin.cn/post/6844904051377700871
 
@@ -808,6 +808,8 @@ Spring Cache 参考文档：https://juejin.cn/post/7330512499173572649
 
 ![image-20240209133024686](mark-img/image-20240209133024686.png)
 
+![image-20240305114124362](mark-img/image-20240305114124362.png)
+
 
 
 然后在 `pom.xml` 导入以下依赖，项目就直接可以运行了！然后参考课程再配置其他数据库和前端静态资源。
@@ -834,7 +836,7 @@ Spring Cache 参考文档：https://juejin.cn/post/7330512499173572649
 <dependency>
     <groupId>com.alibaba</groupId>
     <artifactId>druid</artifactId>
-    <version>1.1.16</version>
+    <version>1.2.8</version>
 </dependency>
 
 <dependency>
@@ -849,6 +851,29 @@ Spring Cache 参考文档：https://juejin.cn/post/7330512499173572649
     <version>3.4.1</version>
 </dependency>
 ```
+
+```yml
+server:
+  port: 8080
+spring:
+  application:
+    name: questionnaire-survey
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/questionnaire_survey?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      username: root
+      password: 2002CZYczy
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: ASSIGN_ID
+```
+
+
 
 
 
@@ -1699,8 +1724,8 @@ lJ4A5XVg0JEYfbLMJpoc1NKEcWfQxT
 去 `application.yml` 填写你前面得到的配置
 ```yml
 message:
-  accessKeyId: LTAI5tPVkwyZWWDjEj4Jatkz
-  accessKeySecret: lJ4A5XVg0JEYfbLMJpoc1NKEcWfQxT
+  accessKeyId: ...
+  accessKeySecret: ...
   signName: 阿里云短信测试
   templateCode: SMS_154950909
 ```
@@ -2077,6 +2102,8 @@ public GlobalResult<String> delete(@RequestParam List<Long> ids) {
 #### 1.2.8.1 项目接口文档生成
 
 使用 Swagger 框架在项目中添加相应的配置即可自动生成一份可读性 API 在线文档，另外再在接口上添加相应注解既可规范接口文档样式，参考文档：https://cyborg2077.github.io/2022/10/18/ReggieOptimization/#Swagger
+
+这里主要使用第三方集成的框架：https://doc.xiaominfo.com/
 
 
 
