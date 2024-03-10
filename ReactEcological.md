@@ -1061,6 +1061,48 @@ this.setState({ arr })
 
 
 
+### 1.6.6 React.creatElement
+
+关于 React.createElement 官方介绍：https://zh-hans.react.dev/reference/react/createElement
+
+```jsx
+import { createElement } from 'react';
+
+function Greeting({ name }) {
+  return createElement(
+    'h1',
+    { className: 'greeting' },
+    '你好'
+  );
+}
+```
+
+```jsx
+const MyFunctionalComponent = (props) => {
+  return (
+    <div>
+      {props.title}
+    </div>
+  );
+};
+const element = React.createElement(
+  MyFunctionalComponent, // 组件类型，这里是我们定义的函数式组件
+  { title: 'Hello, Functional Component!' }, // 传递的props
+  null // 函数式组件通常没有子元素，所以这里是null
+);
+class App extends React.Component {
+  render() {
+    return (
+      <div>
+        {element} {/* 这里会渲染MyFunctionalComponent组件 */}
+      </div>
+    );
+  }
+}
+```
+
+和 vue 的 `<componest />` 组件类似 https://cn.vuejs.org/api/built-in-special-elements.html#component
+
 
 
 ## 1.7 React 生命周期记录

@@ -613,7 +613,7 @@ console.log(returnedTarget === target);
 
 **Object.keys、Object.values 、Object.entries**
 
-返回键、值、键值对数组
+传入一个对象或者枚举类型，可返回它的键、值、键值对数组
 
 ```js
 const person = {

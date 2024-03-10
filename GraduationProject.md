@@ -160,45 +160,77 @@ class AppContext extends MessageCenter {
 }
 ```
 
-最后就是如何创建我们自定义的弹窗了，首先我们得写一份弹窗路径规则，然后就是自定义弹窗组件的封装。页面组件下新建 `router.layers.ts`，参数可以直接参考 antd 的 `ModalProps`
+最后就是如何创建我们自定义的弹窗了，我们得写一份弹窗路径规则，然后就是自定义弹窗组件的封装。在 `view` 文件夹新建 `CommonLayer` 下新建 `router.layers.ts`，参数可以直接参考 antd 的 `ModalProps`。使用 `BaseModalLayer` 添加标题和底部
+
+```ts
+/** 默认弹窗选项，无footer、无title、无padding */
+export const modelDefaultOptions = {
+  enhancer: 'modal',
+  maskClosable: true,
+  centered: true,
+  closable: false,
+  footer: null,
+  bodyStyle: { padding: 0 },
+}
+
+/** localStorage缓存key */
+export const LOCALSTORAGE_KEY = {
+  userId: 'userId',
+}
+```
 
 ```ts
 import { modelDefaultOptions } from '@/consts'
 import type { ModalProps } from 'antd'
 
+// 规范弹窗前缀
+const layerPrefix = '@UserInfo:'
+
 export default [
   {
     ...modelDefaultOptions,
-    width: 380,
-    footer: null,
-    key: 'CommonSlideToUnlock',
-    getComponent: () => import('./SlideToUnlock'),
+    width: 500,
+    key: `${layerPrefix}UserInfoView`,
+    getComponent: () => import('./components/UserInfoView'),
   },
 ] as ModalProps
 ```
 
+弹窗案例：`src/views/UserInfoLayer/components/UserInfoView/index.tsx`
+
 ```tsx
 import React from 'react'
+import UserInfoMain from './UserInfoMain'
+import BaseModelLayer from '@/components/BaseModelLayer'
 import type { ILayerProps } from '@ekd/enhance-layer-manager'
+import type { ButtonProps } from 'antd/lib/button/button'
 
-export interface DemoLayerProps extents ILayerProps {
-  name: string
-}
+const UserInfoView = React.forwardRef(({ layer }: ILayerProps) => {
+  const actions: ButtonProps[] = [
+    {
+      name: '取消',
+      onClick: () => layer.emitCancel(),
+    },
+    {
+      name: '确认',
+      type: 'primary',
+      onClick: () => layer.emitCancel(),
+    },
+  ]
 
-const DemoLayer = ({ layer, name }: DemoLayerProps) => {
-  const clickFn = () => {
-    layer.emitOk(true) // 弹窗回调
-  }
-
-  return <div onClick={clickFn}>test</div>
-}
-export default DemoLayer
+  return (
+    <BaseModelLayer actions={actions} title="个人中心">
+      <UserInfoMain />
+    </BaseModelLayer>
+  )
+})
+export default UserInfoView
 ```
 
 在项目任意位置调用事件即可，使用 `layer.emitOk` 返回的数据我们异步的方式获取
 
 ```ts
-const res = await app.open('CommonSlideToUnlock', { name: 'cocoon' })
+const res = await app.open('@Common:SlideToUnlock', { name: 'cocoon' })
 ```
 
 
@@ -725,6 +757,360 @@ const interceptorRoute = (item: RouterItem) => {
 
 
 
+## 1.3 项目业务开发记录指南
+
+### 1.3.1 BaseLayout 整体设计
+
+我这边设计是上侧有两个分区，左侧只有一级菜单栏。点击分区切换菜单栏并跳转至菜单栏对应路由，点击菜单栏直接跳转路由
+
+1. 点击菜单操作只做路由跳转，不做状态更新！
+2. 状态更新根据路由动态变化，在仓库中创建一个监听并更新函数！
+
+`BaseLayout` 组件设计，监听 `location` 变化并执行 `monitorPathChange` 函数
+
+```tsx
+const BaseLayout = () => {
+  const { Header, Content, Sider } = Layout
+  const location = useLocation()
+  const monitorPathChange = useLayoutStore((s) => s.monitorPathChange)
+
+  useEffect(() => {
+    monitorPathChange(location.pathname)
+  }, [location, monitorPathChange])
+
+  return (
+    <Layout className={styles['base-layout']}>
+      <Header className={styles['base-layout-header']}>
+        <div className={styles['header-logo']} onClick={() => navigate('/')}>
+          <img className={styles['log-img']} src={logImg} />
+          <div className={styles['log-title']}>小智问卷</div>
+        </div>
+        <HeaderMenu />
+      </Header>
+      <Layout>
+        <Sider width={220} theme="light">
+          <SiderMenu />
+        </Sider>
+        <Layout style={{ padding: '24px' }}>
+          <Content>
+            <Outlet />
+          </Content>
+        </Layout>
+      </Layout>
+    </Layout>
+  )
+}
+```
+
+`monitorPathChange` 函数负责当路由路径变化时**更新分区状态和菜单栏状态**
+
+```ts
+monitorPathChange: (pathName) => {
+  const path = pathName.match(/\/([^/]+)$/)?.[1] as any
+  if (Object.values(WORK_AREA_KEY).includes(path)) {
+    // 跳转到工作区指定path
+    set({
+      headerMenuKey: HEADER_MENU_KEY.workingArea,
+      workingAreaKey: path,
+    })
+  }
+  if (Object.values(TEMPLATE_KEY).includes(path)) {
+    // 跳转到模板库指定path
+    set({
+      headerMenuKey: HEADER_MENU_KEY.templateLibrary,
+      templateLibraryKey: path,
+    })
+  }
+}
+```
+
+分区组件 `HeaderMenu` 设计，当 `HEADER_MENU_KEY` 添加一个分区时在这里添加对应代码即可
+
+```tsx
+const HeaderMenu = () => {
+  const headerMenuKey = useLayoutStore((s) => s.headerMenuKey)
+  const workingAreaKey = useLayoutStore((s) => s.workingAreaKey)
+  const templateLibraryKey = useLayoutStore((s) => s.templateLibraryKey)
+
+  const menuItems = [
+    {
+      label: '工作台',
+      key: HEADER_MENU_KEY.workingArea,
+    },
+    {
+      label: '模板库',
+      key: HEADER_MENU_KEY.templateLibrary,
+    },
+  ]
+
+  const menuClick: MenuProps['onClick'] = (e) => {
+    if (e.key === HEADER_MENU_KEY.templateLibrary) {
+      navigate(`/app/${templateLibraryKey || TEMPLATE_KEY.questionnaireSurvey}`)
+    }
+    if (e.key === HEADER_MENU_KEY.workingArea) {
+      navigate(`/app/${workingAreaKey || WORK_AREA_KEY.systemHome}`)
+    }
+  }
+
+  return (
+    <Menu
+      mode="horizontal"
+      className={styles['header-menu']}
+      selectedKeys={[headerMenuKey]}
+      items={menuItems}
+      onClick={menuClick}
+    />
+  )
+}
+```
+
+菜单栏组件 `SiderMenu` 设计，当新增一个分区和对应菜单栏时，在此添加配置即可
+
+```tsx
+const getIconComponent = (ICON) => {
+  return React.createElement(ICON, { style: { fontSize: 16 } })
+}
+
+const SiderMenu = () => {
+  const headerMenuKey = useLayoutStore((s) => s.headerMenuKey)
+  const workingAreaKey = useLayoutStore((s) => s.workingAreaKey)
+  const templateLibraryKey = useLayoutStore((s) => s.templateLibraryKey)
+
+  const menuItemsByWorkingAreaKey = [
+    {
+      label: '全部问卷',
+      key: WORK_AREA_KEY.systemHome,
+      icon: getIconComponent(HomeOutlined),
+    },
+    {
+      label: '星标问卷',
+      key: WORK_AREA_KEY.starQuestionnaire,
+      icon: getIconComponent(StarOutlined),
+    },
+    {
+      label: '回收站',
+      key: WORK_AREA_KEY.recycleBin,
+      icon: getIconComponent(RestOutlined),
+    },
+  ]
+
+  const menuItemsByTemplateLibraryKey = [
+    {
+      label: '问卷调查',
+      key: TEMPLATE_KEY.questionnaireSurvey,
+      icon: getIconComponent(FireOutlined),
+    },
+    {
+      label: '在线考试',
+      key: TEMPLATE_KEY.onlineExamination,
+      icon: getIconComponent(CalculatorOutlined),
+    },
+    {
+      label: '投票评选',
+      key: TEMPLATE_KEY.votingTemplate,
+      icon: getIconComponent(LikeOutlined),
+    },
+  ]
+
+  const getMenuItems = () => {
+    switch (headerMenuKey) {
+      case HEADER_MENU_KEY.workingArea:
+        return menuItemsByWorkingAreaKey
+      case HEADER_MENU_KEY.templateLibrary:
+        return menuItemsByTemplateLibraryKey
+      default:
+        return menuItemsByWorkingAreaKey
+    }
+  }
+
+  const getSelectedKey = () => {
+    switch (headerMenuKey) {
+      case HEADER_MENU_KEY.workingArea:
+        return workingAreaKey
+      case HEADER_MENU_KEY.templateLibrary:
+        return templateLibraryKey
+      default:
+        return workingAreaKey
+    }
+  }
+
+  return (
+    <div className={styles['sider-menu']}>
+      <Menu
+        mode="vertical"
+        items={getMenuItems()}
+        onClick={(e) => navigate(`/app/${e.key}`)}
+        selectedKeys={[getSelectedKey()]}
+      />
+      <div>个人中心</div>
+    </div>
+  )
+}
+```
+
+分区和菜单栏的 KEY 值预览，新增分区和菜单栏时首先在这里新增
+
+```ts
+export enum HEADER_MENU_KEY {
+  workingArea = 'workingArea',
+  templateLibrary = 'templateLibrary',
+}
+
+export enum WORK_AREA_KEY {
+  systemHome = 'systemHome',
+  starQuestionnaire = 'starQuestionnaire',
+  recycleBin = 'recycleBin',
+}
+
+export enum TEMPLATE_KEY {
+  questionnaireSurvey = 'questionnaireSurvey',
+  onlineExamination = 'onlineExamination',
+  votingTemplate = 'votingTemplate',
+}
+```
+
+
+
+### 1.3.2 头像上传功能整体设计
+
+#### 1.3.2.1 AvatarUpload 封装
+
+这里还没有深入了解 antd 的上传组件的用法和封装：https://4x-ant-design.antgroup.com/components/upload-cn/
+
+只是简单的对于上传头像的业务需求进行了实际的开发和使用，下面是一步一步的封装步骤
+
+具体组件地址：`src/components/FormGenerator/Fields/FieldAvatarUpload/index.tsx`，`ImgCrop` 是一个图片裁切的组件，文档地址：https://github.com/nanxiaobei/antd-img-crop
+
+```tsx
+<div className={styles['avatar-upload']}>
+  <ImgCrop aspectSlider rotationSlider>
+    <Upload
+      name="avatar" // 传输的文件对象名称，和后端接口对应
+      listType="picture-card"
+      className="avatar-uploader"
+      showUploadList={false} // 不使用文件列表
+      action="/api/userInfo/avatarUpload" // 手动添加/api为了实现代理
+      beforeUpload={beforeUpload}
+      onChange={handleChange}
+    >
+      {/* ImageUrl存储的是选中图片的Base64格式的URL，用于前端展示 */}
+      <Avatar src={imageUrl} icon={loading ? <LoadingOutlined /> : <UserAddOutlined />} />
+    </Upload>
+  </ImgCrop>
+</div>
+```
+
+`avatar-upload` 样式如下，设置了一些自定义样式
+
+```less
+.avatar-upload {
+  :global {
+    .ant-upload-select-picture-card {
+      width: 66px;
+      height: 66px;
+      border-radius: 50%;
+      margin-right: 0;
+      margin-bottom: 0;
+    }
+
+    .ant-avatar {
+      width: 100%;
+      height: 100%;
+      line-height: 64px;
+      color: rgba(20, 34, 52, 0.45);
+      background-color: transparent;
+    }
+  }
+}
+```
+
+`beforeUpload` 函数控制在文件上传前的一些配置，且已经可以获取到选择的文件对象！返回真表示继续往下进行
+
+```ts
+const beforeUpload = (file: RcFile) => {
+  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
+  if (!isJpgOrPng) {
+    message.error('只允许上传JPG/PNG格式文件')
+  }
+  const isLt2M = file.size / 1024 / 1024 < 2
+  if (!isLt2M) {
+    message.error('图片大小必须小于2MB')
+  }
+  return isJpgOrPng && isLt2M
+}
+```
+
+`handleChange` 函数控制在文件上传后的一些配置和回调，该函数可获取到一个关键对象：`UploadFile`，其包含上次的文件对象 `originFileObj`、上传状态 `status`、后端的返回响应 `response` 和一些之前的上传配置对象等等
+
+`getBase64` 函数是将一个文件对象 `originFileObj` 转换为一个 Base64 格式的 URL
+
+```ts
+const handleChange: UploadProps['onChange'] = (info: UploadChangeParam<UploadFile>) => {
+  const getBase64 = (img: RcFile, callback: (url: string) => void) => {
+    const reader = new FileReader()
+    reader.addEventListener('load', () => callback(reader.result as string))
+    reader.readAsDataURL(img)
+  }
+
+  if (info.file.status === 'error') {
+    message.error('图片上传失败')
+    return
+  }
+
+  if (info.file.status === 'uploading') {
+    setLoading(true)
+    return
+  }
+
+  if (info.file.status === 'done') {
+    getBase64(info.file.originFileObj as RcFile, (url) => {
+      console.log('info....', info)
+      const avatarUrl = info.file.response?.value || ''
+      onChange?.(avatarUrl) // 表单返回后端响应的上传成功的文件名
+      setLoading(false) 
+      setImageUrl(url) // ImageUrl存储的是Base64格式的URL，用于前端展示
+    })
+  }
+}
+```
+
+
+
+#### 1.3.2.2 头像表单自定义样式
+
+通过传入表单配置项和自定义样式来解决
+
+```ts
+export const fieldAvatarUpload: FormComponentsProps = {
+  field: 'avatar',
+  label: '头像',
+  type: FORM_TYPE.avatarUpload,
+  optional: true,
+  className: styles['avatar-upload'],
+}
+```
+
+`avatar-upload` 自定义样式类名，单独改变头像的 label 样式
+
+```less
+.avatar-upload {
+  :global {
+    .ant-form-item-label {
+      display: flex;
+      align-items: center;
+    }
+
+    .ant-form-item-label>label {
+      margin-left: 11px !important;
+    }
+  }
+}
+```
+
+
+
+
+
 # 第二章 后端问卷系统开发
 
 整体项目初始化构建参考瑞吉外卖项目，主要用到的技术包括：SpringBoot、MySQL、MyBatisPlus、 Redis 等
@@ -1048,6 +1434,86 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         // 设置对象转化器，底层使用jackson将java对象转为json
         messageConverter.setObjectMapper(new JacksonObjectMapper());
         converters.add(0, messageConverter);
+    }
+}
+```
+
+
+
+## 2.2 项目业务开发记录指南
+
+### 2.2.1 头像上传功能业务设计
+
+首先我们去资源文件中新建一份文件夹用来存储前端上传过来的头像文件，然后在 `application.yml` 添加配置
+
+```yml
+paths:
+  userAvatar: /src/main/resources/userAvatar/
+```
+
+接下来是头像上传的功能开发，参考注释理解就行了，注意这段代码的使用：`@RequestPart(value = "avatar")`
+
+```java
+@Value("${paths.userAvatar}")
+private String userAvatarPath;
+
+@PostMapping("/avatarUpload")
+public GlobalResult<String> avatarUpload(@RequestPart(value = "avatar")MultipartFile file) throws IOException {
+    // 文件存储地址为项目根路径+资源路径
+    String projectPath = System.getProperty("user.dir");
+    String basePath = projectPath + userAvatarPath;
+    // 如果文件存储的文件夹不存在则新建
+    File dir = new File(basePath);
+    if (!dir.exists()) dir.mkdirs();
+    // 重命名文件
+    String originalFilename = file.getOriginalFilename();
+    String suffix = null;
+    if (originalFilename != null) {
+        suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+    }
+    String fileName = UUID.randomUUID() + suffix;
+
+    // 头像文件存储在本地磁盘
+    try {
+        file.transferTo(new File(basePath + fileName));
+    } catch (IOException exception) {
+        throw new RuntimeException(exception);
+    }
+
+    // 返回头像的文件名即可，作为User.avatar
+    return GlobalResult.success(fileName);
+}
+```
+
+![image-20240309230443077](mark-img/image-20240309230443077.png)
+
+最后是头像预览接口的开发，当调用 `/userInfo/avatarDownload/图片名` 时将返回一张图片
+
+```java
+@GetMapping("/avatarDownload/{avatarFile}")
+public void avatarDownload(HttpServletResponse response, @PathVariable String avatarFile) {
+    // 文件存储地址为项目根路径+资源路径
+    String projectPath = System.getProperty("user.dir");
+    String basePath = projectPath + userAvatarPath;
+
+    try {
+        // 输入流，通过输入流读取文件内容
+        FileInputStream fileInputStream = new FileInputStream(new File(basePath + avatarFile));
+        // 输出流，通过输出流将文件写回浏览器
+        ServletOutputStream outputStream =response.getOutputStream();
+
+        int length = 0;
+        byte[] bytes = new byte[1024];
+        while (length != -1) {
+            length = fileInputStream.read(bytes);
+            outputStream.write(bytes, 0, length); // 写入
+            outputStream.flush(); // 刷新
+        }
+
+        outputStream.close();
+        fileInputStream.close();
+    } catch (IOException e) {
+        throw new RuntimeException(e);
     }
 }
 ```
