@@ -996,11 +996,18 @@ disabledDateObj={{
 
 ### 2.4.7 动态增减表单项应用
 
-antd 官网沙盒案例：https://stackblitz.com/run?file=demo.tsx
-
 该动态组件包括：`From`、`From.List`、`(fields, { add, remove }, { errors }) => {}` 最主要的三部分组成
 
 **其中 fields 为当前的所有表单项，这个值是动态的根源。**每个表单项还要用 `From.Item` 包裹一层，用于确定样式和属性值
+
+```ts
+{
+    "name": 2,
+    "key": 2,
+    "isListField": true,
+    "fieldKey": 2
+}
+```
 
 
 

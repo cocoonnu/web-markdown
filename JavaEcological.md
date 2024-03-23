@@ -2222,6 +2222,8 @@ dishFlavorService.removeByIds(ids);
 
 dishFlavorService.saveBatch(dishFlavorList);
 
+questionInfoService.update(null, questionInfoLqw);
+
 List<Dish> dishList = dishService.list(lqw);
 ```
 

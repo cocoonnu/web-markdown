@@ -22,24 +22,24 @@ https://blog.csdn.net/jack_rose_me/article/details/124603494
 
 ## 1.2 IMG 标签知识点
 
-**保持盒子内图片匹配**
+**图片适配方案一：使用盒子加 img 标签**
 
-```scss
-// 使用外层盒子
-.imgBx img {
+```less
+// 先规范外层盒子的宽高
+.img-box {
+  width: 300px;
+  height: 300px;
+  
+  // 再适配内部图片
+  .img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: contain;    
+  }
 }
+```
 
-// 直接使用img
-    img {
-        width: 35px;
-        height: 35px;
-        cursor: pointer;
-        object-fit: contain;
-    }
-
+```less
 fill		// 默认，不保证保持原有的比例，内容拉伸填充整个内容容器
 contain		// 保持原有尺寸比例。内容被缩放
 cover		// 保持原有尺寸比例。但部分内容可能被剪切
@@ -48,7 +48,49 @@ none		// 保留原有元素内容的长度和宽度，也就是说内容不会�
 
 
 
-**src为空时，img标签不显示裂图**
+**图片适配方案二：直接使用 img 标签**
+
+```less
+img {
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  object-fit: contain;
+}
+```
+
+
+
+**图片适配方案三：使用盒子加背景图片**
+
+```less
+.cover-thumb {
+  width: 230px;
+  height: 230px;
+  vertical-align: top;
+  background-size: cover; // 一般指定宽度为盒子宽度230px或者cover、contain
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url('...')
+}
+```
+
+
+
+**src 或 backgroundImage 引入图片变量**
+
+```tsx
+import questionnaireSurveyImg from '@/assets/images/questionnaireSurveyImg.png'
+
+(
+  <img src={questionnaireSurveyImg} />
+  <div style={{ backgroundImage: `url(${questionnaireSurveyImg})` }} />
+)
+```
+
+
+
+**src 为空时，img 标签不显示裂图**
 
 ```js
 img[src=""], img:not([src]) {
@@ -66,35 +108,6 @@ index.html
 ```
 
 > https://blog.csdn.net/u011127019/article/details/125169827
-
-
-
-**src 绑定 JS 变量**
-
-```js
-// 不能直接使用js变量存储地址字符串给src 需要先引入资源
-
-import img from './img.png'
-const img = require('./img/clock.svg')
-```
-
-```html
-<img :src="img" />
-```
-
-
-
-**背景图片适配**
-
-```css
-div {
-    width: 300px;
-    height: 380px;
-    background: url(./fingerprint.png) no-repeat;
-    /* 一般指定宽度为盒子宽度 或者cover contain*/
-    background-size: 300px;
-}
-```
 
 
 
@@ -282,7 +295,7 @@ p[id*=div] {
 
 
 
-## 2.3 CSS 滚动条样式
+## 2.3 CSS 滚动条配置
 
 `::-webkit-scrollbar` 作为一个伪类选择器，设置全局滚动条
 
@@ -292,7 +305,7 @@ MDN：https://developer.mozilla.org/zh-CN/docs/Web/CSS/::-webkit-scrollbar
 
 
 
-全局滚动条模板参考
+**全局滚动条模板参考**
 
 ```css
 /* 整个滚动条 */
@@ -326,7 +339,7 @@ MDN：https://developer.mozilla.org/zh-CN/docs/Web/CSS/::-webkit-scrollbar
 
 
 
-单个盒子生效
+**单个盒子生效，不需要添加 `:global`**
 
 ```scss
 // 滚动条隐藏
@@ -336,6 +349,16 @@ MDN：https://developer.mozilla.org/zh-CN/docs/Web/CSS/::-webkit-scrollbar
 ```
 
 
+
+**纵向滚动条出现契机**
+
+当一个盒子设置了高度（响应式高度也可以），而不是设置为内容高度，另外还设置了 `overflow: auto` 即可出现纵向滚动条
+
+
+
+**横向滚动出现契机**
+
+如果这个盒子是固定宽度则直接使用 `overflow: auto` 即可。如果是继承父盒子宽度 `width: 100%` 则需要向上找父盒子，直到某个父盒子的宽度不是 `width: 100%` ，然后一路向下开启 `overflow: auto` 即可
 
 
 
@@ -396,11 +419,19 @@ Grid 备忘清单：[https://wangchujiang.com/reference/docs/css.html#css-grid-�
 
 
 
+**grid 样式介绍**
+
+`grid-template-columns: repeat(auto-fill, minmax(230px, 1fr))`：设置了容器子元素宽度最小 230px，最大为容器宽度分配完 230px 后再将剩下的宽度均匀的分配给每个 230
+
+
+
 ## 2.6 背景属性与渐变
 
 
 
 ## 2.7 移动属性与动画
+
+通常对一个盒子进行简单动画一般用到这三个属性：`transform`、`transition`、`opacity`
 
 
 
@@ -417,6 +448,41 @@ Grid 备忘清单：[https://wangchujiang.com/reference/docs/css.html#css-grid-�
 **HTML 字符串换行方式**
 
 https://blog.csdn.net/TwelveSpring/article/details/123253679
+
+
+
+**text-align 属性可控制当前盒子的内容横向显示位置**
+
+```less
+.edit-header-right {
+  flex: 1;
+  text-align: right; // 将两个按钮靠右排列
+}
+```
+
+```tsx
+<div className={styles['edit-header-right']}>
+  <Space>
+    <Button>保存</Button>
+    <Button type="primary">发布</Button>
+  </Space>
+</div>
+```
+
+
+
+**省略号样式**
+
+```less
+.text {
+  max-width: 200px; // 必须设置宽度或者最大宽度
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+```
+
+
 
 
 
@@ -689,17 +755,15 @@ https://blog.csdn.net/u011140116/article/details/121845262
 
 ## 3.3 数组常见函数
 
+**数组使用经验总结**
+
 数组常见函数：https://vue3js.cn/interview/JavaScript/array_api.html
-
-
 
 Array 原型方法大全：https://juejin.cn/post/7028018256266919973
 
 > **会直接改变原数组的方法：push、pop、splice、unshift、shift、sort、reverse**
 >
 > `arr.length`：数组长度会自动延长到最后一个被赋值的位置，中间没有被赋值的都为 undefined
-
-
 
 数组变量如果是要赋值，那么直接等于即可。如果需要拷贝，那么需要使用以下两个方法实现浅拷贝：`concat`、`[...]`
 
@@ -729,6 +793,8 @@ let a= [].concat(1,2,3,[4,5],[6,7])
 ```
 
 
+
+**数组常用内置函数**
 
 - **arr.concat**
 
@@ -1120,27 +1186,30 @@ https://vue3js.cn/interview/JavaScript/visible.html
 
 推荐文章：https://juejin.cn/post/7029691847060488228
 
-| 方法                                | 功能                        | 兼容性                       |
-| ----------------------------------- | --------------------------- | ---------------------------- |
-| `document.getElementById()`         | 通过 id 得到**元素**        | IE 6                         |
-| `document.getElementsByTagName()`   | 通过标签名得到**元素数组**  | IE 6                         |
-| `document.getElementsByClassName()` | 通过类名得到**元素数组**    | IE 9                         |
-| `document.querySelector()`          | *通过选择器得到**元素**     | IE 8 部分兼容、IE 9 完全兼容 |
-| `document.querySelectorAll()`       | *通过选择器得到**元素数组** | IE 8 部分兼容、IE 9 完全兼容 |
+| 方法                                | 功能                       | 兼容性                       |
+| ----------------------------------- | -------------------------- | ---------------------------- |
+| `document.getElementById()`         | 通过 id 得到**元素**       | IE 6                         |
+| `document.getElementsByTagName()`   | 通过标签名得到**元素数组** | IE 6                         |
+| `document.getElementsByClassName()` | 通过类名得到**元素数组**   | IE 9                         |
+| `document.querySelector()`          | 通过选择器得到**元素**     | IE 8 部分兼容、IE 9 完全兼容 |
+| `document.querySelectorAll()`       | 通过选择器得到**元素数组** | IE 8 部分兼容、IE 9 完全兼容 |
 
 
 
-**scrollIntoView**
+**滚动属性与样式**
 
-DOM 实例的 API，MDN：https://developer.mozilla.org/zh-CN/docs/Web/API/Element/scrollIntoView
+1. **先确定一个父盒子的宽和高**，然后将其样式设置为 `over-flow: auto`，即可开启滚动属性
+2. 要控制父盒子的滚动位置直接使用：`ele.scrollTo({ top: 0, behavior: 'smooth' })`
+3. 要指定滚动到某个子盒子的位置直接使用：`children.scrollIntoView()`
+4. 详细属性可自行查看 MDN：https://developer.mozilla.org/zh-CN/docs/Web/API/Element/scrollIntoView
 
-将调用它的元素滚动到浏览器窗口的可见区域。（可用于锚点操作）
-
-```js
-const two = document.getElementById('two')
+```tsx
+const ele = document.getElementById('ele')
+const children = document.getElementById('children')
 
 // block：垂直方向对齐方式    inline：水平方向对齐方式
-if (two) two.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" })
+if (children) children.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" })
+ele.scrollTo({ top: 0, behavior: 'smooth' })
 ```
 
 

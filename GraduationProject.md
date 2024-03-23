@@ -737,15 +737,19 @@ const interceptorRoute = (item: RouterItem) => {
   const lazyComponent = LazyComponent(newComponent)
   const getRouteComponent = () => {
     return (
-      <KeepAliveWrapper>
-        <PrivateRoute item={item} component={lazyComponent} />
-      </KeepAliveWrapper>
+      <PrivateRoute item={item} component={lazyComponent} />
+      // <KeepAliveWrapper>
+      // </KeepAliveWrapper>
     )
   }
 
   return <Route path={item.path} key={item.path} element={getRouteComponent()} />
 }
 ```
+
+> 不要用 KeepAliveWrapper 组件，否则无法使用 useEffect 监听到路由 param、location 的变化
+
+
 
 最后别忘了在 main 组件中导入路由系统，并使用哈希路由
 
@@ -754,6 +758,71 @@ const interceptorRoute = (item: RouterItem) => {
   <Routes />
 </HashRouter>
 ```
+
+
+
+#### 1.2.3.3 路由系统应用层使用
+
+前面主要开发完了路由系统的底层代码，接下是路由跳转、参数传递、参数获取、路由配置获取等路由系统应用层的使用
+
+关于 `ReactRouterV6` 的一些使用教程：[https://juejin.cn/post/7203156544878542904](https://juejin.cn/post/7203156544878542904?searchId=202403111541557B6EB10657EB0CC0C3F6#heading-33)
+
+
+
+**路由传参方式**
+
+1. 动态路径传参：`path="/teams/:teamId"`
+
+2. `search` 参数传递：`path="/login?name=ztc&age=18"`
+3. `state` 参数传递：`navigate('/login',{state:{name:"cocoon",age:18}})`
+
+
+
+**路由跳转方式：`useNavigate` 函数的使用**
+
+1. 搭配前面配置的全局监听事件，**已封装了全局路由跳转函数：`src/utils/tools/router_utils.ts`**
+2. 路由跳转的使用：`navigate('/login/:id?name=cocoon', { replace: true, state: { data: 18 } })`
+3. 路由前进与回退：`navigate(-1)`、`navigate(2)`
+4. `replace` 属性为真表示将在栈中上一个路由路径删除并替换
+
+
+
+**`useParams` ：用来获取动态路径参数**
+
+```ts
+import { useNavigate, useParams } from "react-router-dom"
+const params = useParams() // { teamId: '111' }
+```
+
+
+
+**`useSearchParams`：用来获取 `search` 参数**
+
+```ts
+import { useSearchParams } from "react-router-dom"
+const [searchParams] = useSearchParams()
+const params = Object.fromEntries(searchParams) // { name: 'ztc', age: 18 }
+```
+
+
+
+**`useLocation`：可获取 `state` 参数和当前路由地址**
+
+```ts
+import { useLocation } from "react-router-dom"
+const location = useLocation() // { pathname, key, hash, state }
+```
+
+
+
+**获取当前路由的路由菜单配置**
+
+1. 项目已经封装好了一个函数 `getRouteInfo` ：`src/utils/tools/router_utils.ts`
+
+2. 存入地址即可得到路由表配置：`getRouteInfo(location.pathname)`
+3. 如果是动态参数路径则需要拼凑成原始路径值：`/edit/230` -> `/edit/:id`
+
+
 
 
 
@@ -1109,6 +1178,764 @@ export const fieldAvatarUpload: FormComponentsProps = {
 
 
 
+## 1.4 问卷系统主业务开发指南
+
+这一大章主要是该项目的关键业务的开发：问卷系统的构建。从定义问卷信息、问卷组件配置、问卷组件类型出发一步一步构建一个问卷生成器和编辑问卷页，从问卷静态组件到问卷属性组件实现问卷的读与写。
+
+### 1.4.1 问卷生成器构建使用
+
+#### 1.4.1.1 问卷生成器构建
+
+首先我们在 `components` 文件夹中新建 `QuestionGenerator`，然后先规范问卷生成器配置类型：
+
+```ts
+/** 问卷组件props类型 */
+export type QuestionComProps = QuestionTitleProps | QuestionInputProps
+
+/** 问卷生成器配置类型 */
+export interface QuestionComConfig {
+  /** 问卷组件名称 */
+  title: string
+  /** 问卷组件类型 */
+  type: string
+  /** 问卷静态组件渲染 */
+  Component: FC<QuestionComProps>
+  /** 问卷属性组件渲染 */
+  PropComponent: FC<QuestionComProps>
+  /** 问卷组件默认props类型 */
+  defaultProps: QuestionComProps
+}
+```
+
+在 `index.ts` 中导出问卷生成器配置列表 `questionComConfigList`，通过问卷配置即可生成问卷组件
+
+```ts
+/** 问卷生成器配置列表 */
+export const questionComConfigList: QuestionComConfig[] = [questionInputConfig, questionTitleConfig]
+
+/** 问卷生成器配置分组 */
+export const questionComConfigGroup = [
+  {
+    groupId: 'textGroup',
+    groupName: '文本显示',
+    groupConfigs: [questionTitleConfig],
+  }
+]
+
+/** 通过问卷组件类型获取问卷生成器配置 */
+export const getQuestionComConfByType = (type: string) => {
+  return questionComConfigList.find((c) => c.type === type)
+}
+```
+
+接下来我们来新建一个问卷组件：`QuestionInput`，只需要导出它的问卷生成器配置和问卷组件属性：`questionInputConfig`、`QuestionInputProps`
+
+```ts
+/** 输入框组件配置 */
+const questionInputConfig: QuestionComConfig = {
+  title: '单行输入框',
+  type: 'questionInput',
+  Component,
+  PropComponent,
+  defaultProps: QuestionInputDefaultProps,
+}
+
+export default questionInputConfig
+```
+
+```ts
+export interface QuestionInputProps {
+  title?: string
+  placeholder?: string
+  disabled?: boolean
+  onChange?: (newProps: QuestionInputProps) => void
+}
+```
+
+
+
+下面介绍 `Component` 和 `PropComponent` 两个组件的构建，静态组件就直接是进行静态展示就行
+
+```tsx
+import React from 'react'
+import { Typography, Input } from 'antd'
+import { QuestionInputDefaultProps } from '../types'
+import type { QuestionInputProps } from '../types'
+
+const QuestionInput = (props: QuestionInputProps) => {
+  const { title, placeholder } = { ...QuestionInputDefaultProps, ...props }
+
+  return (
+    <div>
+      <Typography.Paragraph strong>{title}</Typography.Paragraph>
+      <div>
+        <Input placeholder={placeholder} />
+      </div>
+    </div>
+  )
+}
+
+export default QuestionInput
+```
+
+> src/components/QuestionGenerator/QuestionInput/components/Component.tsx
+
+<img src="mark-img/image-20240312234813525.png" alt="image-20240312234813525" align="left" />
+
+属性组件就是对该问卷组件的属性进行编辑
+
+```tsx
+const PropQuestionInput = (props: QuestionInputProps) => {
+  const { title, placeholder, onChange, disabled } = props
+  const [form] = Form.useForm()
+  
+  // 初始化接收的参数
+  useEffect(() => {
+    form.setFieldsValue({ title, placeholder })
+  }, [title, placeholder, form])
+  
+  // 表单变化时调用onChange回调函数并传入表单属性
+  const handleValuesChange = () => {
+    onChange?.(form.getFieldsValue())
+  }
+  
+  return (
+    <Form
+      layout="vertical"
+      initialValues={{ title, placeholder }}
+      form={form}
+      onValuesChange={handleValuesChange}
+      disabled={disabled}
+    >
+      <Form.Item label="标题" name="title" rules={[{ required: true, message: '请输入标题' }]}>
+        <Input />
+      </Form.Item>
+      <Form.Item label="提示文案" name="placeholder">
+        <Input />
+      </Form.Item>
+    </Form>
+  )
+}
+
+export default PropQuestionInput
+```
+
+> src/components/QuestionGenerator/QuestionInput/components/PropComponent.tsx
+
+<img src="mark-img/image-20240312235007622.png" alt="image-20240312235007622" align="left" />
+
+#### 1.4.1.2 问卷生成器解构
+
+这一小节我们来解析当我们修改右侧的属性面板时，是如何同步到画布进行更新，又是如何在组件内部更新的！
+
+首先整体的逻辑是：1. 在初始化 `PropComponent` 组件时传入的 `props` 会使表单初始化赋值
+
+```tsx
+const { title, isVertical, selectedValue, options = [], onChange, disabled } = props
+const [form] = Form.useForm()
+
+useEffect(() => {
+  form.setFieldsValue({ title, isVertical, selectedValue, options })
+}, [title, isVertical, selectedValue, options, form])
+
+```
+
+> 这个组件不要写 formProps，而是把属性给写全来！！
+
+然后是 2. 表单的建立就是为了给 `formProps` 赋值，所以表单的 `name` 属性要和 `formProps` 一致
+
+```tsx
+export interface QuestionInputProps {
+  title?: string
+  placeholder?: string
+  disabled?: boolean
+  onChange?: (newProps: QuestionInputProps) => void
+}
+
+<Form layout="vertical" form={form} onValuesChange={handleValuesChange} disabled={disabled}>
+  <Form.Item label="标题" name="title" rules={[{ required: true, message: '请输入标题' }]}>
+    <Input />
+  </Form.Item>
+  <Form.Item label="提示文案" name="placeholder">
+    <Input />
+  </Form.Item>
+</Form>
+```
+
+第三点 3. 当表单内输入框变化时会触发 `handleValuesChange` 函数将表单的值传入 `props` 传过来的 `onChange` 回调函数中。这里的 `onChange` 正好是 `ComponentProps` 右侧属性面板组件传入的！
+
+```ts
+const handleValuesChange = () => {
+  onChange?.(form.getFieldsValue())
+}
+```
+
+```tsx
+// 表单修改的回调函数
+const onChange = (newProps: QuestionComProps) => {
+  updateQuestionComInfoProps(questionComInfo?.id || '', newProps)
+}
+
+// 渲染当前选中的问卷属性组件
+const { PropComponent } = questionComConfig
+const { props, isLocked } = questionComInfo || {}
+return <PropComponent {...props} disabled={isLocked} onChange={onChange} />
+```
+
+第四点我们发现：4. 当表单修改时会执行 `updateQuestionComInfoProps` 函数根据 `id` 更新 `questionComInfoList` 中的 `props` 属性。**所以说编辑问卷的核心就是更新 `questionComInfoList` ！！！**
+
+```ts
+updateQuestionComInfoProps: (id, newProps) => {
+  const { questionComInfoList } = get()
+  const newQuestionComInfoList = questionComInfoList.concat()
+  const index = questionComInfoList.findIndex((item) => item.id === id)
+  if (index < 0) return
+
+  // 更新对应问卷组件信息的prop属性
+  const { props } = newQuestionComInfoList[index]
+  newQuestionComInfoList[index].props = { ...props, ...newProps }
+  set({ questionComInfoList: newQuestionComInfoList })
+},
+```
+
+最后一点 5. 更新后的 props 又被我们传入到 `PropComponent` 中，组件内部有根据 props 自动更新表单的值，**于是形成闭环！**
+
+```tsx
+// 渲染当前选中的问卷属性组件
+const { PropComponent } = questionComConfig
+const { props, isLocked } = questionComInfo || {}
+return <PropComponent {...props} disabled={isLocked} onChange={onChange} />
+```
+
+```tsx
+const { onChange, disabled, ...formProps } = props
+const [form] = Form.useForm()
+
+useEffect(() => {
+  form.setFieldsValue(formProps)
+}, [formProps, form])
+```
+
+> src/components/QuestionGenerator/QuestionRadio/components/PropComponent.tsx
+
+
+
+### 1.4.2 问卷画布业务开发
+
+**这一层核心就是更新 `questionComInfoList` 后问卷画布就会自动更新**
+
+1. 问卷静态画布组件的开发
+2. 点击某个问卷组件更新 `selectedId`
+
+我们根据后端传过来的问卷信息进行一个静态问卷画布的渲染，这是问卷信息结构
+
+```ts
+export interface QuestionCompInfo {
+  /** 问卷组件id */
+  id: string
+  /** 问卷组件类型 */
+  type: string
+  /** 问卷组件名称 */
+  title: string
+  /** 问卷组件是否隐藏 */
+  isHidden?: boolean
+  /** 问卷组件是否锁定 */
+  isLocked?: boolean
+  /** 问卷组件props属性 */
+  props: QuestionComProps
+}
+
+/** 问卷页面信息 */
+const questionComInfoList: QuestionCompInfo[]
+```
+
+首先我们看渲染层，这里只需要遍历 `questionComInfoList` 然后把对应的问卷组件进行渲染即可，另外还添加了点击事件来选中某个问卷组件进行编辑。组件位置：`src/views/EditQuestion/components/EditCanvas/index.tsx`
+
+```tsx
+<div className={styles['edit-canvas']} id="edit-canvas">
+  <LoadingBox loading={false} iconSize="large">
+    {questionComInfoList.map((item) => {
+      return (
+        <div
+          id={item.id}
+          key={item.id}
+          className={getComponentClassName(item)}
+          onClick={(e) => componentClick(e, item)}
+        >
+          <div className={styles['pointer-none']}>{getQuestionComponent(item)}</div>
+        </div>
+      )
+    })}
+  </LoadingBox>
+</div>
+```
+
+```tsx
+useEffect(() => {
+  // 滚动到选中的问卷组件位置
+  const editCanvasElement = document.getElementById('edit-canvas')
+  if (!editCanvasElement || !selectedId) return
+  const selectedQuestionComElement = document.getElementById(selectedId)
+  selectedQuestionComElement?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'center',
+  })
+}, [selectedId])
+
+const getQuestionComponent = (item: QuestionCompInfo) => {
+  const { type, props } = item
+  const questionComConf = getQuestionComConfByType(type)
+  if (!questionComConf) return null
+  return React.createElement(questionComConf.Component, props)
+}
+```
+
+
+
+### 1.4.3 左侧组件库面板开发
+
+左侧组件库面板首先是分组展示系统支持的所有问卷组件，然后是点击某个组件实现新增问卷组件操作
+
+1. 左侧组件库面板组件渲染
+2. 点击组件库里某个组件实现新增问卷组件操作
+
+```tsx
+{questionComConfigGroup.map((group, index) => {
+  const { groupId, groupName, groupConfigs } = group
+  return (
+    <div key={groupId}>
+      <Typography.Title
+        level={3}
+        style={{ fontSize: '16px', marginTop: index > 0 ? '20px' : '0' }}
+      >
+        {groupName}
+      </Typography.Title>
+      <div>{groupConfigs.map((config) => genComponent(config))}</div>
+    </div>
+  )
+})}
+```
+
+```tsx
+const genComponent = (config: QuestionComConfig) => {
+  const { Component, type } = config
+  return (
+    <div
+      key={type}
+      className={styles['component-wrapper']}
+      onClick={() => addQuestionComInfo(config)}
+    >
+      <div className={styles['pointer-none']}>
+        <Component />
+      </div>
+    </div>
+  )
+}
+```
+
+```tsx
+addQuestionComInfo: (config) => {
+  const questionComInfo: QuestionCompInfo = {
+    id: nanoid(),
+    type: config.type,
+    title: config.title,
+    isHidden: false,
+    isLocked: false,
+    props: config.defaultProps,
+  }
+  const { selectedId, questionComInfoList } = get()
+  const newQuestionComInfoList = questionComInfoList.concat()
+
+  const index = questionComInfoList.findIndex((item) => item.id === selectedId)
+  if (index < 0) {
+    // 当前未选中任何问卷组件则在末尾新增组件
+    newQuestionComInfoList.push(questionComInfo)
+  } else {
+    // 在当前选中的问卷组件后面新增组件
+    newQuestionComInfoList.splice(index + 1, 0, questionComInfo)
+  }
+
+  set({
+    questionComInfoList: newQuestionComInfoList,
+    selectedId: questionComInfo.id,
+  })
+},
+```
+
+
+
+### 1.4.4 右侧组件属性面板开发
+
+这一层的核心功能：
+
+1. 当选中某个问卷组件后，将其问卷属性组件渲染到右侧组件属性面板中
+1. 当编辑组件属性时问卷静态组件同步更新，即根据 id 更新 questionComInfoList 中的 props 属性
+
+首先是 `ComponentProps` 的构建 `src/views/EditQuestion/components/RightSetting/ComponentProps.tsx`
+
+```tsx
+const ComponentProps = () => {
+  const {
+    selectedId,
+    updateQuestionComInfoProps,
+    getQuestionComConfigById,
+    getQuestionComInfoById,
+  } = useEditQuestionStore()
+
+  // 获取当前选中的问卷组件信息和配置
+  const questionComConfig = getQuestionComConfigById(selectedId)
+  const questionComInfo = getQuestionComInfoById(selectedId)
+
+  if (!questionComConfig) return <NoProp />
+
+  // onChange 回调函数当表单内容变化时实时更新
+  const onChange = (newProps: QuestionComProps) => {
+    updateQuestionComInfoProps(questionComInfo?.id || '', newProps)
+  }
+
+  // 渲染当前选中的问卷属性组件
+  const { PropComponent } = questionComConfig
+  return <PropComponent {...questionComInfo?.props} onChange={onChange} />
+}
+
+export default ComponentProps
+```
+
+> 该组件会随着 selectedId 的更新而更新
+
+关键函数 `updateQuestionComInfoProps` 的代码如下
+
+```ts
+updateQuestionComInfoProps: (id, newProps) => {
+  const { questionComInfoList } = get()
+  const newQuestionComInfoList = questionComInfoList.concat()
+  const index = questionComInfoList.findIndex((item) => item.id === id)
+  if (index < 0) return
+
+  // 更新对应问卷组件信息的prop属性
+  const { props } = newQuestionComInfoList[index]
+  newQuestionComInfoList[index].props = { ...props, ...newProps }
+  set({ questionComInfoList: newQuestionComInfoList })
+},
+```
+
+
+
+### 1.4.5 QuestionRadio 表单
+
+单选框问卷属性组件的开发单独抽出一小节进行讲解，开发完这个组件之后可以更深入了解问卷生成器的架构和 antd 组件库 `Form.List` 的使用。首先我们把标题默认选中、是否竖向排列三个表单先写完
+
+```tsx
+const [form] = Form.useForm()
+const { onChange, disabled, options, ...formProps } = props
+
+useEffect(() => {
+  form.setFieldsValue(formProps)
+}, [formProps, options, form])
+
+const handleValuesChange = () => {
+  onChange?.(form.getFieldsValue())
+}
+
+(
+  <Form layout="vertical" onValuesChange={handleValuesChange} disabled={disabled} form={form}>
+    <Form.Item label="标题" name="title" rules={[{ required: true, message: '请输入标题' }]}>
+      <Input />
+    </Form.Item>
+    <Form.Item label="默认选中" name="selectedValue">
+      <Select
+        options={options
+          ?.map(({ text, value }) => ({ value, label: text || '' }))
+          ?.filter((item) => item.label)}
+      />
+    </Form.Item>
+    <Form.Item name="isVertical" valuePropName="checked">
+      <Checkbox>竖向排列</Checkbox>
+    </Form.Item>
+  </Form>
+)
+```
+
+> 这里都是属性组件生成的基本操作
+
+开发对于选项的表单项增加删除则需要使用 `Form.List` 技术，首先得套一层下面的框架，引入 `fields`、`add`、`remove`
+
+```tsx
+<Form.List name="options">
+  {(fields, { add, remove }) => (
+    ......
+  )}
+</Form.List>
+```
+
+> fields 是一个数组，里面的属性类型：{ fieldKey, name, key } 三个属性都是 index
+>
+> `name="options"` 表示该表单项在整个表单上存储为数组：`options: []`
+
+<img src="mark-img/image-20240314220220378.png" alt="image-20240314220220378" align="left" style="zoom:50%;" />
+
+我们看到有一个选项的 label 在最上面，还有一个添加选项的按钮在最下面，所以需要两个 `Form.Item` 包裹一下
+
+```tsx
+const renderAddOptionBtn = (add) => {
+  return (
+    <Form.Item>
+      <Button
+        type="primary"
+        onClick={() => {
+          add({ text: '', value: nanoid() })
+        }}
+        style={{ width: '100%' }}
+        icon={<PlusOutlined />}
+      >
+        添加选项
+      </Button>
+    </Form.Item>
+  )
+}
+
+<Form.List name="options">
+  {(fields, { add, remove }) => (
+    <Form.Item label="选项" required={true}>
+      {fields.map((field) => (
+        <Form.Item key={field.key}>{renderOptionsItem(field, remove)}</Form.Item>
+      ))}
+      {renderAddOptionBtn(add)}
+    </Form.Item>
+  )}
+</Form.List>
+```
+
+下面渲染每一个选项表单项和一个删除按钮，最外层的 `div` 规范一下样式，内层的 `Form.Item` 添加了 `noStyle` 使得输入框为暴露项，没有 `Form.Item` 包裹，另外 `name={[field.name, 'text']}` 规范了数据结构：`options: [{text: 'czy'}, {}]`
+
+```tsx
+<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+  <Form.Item
+    noStyle
+    name={[field.name, 'text']}
+    validateTrigger={['onChange', 'onBlur']}
+    rules={[
+      {
+        required: true,
+        message: '请输入选项文字',
+      },
+      {
+        validator: (_, text) => {
+          if (!text) return Promise.resolve()
+          const { options: optionsValue = [] } = form.getFieldsValue()
+          const num = optionsValue.filter((opt: OptionType) => opt.text === text).length
+          if (num === 1) return Promise.resolve()
+          return Promise.reject(new Error('选项文字与其他选项重复了'))
+        },
+      },
+    ]}
+  >
+    <Input placeholder="请输入选项文字" style={{ width: '90%' }} />
+  </Form.Item>
+
+  {field?.key === 0 || field?.key === 1 ? null : (
+    <MinusCircleOutlined onClick={() => remove(field?.name)} />
+  )}
+</div>
+```
+
+最后的最后完善一下 `handleValuesChange`
+
+```tsx
+const handleValuesChange = () => {
+  // 当删除的是默认选中的选项，则需要将默认选中置为空
+  const { options, selectedValue } = form.getFieldsValue()
+  const selectedIndex = options.findIndex((item) => item.value === selectedValue)
+  if (selectedIndex === -1) form.setFieldsValue({ selectedValue: undefined })
+  onChange?.(form.getFieldsValue())
+}
+```
+
+
+
+### 1.4.6 问卷编辑器拖拽排序
+
+我们先把列表渲染写好来，主要就需要这个列表对象：`questionComInfoList`
+
+```tsx
+{questionComInfoList.map((item) => {
+  return (
+      <div
+        id={item.id}
+        key={item.id}
+        className={getComponentClassName(item)}
+        onClick={(e) => componentClick(e, item)}
+      >
+        <div className={styles['pointer-none']}>{getQuestionComponent(item)}</div>
+      </div>
+  )
+})}
+```
+
+这里我们用到第三方组件：https://dndkit.com，并且我已经封装好了拖拽组件：`SortableContainer` 和 `SortableItem`
+
+```tsx
+export interface SortableContainerProps {
+  children: React.ReactNode | React.ReactNode[]
+  items: { id: string; [key: string]: any }[]
+  onDragEnd: (oldIndex: number, newIndex: number) => void
+}
+
+const SortableContainer = ({ children, items, onDragEnd }: SortableContainerProps) => {
+	......
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (over == null) return
+    if (active.id !== over.id) {
+      const oldIndex = items.findIndex((item) => item.id === active.id)
+      const newIndex = items.findIndex((item) => item.id === over.id)
+      onDragEnd(oldIndex, newIndex)
+    }
+  }
+
+  return (
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <SortableContext items={items} strategy={verticalListSortingStrategy}>
+        {children}
+      </SortableContext>
+    </DndContext>
+  )
+}
+
+export default SortableContainer
+```
+
+> src/components/DragSortable/SortableContainer.tsx
+
+```tsx
+export interface SortableItemProps {
+  key: string | number
+  id: string | number
+  children: React.ReactNode
+  className?: string
+  style?: CSSProperties
+}
+
+const SortableItem = ({ id, children, style }: SortableItemProps) => {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
+
+  const itemStyle = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    ...style,
+  }
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={styles['sortable-item']}
+      style={itemStyle}
+      {...attributes}
+      {...listeners}
+    >
+      {children}
+    </div>
+  )
+}
+
+export default SortableItem
+```
+
+> src/components/DragSortable/SortableItem.tsx
+
+最后只需要两个步骤即可：1. 包裹列表和 ` item` 2. 传入 `onDragEnd` 函数调用 `arrayMove` 更新列表
+
+```tsx
+<SortableContainer items={questionComInfoList} onDragEnd={onDragEnd}>
+  {questionComInfoList.map((item) => {
+    return (
+      <SortableItem key={item.id} id={item.id}>
+        <div
+          id={item.id}
+          key={item.id}
+          className={getComponentClassName(item)}
+          onClick={(e) => componentClick(e, item)}
+        >
+          <div className={styles['pointer-none']}>{getQuestionComponent(item)}</div>
+        </div>
+      </SortableItem>
+    )
+  })}
+</SortableContainer>
+```
+
+```ts
+onDragEnd: (oldIndex, newIndex) => {
+  const { questionComInfoList } = get()
+  const newQuestionComInfoList = arrayMove(questionComInfoList, oldIndex, newIndex)
+  set({ questionComInfoList: newQuestionComInfoList })
+},
+```
+
+
+
+## 1.5 问卷答卷生成器重构方案
+
+目前有大问题：
+
+1. 单项框多选框存在新增时无法定义 value 的问题
+2. 答卷生成器可能无法使用表单生成器进行渲染
+3. 后端问卷数据表保存信息量太大，需要修改表结构
+
+
+
+### 1.5.1 单项框问卷组件重构
+
+实现功能：支持添加选项、删除选项、默认选中、取消默认选中、竖向排列
+
+答卷组件：返回选择框 label 的值而不是 value
+
+答卷 answer：单项框为 label，多选框为数组的 toString
+
+```js
+function countWords(str) {
+    // 将字符串按逗号和空格分割成单词数组
+    const words = str.split(/[,\s]+/);
+    
+    // 创建一个对象来存储单词计数
+    const wordCount = {};
+
+    // 统计每个单词出现的次数
+    words.forEach(word => {
+        // 去除逗号，如果单词不为空则更新计数
+        const cleanedWord = word.replace(/[,]/g, '').trim();
+        if (cleanedWord !== '') {
+            if (wordCount[cleanedWord]) {
+                wordCount[cleanedWord] += 1;
+            } else {
+                wordCount[cleanedWord] = 1;
+            }
+        }
+    });
+
+    // 计算词的总数
+    const totalWords = words.length;
+
+    return { totalWords, wordCount };
+}
+
+const inputString = "选项2,选项3,选项3,选项1";
+const { totalWords, wordCount } = countWords(inputString);
+
+console.log("词的总数:", totalWords);
+console.log("每个词出现的次数:", wordCount);
+```
+
+
+
+
+
+### 1.5.2 答卷生成器重构方案
+
+不能使用 FormGenerator 表单生成器进行答卷表单的生成，只能定制化处理了。
+
+
+
 
 
 # 第二章 后端问卷系统开发
@@ -1120,8 +1947,6 @@ export const fieldAvatarUpload: FormComponentsProps = {
 ## 2.1 项目初始化搭建指南
 
 项目中还未用到的技术：分页、公共字段自动填充、ThreadLocal、Transactional
-
-
 
 ### 2.1.1 新建项目配置框架
 
@@ -1442,7 +2267,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
 ## 2.2 项目业务开发记录指南
 
-### 2.2.1 头像上传功能业务设计
+### 2.2.1 头像上传开发设计
 
 首先我们去资源文件中新建一份文件夹用来存储前端上传过来的头像文件，然后在 `application.yml` 添加配置
 
@@ -1515,6 +2340,61 @@ public void avatarDownload(HttpServletResponse response, @PathVariable String av
     } catch (IOException e) {
         throw new RuntimeException(e);
     }
+}
+```
+
+
+
+### 2.2.2 保存或更新问卷信息
+
+我们新建了两张表，`question_info` 和 `question_com_info` 分别用来存储问卷列表和问卷组件列表。1. 可以通过 `user_id` 获取不同用户对应的问卷列表 2. 可以通过 `question_id` 获取对应的问卷组件列表
+
+在问卷编辑器的开发中只需要用到两个接口：
+
+1. 更新或保存问卷信息
+
+```java
+@PostMapping("/saveQuestionInfo")
+public GlobalResult<QuestionInfo> saveQuestionInfo(@RequestBody QuestionInfoDto questionInfoDto){
+   Long id = questionInfoDto.getId();
+   QuestionInfo questionInfo = new QuestionInfo();
+   BeanUtils.copyProperties(questionInfoDto, questionInfo, "questionComInfoList");
+   if (id == null || id == 0L) {
+       // 新建一份问卷信息，前端已传递了userID、template、name
+       questionInfo.setCreatedTime(LocalDateTime.now());
+       questionInfo.setAnswerCount(0);
+       questionInfoService.save(questionInfo);
+   } else {
+       // 更新问卷信息
+       questionInfoService.updateById(questionInfo);
+   }
+
+   // 保存该问卷信息对应的问卷组件信息
+   List<QuestionComInfo> questionComInfoList = questionInfoDto.getQuestionComInfoList();
+   for (QuestionComInfo questionComInfo : questionComInfoList) {
+       questionComInfo.setQuestionId(questionInfo.getId());
+   }
+   questionComInfoService.saveOrUpdateBatch(questionComInfoList);
+   return GlobalResult.success(questionInfo);
+}
+```
+
+2. 根据问卷ID获取问卷信息
+
+```java
+@GetMapping("/getQuestionInfoById")
+public GlobalResult<QuestionInfoDto> getQuestionInfoById(Long id) {
+   // 根据id查询问卷信息
+   QuestionInfo questionInfo = questionInfoService.getById(id);
+   QuestionInfoDto questionInfoDto = new QuestionInfoDto();
+   BeanUtils.copyProperties(questionInfo, questionInfoDto);
+
+   // 查询该问卷信息对应的问卷组件信息
+   LambdaQueryWrapper<QuestionComInfo> lqw = new LambdaQueryWrapper<>();
+   lqw.eq(QuestionComInfo::getQuestionId, id);
+   List<QuestionComInfo> questionComInfoList = questionComInfoService.list(lqw);
+   questionInfoDto.setQuestionComInfoList(questionComInfoList);
+   return GlobalResult.success(questionInfoDto);
 }
 ```
 
