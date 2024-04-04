@@ -1707,10 +1707,10 @@ public class ReggieTakeoutApplication {
 
 ```java
 AccessKey ID
-LTAI5tPVkwyZWWDjEj4Jatkz
+LTA...
 
 AccessKey Secret
-lJ4A5XVg0JEYfbLMJpoc1NKEcWfQxT
+lJ4A5...
 ```
 
 
