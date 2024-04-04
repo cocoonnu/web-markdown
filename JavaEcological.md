@@ -318,6 +318,8 @@ drop database mysql01; //删除数据库
 show databases; //查看所有数据库
 
 show create databases; //查看数据库属性
+
+SpringBoot、MySQL、MyBatisPlus、Redis
 ```
 
 

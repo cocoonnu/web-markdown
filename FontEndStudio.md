@@ -358,7 +358,7 @@ MDN：https://developer.mozilla.org/zh-CN/docs/Web/CSS/::-webkit-scrollbar
 
 **横向滚动出现契机**
 
-如果这个盒子是固定宽度则直接使用 `overflow: auto` 即可。如果是继承父盒子宽度 `width: 100%` 则需要向上找父盒子，直到某个父盒子的宽度不是 `width: 100%` ，然后一路向下开启 `overflow: auto` 即可
+如果这个盒子是固定宽度则直接使用 `overflow-x: auto` 即可。如果是继承父盒子宽度 `width: 100%` 则需要向上找父盒子，直到某个父盒子的宽度不是 `width: 100%` ，然后一路向下开启 `overflow-x: auto` 即可
 
 
 
@@ -484,6 +484,27 @@ https://blog.csdn.net/TwelveSpring/article/details/123253679
 
 
 
+**盒子宽度随着内容（字数）宽度动态变化**
+
+```less
+.total-wrapper {
+  width: fit-content;
+  height: 32px;
+  text-align: center;
+  padding: 5px 16px;
+  font-size: 14px;
+  white-space: nowrap;
+  line-height: 22px;
+  background-color: #f3f3f3;
+}
+```
+
+```tsx
+<div className={styles['total-wrapper']}>答卷数量: 1000000</div>
+```
+
+
+
 
 
 ## 2.9 Less 常用技巧
@@ -558,7 +579,7 @@ Date：https://juejin.cn/post/6996926386405376037
 **原型和原型链**
 
 - 详细解析：https://juejin.cn/post/6844903989088092174
-- 对于 ES6 复杂类型，实例里面都有一个 `__proto__` 属性执行构造函数的 `prototype`
+- 对于 ES6 复杂类型，实例里面都有一个 `__proto__` 属性指向构造函数的 `prototype`
 - 构造函数的 `prototype` 里面有多个原型方法，不同复杂类型对应不同方法
 - JS 内置的构造函数如下所示
 
@@ -596,7 +617,7 @@ let a1 = new a.constructor(a)
 
 - 构造函数和对象实例都是对象，只有构造函数有 prototype（原型对象），任何对象都有 `__proto__`
 - 对象的 `__proto__` 指向其构造函数的 prototype
-- 构造函数的 prototype 里面有一个属性 constructor，就等于该构造函数。其实例对象直接有该属性
+- 构造函数的 prototype 里面有一个属性 constructor，就等于该构造函数，其实例对象直接有该属性
 
 ```js
 // 构造函数Function（构造函数的构造函数）
@@ -606,8 +627,8 @@ const foo = new Foo() // 对象实例foo
 
 // 可以得到以下关系
 foo.__proto__ == Foo.prototype
-Foo.__proto == Function.prototype
-Function.__proto__ = Function.prototype
+Foo.__proto__ == Function.prototype
+Function.__proto__ == Function.prototype
 
 Foo.prototype.__proto__ == Object.prototype // 原型对象也是一个对象，构造函数为Object
 Function.prototype.__proto__ == Object.prototype
@@ -649,6 +670,27 @@ console.log(Animal.foo); // Fu
 - `instanceof` 只能判断当前对象的原型链上，是否存在指定类型，返回 true 或 false
 - `Object.prototype.toString.call(new Set())`：全能型判断方法，得到字符串 `[object Set]`
 - https://juejin.cn/post/7197990402720235576
+
+
+
+**普通函数和箭头函数的 this 指向问题**
+
+- 首先看普通函数的 this 指向，有全局函数（默认绑定）、对象函数（隐式绑定）、构造函数（new 绑定）
+- 另外注意：`setTimeout`、`Promise` 里的内置函数作为全局函数（默认绑定）看待
+- 如果一个普通函数被调用 `apply`、`call`、`bind`（显示绑定），那等于是明确指定了 this 指向了
+- 然后箭头函数，就看两点：该箭头没有外层函数则 this 指向 window，有外层函数 this 就为外层函数的 this
+- https://juejin.cn/post/7310415386405765159
+
+
+
+**关于可迭代对象和可迭代器的理解**
+
+- 常见的可迭代对象有：`Map`、`Set`、`Array`、`String`、`arguments`、`arguments`
+- 每个可迭代对象都内置有一个 `Symbol.iterator`，表示它可以被 `for of` 进行迭代
+- 迭代器是可迭代对象的一个拓展，它实现了迭代协议，具有 `next` 函数指向不断指向下一个值
+- 所以可迭代对象不一定是迭代器,但是迭代器一定是可迭代对象
+- 常见的迭代器有：Map 迭代器：keys、values、entries，Set 迭代器：values、keys、entries
+- https://juejin.cn/post/6844903749610127373
 
 
 
@@ -932,7 +974,7 @@ let newArr = arr.flat(Infinity)
 
 - **for of 循环**（效率更高、使用 break 可终止循环）
 
-for...of 遍历一个可迭代对象，如数组、字符串、Map/Set（无object） 。针对一个迭代对象，所以获得 value
+for...of 可以遍历一个**可迭代对象**，常见的可迭代对象有：`Map`、`Set`、`Array`、`String`、`arguments`、`arguments`
 
 ```js
 for (let v of arr) {}
@@ -1165,18 +1207,39 @@ Event MDN：https://developer.mozilla.org/zh-CN/docs/Web/API/Event
 
 
 
-### 3.5.2 DOM 高度宽度属性
-
-https://vue3js.cn/interview/JavaScript/visible.html
+### 3.5.2 DOM 高宽度属性
 
 主要考察盒子模型，一个 DOM 对象包含如下的高宽度属性：
 
-- offsetHeight offsetWidth：包括盒子的 border + padding + content
-- clientHeight clientWidth：包括盒子的 padding + content
-- scrollHeight scrollWidth：包括盒子的 padding + 实际内容的尺寸
-- scrollTop scrollLeft：DOM 内部元素滚动的距离
+- offsetHeight、offsetWidth：包括盒子的 border + padding + content
+- offsetTop、offsetLeft：该元素的上（左）外边框到其父元素的上（左）内边框之间的距离
+- clientHeight、clientWidth：包括盒子的 padding + content
+- scrollHeight、scrollWidth：包括盒子的 padding + 实际内容的尺寸
+- scrollTop、scrollLeft：该盒子相对于其父盒子滚动的距离
 
 > 实际内容是指该盒子可能含有子盒子，子盒子内容尺寸大于该盒子内容尺寸
+
+
+
+如何判断一个元素是否在其父元素的可视区域中：https://vue3js.cn/interview/JavaScript/visible.html
+
+```js
+function isInViewPortOfOne (el) {
+    // viewPortHeight 兼容所有浏览器写法
+    const viewPortHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight 
+    const offsetTop = el.offsetTop
+    const scrollTop = document.documentElement.scrollTop
+    const top = offsetTop - scrollTop
+    return top <= viewPortHeight
+}
+```
+
+
+
+还有一个 API 可以获取当前盒子相对于父盒子的位置属性：getBoundingClientRect
+
+- https://vue3js.cn/interview/JavaScript/visible.html#getboundingclientrect
+- https://developer.mozilla.org/zh-CN/docs/Web/API/Element/getBoundingClientRect
 
 
 
@@ -1474,7 +1537,7 @@ console.log(foo.n);        //实参foo的指向还是原来的内存空间，里
 >
 > `??`：空值合并运算符（ ?? ）是一个如果左侧的表达式为 `null`或者 `undefined` 时，返回其右侧表达式，否则返回左侧表达式。
 >
-> `!a`：可将变量转换成 boolean 类型，null、undefined 和空字符串取反都为 false，其余都为 true
+> `!a`：可将变量转换成 boolean 类型，null、undefined 和空字符串取反都为 true，其余都为 false
 >
 > `!!`：因此 `!!a` 等效于 `a!=null && typeof(a)!='undefined' && a!=''`，一步到位取反！
 
@@ -1499,7 +1562,7 @@ console.log(foo.n);        //实参foo的指向还是原来的内存空间，里
 
 1. `==`：会进行隐式类型转换
 
-2. `====`：不会隐式转换，严格类型判断。但是 `+0 === -0`、`NaN !== NaN`
+2. `===`：不会隐式转换，严格类型判断。但是 `+0 === -0`、`NaN !== NaN`
 
 3. `Object.is`：解决了 `+0 === -0`、`NaN !== NaN` 的问题！更加标准化判断
 4. https://blog.csdn.net/MRlaochen/article/details/118557765

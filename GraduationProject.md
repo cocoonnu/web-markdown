@@ -771,9 +771,9 @@ const interceptorRoute = (item: RouterItem) => {
 
 **路由传参方式**
 
-1. 动态路径传参：`path="/teams/:teamId"`
+1. 动态路径传参：`path="/teams/:teamId"`，需要添加占位符，如果 `teamId` 可以为空则在后面加上一个问号即可
 
-2. `search` 参数传递：`path="/login?name=ztc&age=18"`
+2. `search` 参数传递：`path="/login"`，不需要任何占位符
 3. `state` 参数传递：`navigate('/login',{state:{name:"cocoon",age:18}})`
 
 
@@ -821,6 +821,213 @@ const location = useLocation() // { pathname, key, hash, state }
 
 2. 存入地址即可得到路由表配置：`getRouteInfo(location.pathname)`
 3. 如果是动态参数路径则需要拼凑成原始路径值：`/edit/230` -> `/edit/:id`
+
+
+
+### 1.2.4 表格设计规范指南
+
+#### 1.2.4.1 表格横向宽度规范
+
+要规范表格的宽度，最好的方式就是指定表格每个元素的宽度，这样表格就会自动设置好 `scroll: {x: 1000}`。因此当表格实际宽度小于 1000px 时会出现横向滚动条，当表格实际宽度大于 1000px 时每个列都会均匀的多分配一点宽度。
+
+```ts
+const columns: ColumnsType<QuestionInfo> = [
+  {
+    title: '问卷名',
+    dataIndex: 'name',
+    key: 'name',
+    width: 100,
+  },
+  {
+    title: '创建人',
+    dataIndex: 'username',
+    key: 'username',
+    width: 100,
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createdTime',
+    key: 'createdTime',
+    width: 100,
+  },
+]
+```
+
+
+
+如果想实现一个动态宽度的列，那么将其他列设置好宽度即可。表格设置好固定宽度后会自动将剩余宽度分配给剩下的那个动态宽度的列。如果还想让那个列单行显示，可以使用 `TooltipParcel` 组件，**最大宽度为分配的列表宽度，超出部分显示省略号**
+
+```tsx
+const columns: ColumnsType<QuestionInfo> = [
+  {
+    title: '问卷名',
+    dataIndex: 'name',
+    key: 'name',
+    render: (value) => <TooltipParcel title={value} placement="topLeft" />,
+  },
+  {
+    title: '创建人',
+    dataIndex: 'username',
+    key: 'username',
+    width: 100,
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createdTime',
+    key: 'createdTime',
+    width: 100,
+  },
+]
+```
+
+> 无法实现两个动态宽度的列，必定有一个列需要设置 width 或者 maxWidth
+
+
+
+参考上面那条，如果想实现一个动态宽度的列，但是还需要设置一个固定的最大内容宽度这只需要下面这样
+
+```tsx
+{
+  title: '问卷名',
+  dataIndex: 'name',
+  key: 'name',
+  render: (value) => <TooltipParcel title={value} placement="topLeft" maxWidth={250} />,
+},
+```
+
+
+
+如果不想给每个列设置固定宽度，但是有不想让表格内容显示换行等问题，则只需要设置一个 `scroll: {x: 1000}` 即可
+
+```tsx
+const columns: ColumnsType<QuestionInfo> = [
+  {
+    title: '问卷名',
+    dataIndex: 'name',
+    key: 'name',
+  },
+  {
+    title: '创建人',
+    dataIndex: 'username',
+    key: 'username',
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createdTime',
+    key: 'createdTime',
+  },
+]
+
+(
+  <Table
+    columns={columns}
+    dataSource={recycleBinList}
+    scroll={{ x: 1200 }}
+    ......
+  />
+)
+```
+
+
+
+因此如果其他列没有设置固定宽度，但是又想让一个列的内容设置一个最大宽度，那么需要这样设置
+
+```tsx
+const columns: ColumnsType<QuestionInfo> = [
+  {
+    title: '问卷名',
+    dataIndex: 'name',
+    key: 'name', // 这里不需要再写宽度了
+    render: (value) => <TooltipParcel title={value} placement="topLeft" maxWidth={250} />,
+  },
+  {
+    title: '创建人',
+    dataIndex: 'username',
+    key: 'username',
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createdTime',
+    key: 'createdTime',
+  },
+]
+```
+
+
+
+#### 1.2.4.2 表格纵向高度规范
+
+想要实现一个表格固定在一个盒子中，如果数据量超出则只在其内部出现纵向滚动条，可以用下面的模板
+
+`src/views/StatisticalQuestion/components/StatisticalTable/index.tsx`
+
+```tsx
+const StatisticalTable = () => {
+  const TABLE_COLUMN_HEAD = 55 // 顶部列名高度
+  const tableWrapper = useRef<HTMLDivElement | null>(null)
+  const [tableHeight, setTableHeight] = useState<number>()
+  const tableDataList = useStatisticalQuestionStore((state) => state.tableDataList)
+
+  useEffect(() => {
+    if (tableWrapper.current) {
+      setTableHeight(tableWrapper.current.clientHeight - TABLE_COLUMN_HEAD)
+    }
+  }, [tableWrapper])
+
+  const columns: ColumnsType<StatisticalTableData> = [
+    ......
+  ]
+
+  return (
+    <div
+      ref={tableWrapper}
+      className={classNames(styles['table-wrapper'], {
+        [styles['hidden-bottom']]: tableDataList.length === 0,
+      })}
+    >
+      <Table
+        rowKey="order"
+        columns={columns}
+        dataSource={tableDataList}
+        scroll={{ y: tableHeight }}
+        pagination={false} // 记得关闭默认的分页功能
+      />
+    </div>
+  )
+}
+
+export default StatisticalTable
+```
+
+![image-20240325134857435](mark-img/image-20240325134857435.png)
+
+
+
+如果想要实现一个表格固定在一个盒子中，如果数据量超出则在盒子上展示滚动条，那么使用下面的模板
+
+`src/views/RecycleBin/components/TableContent.tsx`
+
+```tsx
+(
+  <div className={styles['table-content']}>
+    <Table
+      ......
+    />
+  </div>
+)
+```
+
+```less
+.table-content {
+  flex: 1;
+  overflow: auto;
+  padding: 0 24px 8px 24px;
+
+  &::-webkit-scrollbar-track {
+    background-color: #f6f6f6;
+  }
+}
+```
 
 
 
@@ -1936,8 +2143,6 @@ console.log("每个词出现的次数:", wordCount);
 
 
 
-
-
 # 第二章 后端问卷系统开发
 
 整体项目初始化构建参考瑞吉外卖项目，主要用到的技术包括：SpringBoot、MySQL、MyBatisPlus、 Redis 等
@@ -2370,11 +2575,7 @@ public GlobalResult<QuestionInfo> saveQuestionInfo(@RequestBody QuestionInfoDto 
    }
 
    // 保存该问卷信息对应的问卷组件信息
-   List<QuestionComInfo> questionComInfoList = questionInfoDto.getQuestionComInfoList();
-   for (QuestionComInfo questionComInfo : questionComInfoList) {
-       questionComInfo.setQuestionId(questionInfo.getId());
-   }
-   questionComInfoService.saveOrUpdateBatch(questionComInfoList);
+  	......
    return GlobalResult.success(questionInfo);
 }
 ```
@@ -2391,10 +2592,109 @@ public GlobalResult<QuestionInfoDto> getQuestionInfoById(Long id) {
 
    // 查询该问卷信息对应的问卷组件信息
    LambdaQueryWrapper<QuestionComInfo> lqw = new LambdaQueryWrapper<>();
-   lqw.eq(QuestionComInfo::getQuestionId, id);
+   lqw.eq(QuestionComInfo::getQuestionId, id).orderByAsc(QuestionComInfo::getSort);
    List<QuestionComInfo> questionComInfoList = questionComInfoService.list(lqw);
    questionInfoDto.setQuestionComInfoList(questionComInfoList);
    return GlobalResult.success(questionInfoDto);
 }
 ```
+
+
+
+### 2.2.3 问卷组件列表更新处理
+
+由于是前端进行问卷组件列表的更新操作，所以后端只需要接收前端传过来的一份问卷组件列表即可。于是后端现在有两份问卷组件列表：前端传入的和后端存储的，这就需要通过比较两份列表进行单个问卷组件的新增、删除和更新的操作
+
+```java
+@Data
+public class QuestionComInfo implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private Long id;
+    private Long questionId;
+    private String props;
+    private String title;
+    private String type;
+    private int isLocked;
+    private int isHidden;
+    private int sort; // 这里顺序属性不能用“order”字段，真的不知道为什么
+}
+```
+
+```java
+// 获取传入的问卷组件列表
+List<QuestionComInfo> questionComInfoList = questionInfoDto.getQuestionComInfoList();
+// 获取数据库中的问卷组件列表
+LambdaUpdateWrapper<QuestionComInfo> questionComInfoLqw = new LambdaUpdateWrapper<>();
+questionComInfoLqw.eq(QuestionComInfo::getQuestionId, questionInfo.getId());
+List<QuestionComInfo> oriQuestionComInfoList = questionComInfoService.list(questionComInfoLqw);
+
+// 删除不在传入列表中的问卷组件
+for (QuestionComInfo oriQuestionComInfo : oriQuestionComInfoList) {
+    boolean isExist = false;
+    for (QuestionComInfo questionComInfo : questionComInfoList) {
+        if (questionComInfo.getId().equals(oriQuestionComInfo.getId())) {
+            isExist = true;
+            break;
+        }
+    }
+    if (!isExist) questionComInfoService.removeById(oriQuestionComInfo.getId());
+}
+
+// 更新问卷组件列表
+for (QuestionComInfo questionComInfo : questionComInfoList) {
+    questionComInfo.setQuestionId(questionInfo.getId());
+    if (questionComInfo.getId() == null) {
+      	// 新增问卷组件
+        questionComInfoService.save(questionComInfo);
+    } else {
+      	// 更新问卷组件
+        questionComInfoService.updateById(questionComInfo);
+    }
+}
+```
+
+
+
+这里再写一下前端的代码，前端只有一个保存的接口，分两种情况一个是更新问卷信息一个是新建问卷信息。新建的问卷信息和问卷组件信息都会将 `id` 设置为 `undefined`。传给后端的时候还需要额外加一个 `sort` 字段用于后端的列表排序。前端排序只需要通过修改列表的值即可！！
+
+```ts
+saveQuestionInfo: async () => {
+  const { questionId, questionName, questionComInfoList } = get()
+  const serviceData: Partial<QuestionInfo> = {
+    id: questionId,
+    name: questionName,
+    questionComInfoList: questionComInfoList.map((item, index) => ({
+      ...item,
+      sort: index,
+      props: JSON.stringify(item.props),
+      id: item.id.includes(ADD_QUESTION_COM) ? undefined : item.id,
+    })),
+  }
+
+  // 新建问卷信息
+  if (!questionId) {
+    const res = await saveQuestionInfoService({
+      ...serviceData,
+      id: undefined,
+      isPublished: 1,
+      userId: DB.LS.get(LOCALSTORAGE_KEY.userId),
+      template: TEMPLATE_KEY.questionnaireSurvey,
+    })
+    if (res) {
+      navigate(`/editQuestion/${res.id}`, { replace: true })
+      message.success('保存成功')
+    }
+    return res
+  }
+
+  // 更新问卷信息
+  const res = await saveQuestionInfoService(serviceData)
+  if (res) message.success('保存成功')
+  return res
+},
+```
+
+
+
+
 

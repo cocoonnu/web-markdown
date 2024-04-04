@@ -2196,7 +2196,7 @@ export default React.memo(Child,areEqual)
 
 ## 3.1 React 高阶组件
 
-https://blog.csdn.net/weixin_44682587/article/details/121649536
+https://vue3js.cn/interview/React/High%20order%20components.html
 
 
 
@@ -2237,6 +2237,15 @@ export default App;
 使用到一个库：`react-activation`，通常用于当页面组件缓存（状态缓存）
 
 中文文档：https://github.com/CJY0208/react-activation/blob/HEAD/README_CN.md
+
+
+
+
+
+## 3.5 Redux 和 Mobx
+
+https://github.com/cocoonnu/web-projects/blob/main/Markdown/React%20ecology/React-Redux.md
+
 
 
 # 第四章 认识 Zustand
