@@ -1,6 +1,16 @@
 # 第一章 前端面试题
 
-## 3.31
+八股文和前端基础的话推荐这些专栏和网站进行学习：
+
+- https://vue3js.cn/interview/
+- https://juejin.cn/post/6905294475539513352
+- https://juejin.cn/column/7243016090816905275
+- https://juejin.cn/post/7023906112843808804
+- 包含初中高三个等级的面试收集：https://github.com/pro-collection/interview-question
+
+
+
+## 03.31
 
 - 盒模型
 
@@ -41,7 +51,7 @@ https://juejin.cn/post/6905539198107942919#heading-6
 
 
 
-- 说说var、let、const之间的区别
+- 说说 var、let、const 之间的区别
 
 变量提升、暂时性死区、重复声明、块级作用域、修改声明的变量
 
@@ -92,7 +102,7 @@ https://vue3js.cn/interview/es6/set_map.html#%E4%B8%80%E3%80%81set
 
 
 
-## 4.01
+## 04.01
 
 - 什么是线程，什么是进程？
 
@@ -222,7 +232,7 @@ https://kimi.moonshot.cn/share/co5aruhhmfr8ji71aqvg
 
 
 
-## 4.02
+## 04.02
 
 从今天开始主要针对这篇专栏进行八股文的背诵：https://juejin.cn/column/7243016090816905275
 
@@ -244,7 +254,7 @@ https://kimi.moonshot.cn/share/co5aruhhmfr8ji71aqvg
 
 
 
-## 4.03
+## 04.03
 从今天继续针对这篇专栏进行八股文的背诵：https://juejin.cn/column/7243016090816905275
 
 - Vue3.0有什么更新
@@ -269,7 +279,7 @@ JS 基础这一块面试题也得加强：https://juejin.cn/post/724433598757552
 
 
 
-## 4.04
+## 04.04
 
 - React中组件之间如何通信？
 
@@ -372,7 +382,163 @@ https://vue3js.cn/interview/http/after_url.html#%E9%A1%B5%E9%9D%A2%E6%B8%B2%E6%9
 
 
 
-# 第二章 项目难点
+- 说说地址栏输入 URL 敲下回车后发生了什么
+
+URL 解析、DNS 查询、TCP 连接、HTTP 请求、响应请求、响应资源解析、页面渲染
+
+https://vue3js.cn/interview/http/after_url.html
+
+
+
+## 04.05
+
+- 说说TCP为什么需要三次握手和四次挥手？
+
+https://vue3js.cn/interview/http/handshakes_waves.html
+
+
+
+- 说说HTTP 常见的状态码有哪些，适用场景
+
+https://vue3js.cn/interview/http/status.html
+
+
+
+- css 加载会造成阻塞吗？
+
+https://juejin.cn/post/7256702654578409532#heading-5
+
+
+
+- 重排（回流）和重绘有什么区别，什么会引发重排，什么会引发重绘
+
+https://juejin.cn/post/7256702654578409532#heading-6
+
+
+
+- **什么是同源策略**
+
+同源策略是一种规定，它是浏览器最核心也是最基本的安全功能，如果缺少了同源策略浏览器的安全功能将会受到影响。所谓同源是指：域名、协议、端口相同，同源策略又分为以下两种：XMLHttpRequest 同源策略、DOM 同源策略
+
+https://juejin.cn/post/7256702654578409532#heading-9
+
+
+
+- **如何解决跨域问题**
+
+CORS：跨域资源共享，只要服务端添加一个 `Access-Control-Allow-Origin` 请求头设置为我们的目标域名，这个 HTTP 头就决定浏览器允许我们获取跨域请求的响应
+
+JSONP：它的原理就是利用 `<script>` 标签没有跨域限制，通过 `<script>` 标签 src 属性，发送带有 `callback` 函数的 **GET请求**，服务端将接口返回数据拼凑到 `callback` 函数中，返回给浏览器，从而前端再利用 `callback` 函数拿到返回的数据
+
+Proxy：网络代理模式，有以下几种解决方案：1. 我们可以通过 `webpack` 为我们起一个本地服务器作为请求的代理对象，通过该服务器转发请求至目标服务器，得到结果再转发给前端 2. 此外还可通过一些 node 服务端比如 express 实现代理请求转发 3. 最后是直接可以在服务器上配置 Nginx 实现反向代理从而实现跨域
+
+https://juejin.cn/post/7256702654578409532#heading-10
+
+https://vue3js.cn/interview/vue/cors.html
+
+
+
+## 04.06
+
+- async 与 await，`await` 会阻塞下面的代码（即加入微任务队列）
+
+https://vue3js.cn/interview/JavaScript/event_loop.html#%E4%B8%89%E3%80%81async%E4%B8%8Eawait
+
+
+
+- git rebase 和 git merge 的区别？
+
+https://juejin.cn/post/7257441472458604599#heading-7
+
+
+
+- JS 继承有哪些？有什么优缺点？
+
+原型链继承、构造函数继承、组合继承、使用 `Object.create` 实现浅拷贝对象、寄生组合式继承（class 语法糖采用形式）
+
+https://vue3js.cn/interview/JavaScript/inherit.html
+
+
+
+# 第二章 前端笔试题
+
+ ## 04.05
+
+今天主要参考文章：https://juejin.cn/post/6959043611161952269
+
+- 异步&事件循环（1 - 12）
+
+
+
+## 04.06
+
+今天主要参考文章：https://juejin.cn/post/6959043611161952269
+
+
+
+
+
+# 第三章 算法与手写
+
+## 04.04
+
+今天的手写题主要参考：https://juejin.cn/post/7023906112843808804#heading-0
+
+- 手写 new 操作符
+
+- 手写科里化函数
+- 使用setTimeout构建setInterval
+- 手写instanceof
+- 实现一个LRU缓存函数，可获取数据和写入数据，如果数据量超出时则删除最久未使用的数据值
+
+
+
+## 04.05
+
+今天的手写题主要参考：https://juejin.cn/post/7023906112843808804#heading-13
+
+- 简单实现 发布订阅模式
+- 实现JSON.parse
+- 递归循环实现基础的深拷贝：https://vue3js.cn/interview/JavaScript/copy.html
+- 手写防抖和节流
+- 手写数组去重
+- 手写 call、apply
+- 手写bind，既要实现改变指向又要兼容构造函数
+
+
+
+## 04.06
+
+今天的手写题主要参考：https://juejin.cn/post/6994594642280857630
+
+- 手写 Promise，实现基本 Promise 回调与 then 链式调用
+- 手写 Promise.all
+- 手写 Promise.race
+- 手写 Promise.allSettled
+
+
+
+- 冒泡排序
+
+https://www.hello-algo.com/chapter_sorting/bubble_sort/
+
+
+
+- 插入排序
+
+https://www.hello-algo.com/chapter_sorting/insertion_sort/#1141
+
+
+
+- 快速排序
+
+https://www.hello-algo.com/chapter_sorting/quick_sort/
+
+
+
+
+
+# 第四章 项目难点
 
 ## 小智问卷
 
@@ -432,15 +598,17 @@ Vue3 项目由于电脑本地没有拉取代码，无法本地调试，具体代
 
 
 
-# 第三章 非技术面
+# 第五章 非技术面
 
-- 自我介绍
+## 自我介绍
 
 个人信息、前端接触时间、技术栈、实习经历、项目经历、笔记、未来规划
 
-您好，我叫陈智毅，来自江西新余，本科就读的是东华理工大学通信工程专业24届应届生。我这边的话接触前端有两年的时间了。当前主要技术栈是 React 开发，有过 6 个月中厂实习经历，实习的主要任务是针对一套SaaS系统进行一些需求迭代的工作。项目经历的话 React、Vue、小程序和服务端都有开发过。平常喜欢逛一些技术社区丰富自己的技术，另外还喜欢做一些笔记记录自己的工作总结和学习心得。关于前端未来规划的话想多接触一下移动端的方向，包括跨平台框架和安卓原生开发，另外今年也学了 SpringBoot 框架开发了一套服务端系统，因此未来也考虑往全栈方向发展。我的自我介绍结束了，谢谢。
+您好，我叫陈智毅，来自江西新余，本科就读的是东华理工大学通信工程专业24届应届生。我这边的话接触前端有两年的时间了。当前主要技术栈是 React 开发，有过 6 个月中厂实习经历，实习的主要任务是针对一套SaaS系统进行一些需求迭代的工作。项目经历的话 React、Vue、小程序和服务端都有开发过。平常喜欢逛一些技术社区丰富自己的技术，另外还喜欢做一些笔记记录自己的工作总结和学习心得。关于前端未来规划的话可能想接触一下移动端方面的知识，包括一些跨平台框架和安卓原生开发，另外今年也学了 SpringBoot 框架开发了一套服务端系统，因此未来也可能考虑往全栈方向发展。我的自我介绍结束了，谢谢。
 
 
+
+## 非技术问题
 
 - 为什么选择前端这条路
 
@@ -458,20 +626,9 @@ Vue3 项目由于电脑本地没有拉取代码，无法本地调试，具体代
 
 
 
-- 更倾向于什么样的办公环境
+## 个人反问
 
-
-
-# 第四章 算法与手写
-
-## 4.04
-
-今天的手写题主要参考：https://juejin.cn/post/7023906112843808804#heading-0
-
-- 手写 new 操作符
-
-- 手写科里化函数
-- 使用setTimeout构建setInterval
-- 手写instanceof
-- 实现一个LRU缓存函数，可获取数据和写入数据，如果数据量超出时则删除最久未使用的数据值
-
+- 研发部的工作时间安排
+- 公司项目大概的业务，项目的技术栈
+- 前面不清楚的问题请教
+- 可以评价一下我今天面试的表现吗？有哪些地方需要改进的呢

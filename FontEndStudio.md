@@ -520,6 +520,8 @@ Less 官网：https://less.bootcss.com/
 
 
 
+
+
 # 第三章 JavaScript 笔记
 
 推荐阅读文档专栏，包含 JS 大部分语法和知识点复习：https://juejin.cn/column/6991485674788487205
@@ -581,6 +583,8 @@ Date：https://juejin.cn/post/6996926386405376037
 - 详细解析：https://juejin.cn/post/6844903989088092174
 - 对于 ES6 复杂类型，实例里面都有一个 `__proto__` 属性指向构造函数的 `prototype`
 - 构造函数的 `prototype` 里面有多个原型方法，不同复杂类型对应不同方法
+- 因此一个实例对象上的属性来自其本身的属性还有其原型链上的属性
+- 因此一个构造函数上的属性为私有属性，无法继承到实例对象上，而它的 `prototype` 上的属性可以被继承
 - JS 内置的构造函数如下所示
 
 ```js
@@ -679,6 +683,7 @@ console.log(Animal.foo); // Fu
 - 另外注意：`setTimeout`、`Promise` 里的内置函数作为全局函数（默认绑定）看待
 - 如果一个普通函数被调用 `apply`、`call`、`bind`（显示绑定），那等于是明确指定了 this 指向了
 - 然后箭头函数，就看两点：该箭头没有外层函数则 this 指向 window，有外层函数 this 就为外层函数的 this
+- 注：浏览器的全局对象为 `window`，node 环境的全局对象为 `globalThis`
 - https://juejin.cn/post/7310415386405765159
 
 
@@ -740,19 +745,18 @@ console.log(Object.entries(person));
 
 **for in 循环**
 
-for...in 遍历一个对象的**可枚举属性**，如对象、数组、字符串。针对属性，所以获得 key（数组获得 index ）
+for...in 遍历一个对象的可枚举属性，并且还可以遍历数组、字符串，依次遍历获得 key（数组获得 index ）
 
 注意：key 可以得到该对象所有的属性，**包括原型链上的属性，不按顺序遍历**
 
 ```js
 for (let key in obj) {}
+for (let index in arr) {}
 ```
 
 ```js
-// hasOwnProperty：判断一个对象有某个属性或对象，无法检查到原型链上
 for (const key in target) {
     if (target.hasOwnProperty(key)) {
-
     }
 }
 ```
@@ -778,10 +782,10 @@ descriptor 对象可以包含以下属性：
 
 
 
-**object 实例常用 API**
+**对象实例常用 API**
 
-- delete obj.name：删除对象属性
-- obj.hasOwnProperty：只会检查**对象的自有（实例）属性**，对象原形上的属性其不会检测
+- `delete obj.name`：删除对象属性
+- `obj.hasOwnProperty`：判断一个对象自身是否有某个属性，而不是原型链上的属性
 
 - 判断是否是空对象：`JSON.stringify(obj) === "{}"`
 
@@ -884,7 +888,39 @@ const newArr = arr.slice() // 经典的浅拷贝！！
 
 - **arr.reduce**
 
-使用方法：https://blog.csdn.net/hannah2233/article/details/128367223
+不改变原数组，使用方法：https://blog.csdn.net/hannah2233/article/details/128367223
+
+```js
+// 不传入initialValue时，默认从index=1开始遍历，初始时prev=1，cur=2
+// 每次遍历，prev为上一个遍历的返回值，cur为当前数组的遍历值
+var arr = [1, 2, 3, 4];
+var sum = arr.reduce(function(prev, cur, index, arr) {
+    console.log(prev, cur, index);
+    return prev + cur;
+})
+console.log(arr, sum);
+// 结果：
+// 1 2 1
+// 3 3 2
+// 6 4 3
+// [1, 2, 3, 4] 10
+```
+
+```js
+// 这个例子index是从0开始的，第一次的prev的值是我们设置的初始值0，数组长度是4，reduce函数循环4次。
+var  arr = [1, 2, 3, 4];
+var sum = arr.reduce(function(prev, cur, index, arr) {
+    console.log(prev, cur, index);
+    return prev + cur;
+}，0) //注意这里设置了初始值
+console.log(arr, sum);
+//打印结果：
+//0 1 0
+//1 2 1
+//3 3 2
+//6 4 3
+//[1, 2, 3, 4] 10
+```
 
 
 
@@ -937,8 +973,6 @@ arr.fonEach((item,index,arr) => {})
 
 遍历操作数组，将每次返回的结果作为一个新数组返回
 
-当数组为简单类型时，不会该变原数组，当为引用类型时，则会改变原数组！！
-
 ```js
 let newArr = arr.map((item,index,arr) => item + 1)
 ```
@@ -950,8 +984,6 @@ map 使用方法：https://blog.csdn.net/Anna0115/article/details/103696124
 - **arr.filter**
 
 遍历筛选数组，回调函数返回布尔类型，返回一个满足条件的新数组
-
-当数组为简单类型时，不会该变原数组，当为引用类型时，则会改变原数组！！
 
 ```js
 var newArr = arr.filter(function(item,index,arr) {
@@ -1011,8 +1043,8 @@ var items = [
 ];
 
 items.sort((a, b) => {
-	const nameA = a.name.toUpperCase()
-	const nameB = b.name.toUpperCase()
+	const nameA = a.name.toUpperCase()[0]
+	const nameB = b.name.toUpperCase()[0]
 	if(nameA < nameB)	return -1
 	if(nameA > nameB)	return 1
 	return 0
@@ -1291,13 +1323,14 @@ ele.scrollTo({ top: 0, behavior: 'smooth' })
 
 **事件模型可以分为三种**
 
-- 原始事件模型：同一个类型的事件只能绑定一次、只支持冒泡，不支持捕获、btn.onclick = fun
-- 标准事件模型：1、使用 addEventListener 进行监听，默认事件冒泡
+- 原始事件模型：同一个类型的事件只能绑定一次。只支持冒泡，不支持捕获。直接绑定 `btn.onclick = fun`
+- 标准事件模型：1、使用 `addEventListener` 进行监听事件，并支持监听多个事件，默认事件冒泡
 - 标准事件模型：2、第三个参数决定该元素的事件在捕获还是冒泡中执行，可绑定多个事件
-- 标准事件模型：3、事件捕获先执行，再目标元素事件，再事件冒泡
-- https://github.com/febobo/web-interview/issues/64
+- 标准事件模型：3、根据事件流顺序：先事件捕获，再目标元素事件，最后事件冒泡
+- IE 事件模型：通过 `attachEvent`、`detachEvent` 绑定和移除监听函数，只支持冒泡，不支持捕获
+- https://vue3js.cn/interview/JavaScript/event_Model.html
 
-> 原始事件模型、标准事件模型、IE事件模型、Netscape4事件模型
+> 原始事件模型、标准事件模型、IE事件模型
 
 
 
@@ -1628,6 +1661,15 @@ console.dirxml(document);
 
 ## 3.12 异步函数处理与解析
 
+**Promise 解析**
+
+1. Promise 有三个状态：`pending`、`fulfilled`、`rejected`，**Promise的状态在发生变化之后，就不会再发生变化**
+2. Promise 必须接收一个回调函数，这个回调函数有两个参数：`(resolve, reject) => {}`
+3. 当我们需要处理一个 promise 对象时，我们使用 then 方法接收两个回调函数作为参数分别处理成功和失败的请求回调。另外还可以直接使用 catch 方法接收失败的请求回调
+4. 链式调用：`promise.then` 方法也会返回一个 `Promise` 对象 ，根据回调函数的返回值不同 `Promise` 对象的状态不同。如果没有返回值则为 `pending`，如果返回值为非 `Promise` 对象则为 `fulfilled`，如果返回的是 `Promise` 对象则取决于这个 `Promise` 对象而决定，如果抛出了异常则为 `rejected`
+
+
+
 **await/async**
 
 1. await/async 的错误捕捉解决方案：https://juejin.cn/post/7194735739660140603
@@ -1648,6 +1690,12 @@ console.dirxml(document);
 3. 常见的宏任务：`UI rendering`、`setTimeout/setInterval`、`script` 外部代码
 4. 执行顺序：同步任务 - 微任务（同步任务产生的） - 宏任务（同步任务产生的） - 微任务（上一轮宏任务产生的）- 宏任务（上一轮宏任务产生的）......
 5. 所以按照执行顺序可以看出这就形成了一个**事件循环**！
+
+
+
+**代码输出结果题型**
+
+1. https://juejin.cn/post/6959043611161952269#heading-2
 
 
 
@@ -1685,7 +1733,21 @@ setTimeout(function() {
 while((new Date() - date) < 3000) {}
 ```
 
-> 3s 之后同时输出 2、3、1
+> 因为第一个宏任务需要执行3s，等第二个宏任务执行时 setTimeout 全都准备完毕了，所以3s 之后同时输出 2、3、1
+
+
+
+例题三
+
+```js
+Promise.resolve(1)
+  .then(2)
+  .then(Promise.resolve(3))
+  .then(console.log)
+// 打印1
+```
+
+> 看到这个题目，好多的then，实际上只需要记住一个原则：`.then` 或`.catch` 的参数期望是函数，传入非函数则会发生**值透传**。第一个then和第二个then中传入的都不是函数，一个是数字，一个是对象，因此发生了透传，将`resolve(1)` 的值直接传到最后一个then里，直接打印出1。
 
 
 
@@ -1699,9 +1761,13 @@ URL 对象：https://juejin.cn/post/7033570440224178189
 
 
 
+
+
 ## 3.14 class 面向对象编程
 
 待补充 JS 的面向对象程序设计的学习与拓展！
+
+
 
 
 
