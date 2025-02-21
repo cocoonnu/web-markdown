@@ -771,7 +771,7 @@ dir /Applications/Redis/
 
 Redis GUI：https://macapp.org.cn/app/medis.html
 
-终端启动本地 Redis 命令：/Applications/Redis/src/redis-server /Applications/Redis/redis.conf
+终端启动本地 Redis 命令：/Applications/Redis/src/redis-server /Applications/Redis/redis.conf，**还没设置开机自启动**
 
 Redis 常用命令大全：https://juejin.cn/post/6844904051377700871
 

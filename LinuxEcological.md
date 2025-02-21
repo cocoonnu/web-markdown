@@ -64,3 +64,8 @@ PATH=$JAVA_HOME/bin:$PATH
 
 后面参考文档即可：https://cyborg2077.github.io/2022/10/18/ReggieOptimization/#Nginx
 
+
+
+### 1.1.3 连接公司 VPN 教程
+
+下载 OpenVPN，找运维要一个 `client.ovpn` 文件，然后进入软件点击新增，选择导入文件。如果要账号密码则再问运维要即可。

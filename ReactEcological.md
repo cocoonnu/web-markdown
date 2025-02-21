@@ -1354,8 +1354,6 @@ const [name, setName] = useState(() => {
 
 
 
-
-
 - **setState 尽量使用函数形式，函数的返回值作为最新的 state。普通形式容易进行数据合并**
 
 ```jsx
@@ -1375,8 +1373,6 @@ const click = () => {
 ```
 
 > 成功实现加2，虽然函数也是异步更新的，但是函数无法进行合并
-
-
 
 
 
@@ -1405,8 +1401,6 @@ setCheckArr(checkArr.filter(city => {
 // 数组的添加
 setCheckArr(checkArr.concat(cityName))
 ```
-
-
 
 
 
@@ -1447,7 +1441,7 @@ export default function App() {
 
 
 
-- **如果 map 值发生变化，如何强制重新渲染？**下面的方式是尝试转换为对象代替 map。。
+- **如果 map 值发生变化，如何强制重新渲染？**下面的方式是尝试转换为对象代替 map
 
 https://www.coder.work/article/7952666
 
@@ -1561,7 +1555,7 @@ export default createStore(reducer)
 通常 `useEffect` 函数的作用就是为函数组件提供副作用处理的，常见的副作用：localstorage 操作、手动修改dom、数据请求 ajax 发送等，理解如下
 
 - `useEffect` 第一个参数要求我们传入一个回调函数，执行时机有三种情况
-- 第二个参数要求存入一个数组，数组里面为回调函数的**依赖项**
+- 第二个参数要求存入一个数组，数组里面为回调函数的**依赖项**，依赖项包括一些可以触发组件更新的值比如：`props`、`state`
 - 回调函数内部可以返回一个函数，该函数在组件销毁时执行，用于清除副作用 
 - **一个函数组件中可以使用多个Effect Hook，解决类组件中生命周期经常将很多的逻辑放在一起的问题**
 - 参考文档：https://lanan.blog.csdn.net/article/details/126840653
@@ -1720,6 +1714,10 @@ const doubleMemo = useMemo(() => {
 
 ## 2.2 Ref Hooks 介绍
 
+推荐专栏阅读，讲到一些 hooks 的基本使用和高级技巧和性能优化等方面：https://juejin.cn/column/7274211579691319311
+
+
+
 ### 2.2.1 useRef
 
 使用 useRef 创建的对象 `const ref = useRef(null)`，可以直接修改它的值 `ref.current = 123`。相对与 useState 不同的是，当修改 ref 对象时 React 不会触发组件更新，**但是会它的值会保持在整个组件的生命周期中**
@@ -1745,7 +1743,7 @@ export default function App() {
 
 
 
-**`createRef` 与 `useRef` 的不同点**
+**createRef 与 useRef 的不同点**
 
 - useRef 是 Hooks 的一种，一般用于函数组件，而 createRef 一般用于类组件
 - 由 useRef 创建的 ref 对象在组件的**整个生命周期内都不会改变，即组件更新不变**
@@ -1755,21 +1753,10 @@ export default function App() {
 
 
 
-**实现 DOM 时的 Ref 绑定**
+**定义 Ref 列表的方式**
 
-- 直接函数中定义 hook 是不行的
-
-```tsx
-<ul>
-  {items.map((item) => {
-    // 行不通！
-    const ref = useRef(null);
-    return <li ref={ref} />;
-  })}
-</ul>
-```
-
-- 应该利用 **ref 回调**来实现，https://zh-hans.react.dev/reference/react-dom/components/common#ref-callback
+- 将 `Ref` 定义为一个 `map`，通过回调函数的方式给这个 `map` 赋值
+- https://zh-hans.react.dev/reference/react-dom/components/common#ref-callback
 
 ```tsx
 const itemsRef = useRef(null);
@@ -1801,6 +1788,38 @@ function getMap() {
 
 
 
+**跳过初始渲染执行**
+
+在某些情况下，当组件首次渲染时，我们不希望立即执行某些操作。这些操作可能包括发送网络请求、触发某些动画或其他任务。而是只有在某个值或依赖项发生变化后，我们才希望执行这些任务。
+
+```tsx
+import React, { useState, useEffect, useRef } from 'react';
+
+function Counter() {
+    const [count, setCount] = useState(0);
+    const mounted = useRef(false);
+
+    useEffect(() => {
+        if (mounted.current) {
+            alert('Count value changed!');
+        } else {
+            mounted.current = true;
+        }
+    }, [count]);
+
+    return (
+        <div>
+            <button onClick={() => setCount(count + 1)}>Increase</button>
+            <p>Count: {count}</p>
+        </div>
+    );
+}
+
+export default Counter;
+```
+
+
+
 ### 2.2.2 forwardRef
 
 这个 hook 本质上是解决父组件需要操作函数组件上的 DOM 元素的问题。
@@ -1809,10 +1828,10 @@ function getMap() {
 - 函数组件将接收到的 ref 参数绑定到内部的 DOM 元素身上即可！
 - 随后父组件就可以使用到函数组件上的 DOM 元素了
 
-```jsx
+```tsx
 import { useEffect, useRef, forwardRef } from 'react'
 
-const Test = forwardRef((props, divRef) => {
+const Test = forwardRef<DivRef,PropsType>((props, divRef) => {
     return (
         <div ref={ divRef }>
             <input type="text" />
@@ -1846,8 +1865,6 @@ export default function App() {
 - 第一个参数传入一个函数组件接收到的 ref 参数
 - 第二个参数传入一个回调函数，要求该回调函数返回一个对象, 该对象会绑定到 ref 的 current 属性中
 - 返回的对象函数组件自定义，通常封装一些对自身 DOM 元素操作的方法
-
-
 
 ```jsx
 import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
@@ -1889,62 +1906,30 @@ export default function App() {
 
 
 
-
-
 ### 2.2.4 useContext
 
 这个  Hook 可以实现**响应式数据或普通数据**跨层级传递，子组件可以使用父组件定义的响应式数据
 
 - 等效于之前的 Context 嵌套传递，使用起来更加简单，传递的数据**只读**
+- 性能优化方面可以考虑将一个 `context` 拆分和使用 `useMemo` 包裹 `contextValue`
+- 参考文档：https://juejin.cn/post/7275214254096728116
 
-- 参考文档：https://blog.csdn.net/weixin_43606158/article/details/100750602
+```jsx
+// 根组件
+export const DContext = createContext<DContext>(initdata);
+export const useDContext = () => useContext(DContext);
 
+<DContext.Provider value={{ name }}>
+  <DndProvider backend={HTML5Backend}>{children}</DndProvider>
+</DContext.Provider>
+```
 
-
-**根组件**
-
-```tsx
-// 创建一个 Context 对象
-import React, { useContext, createContext } from "react"
-
-const TestContext= createContext({
-    // 这里可以设置默认的 value 对象或者null
-    name: 'cocoon'
-})
-
-function App() {
-  return (
-    // 在父组件中可以设置自己的value值  
-	<TestContext.Provider 
-		value={{
-			username: 'czy',
-		}}
-	>
-		......
-	<TestContext.Provider/>
-  )
-}
+```jsx
+// DndProvider
+const { name } = useDContext()
 ```
 
 
-
-**嵌套组件**
-
-```tsx
-import React, { useContext } from "react
-import { TestContext } from './App'
-
-const Navbar = () => {
-  // 获取导出的 value 对象
-  const { username } = useContext(TestContext)
-    
-  return (
-    <div className="navbar">
-      <p>{username}</p>
-    </div>
-  )
-}
-```
 
 
 
@@ -1989,126 +1974,19 @@ function Counter() {
 
 ### 2.3.1 useCallback
 
-> 前言：定义一个计数器, 我们点击按钮时, counter 数据会发生变化, App 函数组件就会重新渲染, 意味着increment 函数就会被重新定义一次, 每点击一次按钮, increment 函数就会重新被定义。虽然每次定义increment 函数, 垃圾回收机制会将上一次定义的 increment 函数回收, 但是这种不必要的重复定义是会影响性能的
+`useCallback` 会返回一个 `memoized`（有记忆的） 的**回调函数**。作用就是在依赖不变的情况下，多次定义的时候，返回的回调函数是相同的。下面是使用场景：
 
-`useCallback` 会返回一个 `memoized`（有记忆的） 的**回调函数**。作用就是在依赖不变的情况下，多次定义的时候，返回的回调函数是相同的。
-
-- 参数一：传入一个回调函数, 如果依赖发生改变会定义一个新的该回调函数使用, 如果依赖没有发生改变, 依然使用原来的回调函数
-
-- 参数二：用于控制依赖的, 第二个参数要求传入一个数组, 数组中可以传入依赖, 传空数组表示没有依赖
-- 参考文档：https://lanan.blog.csdn.net/article/details/126856799
+1. **子组件的性能优化**：当你将函数作为 prop 传递给已经通过 `React.memo` 进行优化的子组件时，使用 `useCallback` 可以确保子组件不会因为父组件中的函数重建而进行不必要的重新渲染。
+2. **Hook 依赖**：如果你正在传递的函数会被用作其他 Hook（例如 `useEffect` ）的依赖时，使用 `useCallback` 可确保函数的稳定性，从而避免不必要的副作用的执行。
+3. **复杂计算与频繁的重新渲染**：在应用涉及很多细粒度的交互，如绘图应用或其它需要大量操作和反馈的场景，使用 `useCallback` 可以避免因频繁的渲染而导致的性能问题。
+4. https://juejin.cn/post/7277799132109176893
 
 
 
-**优化方案一：函数不会重新定义**
+**优化方案**
 
-```jsx
-import React, { memo, useState, useCallback } from 'react'
-
-const App = memo(() => {
-    const [counter, setCounter] = useState(10)
-
-    const increment = useCallback(() => {
-        setCounter(counter + 1)
-    }, [counter])
-
-    return (
-        <div>
-            <h2>{counter}</h2>
-            <button onClick={() => increment()}>+1</button>
-        </div>
-    )
-})
-```
-
-
-
-**优化方案二：父组件修改其他状态数据的时候，子组件不会进行无用的渲染**
-
-通常使用 useCallback 的目的是在向子组件传递函数时, 将要传递的函数进行优化再传递给子组件, 避免父组件修改其他状态数据的时候，子组件进行无用的多次重复渲染
-
-```jsx
-import React, { memo, useState, useCallback } from 'react'
-
-const Test = memo((props) => {
-    console.log("Test组件被重新渲染")
-    return (
-        <div>
-            <button onClick={props.increment}>Test+1</button>
-        </div>
-    )
-})
-
-const App = memo(() => {
-    const [counter, setCounter] = useState(10)
-    const [message, setMessage] = useState("哈哈哈哈")
-
-    // 使用useCallback依赖于counter
-    const increment = useCallback(() => {
-        setCounter(counter + 1)
-    }, [counter])
-
-    return (
-        <div>
-            <h2>{counter}</h2>
-            <button onClick={increment}>+1</button>
-            <h2>{message}</h2>
-            <button onClick={() => setMessage("呵呵呵呵")}>修改message</button>
-            <Test increment={increment} />
-        </div>
-    )
-})
-
-export default App
-```
-
-
-
-**优化方案三：父组件修改自身所有的状态数据（包括 props 参数）的时候，子组件都不会进行重复渲染**
-
-`useCallback` + `useRef` 优化方案模板代码
-
-```jsx
-import React, { memo, useState, useCallback, useRef } from 'react'
-
-const Test = memo((props) => {
-    console.log("Test组件被重新渲染")
-    return (
-        <div>
-            <button onClick={props.increment}>Test+1</button>
-        </div>
-    )
-})
-
-const App = memo(() => {
-    const [counter, setCounter] = useState(10)
-    const [message, setMessage] = useState("哈哈哈哈")
-
-    // 组件进行多次渲染, 返回的是同一个ref对象
-    const counterRef = useRef()
-    // 将最新的counter保存到ref对象current属性中
-    counterRef.current = counter
-
-    const increment = useCallback(() => {
-        // 在修改数据时, 引用保存到ref对象current属性的最新的值
-        setCounter(counterRef.current + 1)
-    }, [])
-
-    return (
-        <div>
-            <h2>{counter}</h2>
-            <button onClick={increment}>+1</button>
-            <Test increment={increment} />
-            <h2>{message}</h2>
-            <button onClick={() => setMessage("呵呵呵呵")}>修改message</button>
-        </div>
-    )
-})
-
-export default App
-```
-
-
+1. 通常使用 `useCallback` 的目的是在向子组件传递函数时, 将要传递的函数进行优化再传递给子组件, 避免父组件修改其他状态数据的时候，子组件进行无用的多次重复渲染
+2. 其次是如果函数状态太多，函数冗余。那么可以使用 `useCallback` 进行函数缓存优化不必要的渲染
 
 
 
@@ -2120,30 +1998,16 @@ useMemo 返回的也是一个有记忆的值，在依赖不变的情况下，多
 
 - 参数二：传入一个数组，表示依赖，什么都不依赖传入空数组。如果不传则 useMemo 无法起作用，无意义
 
-```jsx
-import React, { memo, useMemo, useState } from 'react'
+- https://juejin.cn/post/7277218424689672253
 
-const App = memo(() => {
-    const [counter, setCounter] = useState(10)
-    const [str] = useState('czy')
 
-    let result = useMemo(() => {
-        console.log('我被执行')
-        return str + 'cocoon'
-    }, [str])
 
-    return (
-        <div>
-            <h2>计算结果: {result}</h2>
+**useMemo 与 memo 的区别**
 
-            <h2>当前计数: {counter}</h2>
-            <button onClick={() => setCounter(counter + 1)}>+1</button>
-        </div>
-    )
-})
+由于 `useMemo` 也可以缓存组件，但是最好还是区分场景使用
 
-export default App
-```
+- 当你想避免因为**数据变化**而产生的不必要的**计算**时，使用 `useMemo`
+- 当你想避免因为 **props 未变**而产生的不必要的**组件重渲染**时，使用 `memo`
 
 
 
@@ -2181,7 +2045,70 @@ export default React.memo(Child,areEqual)
 
 
 
-如果 props 有函数传递就比较麻烦了，如果那么函数没有开启 `useCallback` 那么父组件重新渲染，那么函数也重新编译，React.memo 会认为 props 发生变化，因此子组件会重新渲染！ 
+如果 props 有函数传递就比较麻烦了，如果那么函数没有开启 `useCallback` 那么父组件重新渲染，那么函数也重新编译，React.memo 会认为 props 发生变化，因此子组件会重新渲染！
+
+
+
+## 2.4 ahooks 常用Hook
+
+**useEventEmitter**
+
+通过 `props` 或者 `Context` ，可以将 `event$` 共享给其他组件。然后在其他组件中，可以调用 `EventEmitter` 的 `emit` 方法，推送一个事件，或是调用 `useSubscription` 方法，订阅事件。**可以用于在各个组件中（只要能获取到 event$ ）触发和绑定的事件订阅。** 通常用于兄弟组件之间订阅事件以此通信，官方文档：https://ahooks.js.org/zh-CN/hooks/use-event-emitter
+
+```jsx
+// 生成一个事件订阅
+const event$ = useEventEmitter();
+event$.emit('hello');
+event$.useSubscription(val => {
+  console.log(val);
+});
+```
+
+
+
+**useVirtualList**
+
+提供虚拟化列表能力的 Hook，用于解决展示海量数据渲染时首屏渲染缓慢和滚动卡顿问题。看例子感觉挺好用的，但是没有实用过。
+
+```jsx
+const containerRef = useRef(null);
+const wrapperRef = useRef(null);
+const originalList = useMemo(() => Array.from(Array(99999).keys()), []);
+
+const [list] = useVirtualList(originalList, {
+  containerTarget: containerRef,
+  wrapperTarget: wrapperRef,
+  itemHeight: 60,
+  overscan: 10,
+});
+```
+
+```jsx
+<div ref={containerRef} style={{ height: '300px', overflow: 'auto' }}>
+  <div ref={wrapperRef}>
+    {list.map((ele) => <div style={{height: 60}}>Row: {ele.data}</div>)}
+  </div>
+</div>
+```
+
+
+
+**useInfiniteScroll**
+
+无限滚动逻辑就是将每次返回的数据进行拼接，`const { data, loadMore } = useInfiniteScroll(service);`
+
+1. `service` 返回的数据必须包含 `list` 数组，类型为 `{ list: any[], ...rest }`
+2. `service` 的入参为整合后的最新 `data`
+
+```jsx
+const { data, loading, loadMore, loadingMore } = useInfiniteScroll((d) => getLoadMoreList());
+```
+
+
+
+## 2.5 React 渲染进程解析
+
+
 
 
 
@@ -2240,11 +2167,15 @@ export default App;
 
 
 
+## 3.5 React 实现状态管理
+
+Redux 和 Mobx：https://github.com/cocoonnu/web-projects/blob/main/Markdown/React%20ecology/React-Redux.md
 
 
-## 3.5 Redux 和 Mobx
 
-https://github.com/cocoonnu/web-projects/blob/main/Markdown/React%20ecology/React-Redux.md
+## 3.7 React 实现传送门
+
+React.createPortal：https://zh-hans.react.dev/reference/react-dom/createPortal
 
 
 
@@ -2394,3 +2325,6 @@ https://docs.pmnd.rs/zustand/guides/maps-and-sets-usage
 开启持久化存储
 
 https://github.com/pmndrs/zustand/blob/main/docs/integrations/persisting-store-data.md
+
+
+

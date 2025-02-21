@@ -1,6 +1,6 @@
 # 第一章 Nodejs 环境配置
 
-在新电脑里面直接可以用我写的这篇文章的配置，当电脑本地环境报错的时候就找解决办法，解决不了就直接卸载重来！另外还有 VScode 如果出现什么问题直接更新一下就行了，最好 3 个月更新一次
+在新电脑里面直接可以用我写的这篇文章的配置，当电脑本地环境报错的时候就找解决办法，解决不了就直接卸载重来！另外还有 vs code 如果出现什么问题直接更新一下就行了，最好 3 个月更新一次
 
 
 
@@ -130,6 +130,22 @@ $env:NODE_OPTIONS="--max-old-space-size=8192"
 
 
 
+### 1.4.2 npx 的使用和理解
+
+`npx` 为 `npm` 内置的命令，一个 `CLI` 工具，用于执行项目中环境包或者全局里 `bin` 目录的可执行命令。此外还可以执行在线 `npm` 库里的可执行命令，因此不用全局下载环境包避免占用存储和污染环境。
+
+`npm run` 命令主要是执行项目中 `package.json` 的脚本命令 `scripts`，其实就是用户自定义命名的自定义的命令
+
+```bash
+npx create-react-app@latest my-project
+```
+
+```bash
+npm run dev
+```
+
+
+
 # 第二章 Nodejs 基础学习
 
 Nodejs 基础学习（博客）：https://www.inode.club/node/what.html
@@ -156,23 +172,18 @@ module.exports = {
 
 path 模块学习：https://juejin.cn/post/7176102367723520056
 
-1. path.join：只作为路径字符串拼接，path.resolve：会把 / 作为根目录，还会把路径解析最终生成绝对路径
-2. 使用 require 语句可以直接使用 './'、'../' 读文件，**但是在其他语句中最好使用绝对路径**
-2. 获取 **基于当前路径的文件** 的绝对路径函数就是使用 path.resolve 生成的
+1. `path.join`：只作为路径字符串拼接，`path.resolve`：把路径解析最终生成绝对路径
+2. `__dirname`：全局变量，表示当前执行文件所在目录的完整目录名
+3. `__filename`：全局变量，表示当前执行文件所在目录的完整文件名
 
 ```js
-const appDirectory = fs.realpathSync(process.cwd()) // 项目根目录
-const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath)
-
-// 获取了基于当前路径的 './webpack.build.js' 文件的绝对路径
-webpackConfigPath = resolveApp('./webpack.build.js')
+// 获取当前文件目录下的index.ts的绝对路径
+const resolvePath = path.resolve(__dirname, './index.ts');
 ```
 
 
 
-
-
-## 2.2 .env 环境变量配置
+## 2.2 全局环境变量配置
 
 在 Nodejs 中通常从 `process.env` 获取环境变量，全局可使用
 
@@ -213,6 +224,10 @@ console.log(process.env.LOCAL_ENV); // local
 1. 运行跨平台设置和使用环境变量的脚本，在启动脚本时注入环境变量
 2. 参考文档：https://juejin.cn/post/7088493140205633544
 
+```bash
+npm install --save-dev cross-env
+```
+
 ```json
 "scripts": {
   "build": "cross-env NODE_ENV=production webpack --config build/webpack.config.js"
@@ -222,8 +237,6 @@ console.log(process.env.LOCAL_ENV); // local
 ```ts
 process.env.NODE_ENV = 'production'
 ```
-
-
 
 
 
@@ -358,3 +371,153 @@ Buffer 介绍参考文档：https://www.inode.club/node/buffer.html
 
 10. `Buffer.isBuffer(obj)`：检查一个对象是否为 Buffer 对象。
 
+
+
+# 第三章 Webpack 基础学习
+
+先把 `Webpack` 的一些基础配置和常用的 `loader`、`plugin` 过一遍，然后手动搭建项目实操一下。
+
+中文文档官网：https://www.webpackjs.com/
+
+
+
+## 3.1 Webpack 常用配置
+
+### 3.1.1 入口和上下文
+
+上下文 `context` 定义入口文件所处目录的绝对路径的字符串，默认使用 Node.js 进程的当前工作目录
+
+https://www.webpackjs.com/configuration/entry-context/#context
+
+```js
+context: path.resolve(__dirname, 'app') // 使得从当前工作目录的app目录下开始查找
+```
+
+
+
+入口 `entry` 定义开始应用程序打包过程的一个或多个起点，单页应用：一个入口起点，多页应用：多个入口起点
+
+作为一个对象时，其一个对象属性即作为一个 `chunk` 的入口，对象属性中又有：`import`、`filename`、`depenOn` 等属性
+
+https://www.webpackjs.com/configuration/entry-context/#entry
+
+```js
+// 只有一个入口文件，默认打包一个chunk为main.js
+entry: './src/index.js'
+```
+
+```js
+// 会打包多个 chunk：home、shared、catalog
+entry: {
+  home: './home.js',
+  shared: ['react', 'react-dom', 'redux', 'react-redux'],
+  catalog: {
+    import: './catalog.js',
+    filename: 'pages/catalog.js',
+    dependOn: 'shared',
+    chunkLoading: false,
+  },
+}
+```
+
+
+
+### 3.1.2 output 输出配置
+
+`output` 指示 `webpack` 如何去输出、以及在哪里输出你的「`bundle` 和其他你所打包或使用 `Webpack` 载入的任何内容」
+
+https://www.webpackjs.com/configuration/output/
+
+```js
+output: {
+  filename: "bundle.js",
+  path: path.resolve(__dirname, "dist"),
+  clean: true,
+  publicPath: 'assets/',
+}
+```
+
+
+
+### 3.1.3 构建模式 mode
+
+提供 `mode` 配置选项，告知 `Webpack` 使用相应模式的内置优化，并会将 `process.env.NODE_ENV` 同步设置
+
+https://www.webpackjs.com/configuration/mode/
+
+```bash
+npm run weback --mode=development
+```
+
+```js
+module.exports = (env, argv) => {
+  config.mode = argv.mode
+  if (argv.mode === 'development') {
+    config.devtool = 'source-map'   	
+  }
+  return config
+}
+```
+
+
+
+### 3.1.4 控制 source map
+
+通过属性 `devtool` 控制是否生成，以及如何生成 `source map`，生成 `map` 文件有利于开发环境调试，而生产环境则不需要
+
+https://www.webpackjs.com/configuration/devtool/
+
+
+
+### 3.1.5 代理配置 devServer
+
+通过 `webpack-dev-server` 这个库进行快速启动一个开发应用程序，通过 `http-proxy-middleware` 可实现反向代理，两个配置都在 `devServer` 中编写即可。具体配置查文档就行：https://www.webpackjs.com/configuration/dev-server/
+
+
+
+## 3.2 Webpack 常用加载
+
+### 3.2.1 加载样式文件
+
+当样式文件被入口文件引入时，需要给 `Webpack` 配置 `Loader` 才能打包成功
+
+`CSS`、`Sass`、`Less` 文件加载，并且 `Loader` 数组的顺序不能改变
+
+
+
+```bash
+npm install less sass
+npm install --save-dev css-loader style-loader
+npm install --save-dev sass-loader less-loader
+```
+
+```js
+module: {
+  rules: [
+    {
+      test: /\.css$/,
+      use: ['style-loader', "css-loader"],
+    },
+    {
+      test: /\.s[ac]ss$/i,
+      use: ['style-loader', "css-loader", "sass-loader"],
+    },
+  ],
+},
+```
+
+
+
+## 3.3 Webpack 基础优化策略
+
+这里只讲基础优化不会深入，优化可以从两个方面入手：1. 开发环境构建速度 2. 生产环境构建体积和缓存策略。这里推荐一篇 webpack 实际上手的文章，优化策略都是按一个一个的点来描述和配置的：https://juejin.cn/post/7111922283681153038#heading-18
+
+------
+
+
+
+
+
+# 第四章 前端工程化总结
+
+https://github.com/cocoonnu/web-projects/blob/main/Markdown/React%20ecology/React-Project.md

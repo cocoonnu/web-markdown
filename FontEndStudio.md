@@ -1,5 +1,14 @@
 # 第一章 HTML 学习笔记
 
+前端命名规范：https://developer.aliyun.com/article/951001
+
+1. 组件文件命名规范：大驼峰命名，公司用的是横杠命名
+2. 变量命名规范：无论是普通变量、对象、数组还是对象的键，都是小驼峰命名
+3. 常量命名规范：通过 const 定义一个常量，命名方式为 VAR_TYPE，字母全部大写
+4. 枚举命名规范：枚举名称为大驼峰，枚举的键为常量命名规范
+
+
+
 ## 1.1 HTML 备忘清单
 
 HTML 备忘清单
@@ -41,7 +50,7 @@ https://blog.csdn.net/jack_rose_me/article/details/124603494
 
 ```less
 fill		// 默认，不保证保持原有的比例，内容拉伸填充整个内容容器
-contain		// 保持原有尺寸比例。内容被缩放
+contain	// 保持原有尺寸比例。内容被缩放(可能和指定宽度对应不上)
 cover		// 保持原有尺寸比例。但部分内容可能被剪切
 none		// 保留原有元素内容的长度和宽度，也就是说内容不会被重置
 ```
@@ -83,6 +92,7 @@ img {
 import questionnaireSurveyImg from '@/assets/images/questionnaireSurveyImg.png'
 
 (
+  <img src={require('@/assets/images/questionnaireSurveyImg.png')} />
   <img src={questionnaireSurveyImg} />
   <div style={{ backgroundImage: `url(${questionnaireSurveyImg})` }} />
 )
@@ -155,7 +165,24 @@ React 脚手架中使用 `%PUBLIC_URL%` 则固定从服务器根路径 `http://l
 
 3. 高度，行高、外边距以及内边距都可以控制（块级元素特点）
 
-   
+
+
+
+## 1.5 HTML 自定义属性
+
+当我们操作 DOM 时，可以通过传入 HTML 标签的自定义属性来实现跨层级传输数据，自定义属性规范上使用 `data-*` 来命名
+
+```html
+<div data-custom-id="12345" roleId="admin">
+  This div has custom attributes.
+</div>
+```
+
+```js
+const divElement = document.querySelector('div');
+const customId = divElement.getAttribute('data-custom-id');
+const roleId = divElement.attributes.attributes.blocId?.value
+```
 
 
 
@@ -179,9 +206,17 @@ CSS 选择器速记：[https://wangchujiang.com/reference/docs/css.html#css-选�
 
 CSS 选择器介绍：https://vue3js.cn/interview/css/selector.html
 
-> 可以同时使用多个伪类，而只能同时使用一个伪元素
->
-> nth-of-type(2n + 1)：n 从 0 开始匹配
+
+
+**常见的选择器**
+
+```css
+/* 选择子类 */
+.box .child {}
+
+/* 选择.box并且带有.red的元素 */
+.box.red {}
+```
 
 
 
@@ -265,12 +300,15 @@ CSS 选择器介绍：https://vue3js.cn/interview/css/selector.html
 **属性选择器**
 
 ```css
+[attribute*=value]：选择attribute属性值等于value的所有元素
 [attribute*=value]：选择attribute属性值包含value的所有元素
 [attribute^=value]：选择attribute属性开头为value的所有元素
 [attribute$=value]：选择attribute属性结尾为value的所有元素
 ```
 
 ```css
+[data-animate=move] {}
+
 /* 选择p标签中id为包含div的所有元素 */
 p[id*=div] {
     color: red;
@@ -284,11 +322,21 @@ p[id*=div] {
 选择与 `<selector>` 选择器不匹配的所有元素，下面是例子
 
 ```css
-/* 选择当包含 flipped 的所有元素中不包含 matched 的元素 */
+/* 选择当包含 .flipped 的所有元素中不包含 .matched 的元素 */
 .flipped:not(.matched) {};
 
-/* 当 board-container 中包含了 flipped 对 board 作用 */
+/* 当 .board-container 中包含了 .flipped，然后对其子元素 .board 作用 */
 .board-container.flipped .board {};
+```
+
+```scss
+// scss文件在内部写伪类时可以不用加&，默认绑定&
+// 下面是匹配.box除了最后一项的所有子类
+.box {
+  :not(:last-child) {
+  	margin-bottom: 12px;
+  }
+}
 ```
 
 
@@ -352,7 +400,9 @@ MDN：https://developer.mozilla.org/zh-CN/docs/Web/CSS/::-webkit-scrollbar
 
 **纵向滚动条出现契机**
 
-当一个盒子设置了高度（响应式高度也可以），而不是设置为内容高度，另外还设置了 `overflow: auto` 即可出现纵向滚动条
+当一个盒子设置了高度（非响应式高度），另外还设置了 `overflow: auto`，那么当内容高度超出设置的高度时即可出现纵向滚动条。
+
+**当盒子设置了响应式高度，那么需要将其所有设置了响应式高度的父盒子都设置为 `overflow-y: auto`，**不然的话不会出现滚动条而是会持续撑高。
 
 
 
@@ -419,9 +469,52 @@ Grid 备忘清单：[https://wangchujiang.com/reference/docs/css.html#css-grid-�
 
 
 
-**grid 样式介绍**
+**flex 布局技巧**
 
-`grid-template-columns: repeat(auto-fill, minmax(230px, 1fr))`：设置了容器子元素宽度最小 230px，最大为容器宽度分配完 230px 后再将剩下的宽度均匀的分配给每个 230
+响应式盒子布局：当父元素设置 flex 布局之后，子元素可设置一个最小宽度，然后实际宽度可为 flex: 1 按比列分配。当宽度不够时，后面的子元素换行展示。
+
+```scss
+.boxWrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  row-gap: 24px;
+  column-gap: 8%;
+  flex-wrap: wrap;  
+  .box1 {
+    flex: 1 0 200px; // 最小宽度200px，实际宽度自适应
+	}
+  .box2 {
+    flex: 1 0 220px;
+    max-width: 350px;
+  }
+}
+```
+
+<img src="mark-img/CleanShot 2024-11-28 at 13.50.14.gif" alt="CleanShot 2024-11-28 at 13.50.14" align='left'  />
+
+
+
+**grid 布局技巧**
+
+响应式盒子布局：通过属性 `grid-template-columns: repeat(auto-fill, minmax(230px, 1fr))` 设置容器子元素宽度最小 230px，最大为容器宽度分配完 230px 后再将剩下的宽度均匀的分配给每个 230px
+
+```scss
+// 定义每个网格宽度（150px-先分配个数多余宽度自动填充）、高度（150px）
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-auto-rows: 150px;
+}
+
+// 自定义渲染网络内部，先占满整个网格，再合理分配
+.gridCard {
+  width: 100%;
+  height: 100%;
+  ......
+}
+```
 
 
 
@@ -482,6 +575,17 @@ https://blog.csdn.net/TwelveSpring/article/details/123253679
 }
 ```
 
+```jsx
+// 搭配title实现鼠标移入把文字显示全
+<div title='titletitle'>titletitle</div>
+```
+
+
+
+**块状和文字溢出处理**
+
+https://juejin.cn/post/7027845262190051335
+
 
 
 **盒子宽度随着内容（字数）宽度动态变化**
@@ -505,6 +609,10 @@ https://blog.csdn.net/TwelveSpring/article/details/123253679
 
 
 
+**inherit,initial,unset,revert 是什么**
+
+https://juejin.cn/post/7035445933152141342
+
 
 
 ## 2.9 Less 常用技巧
@@ -520,11 +628,43 @@ Less 官网：https://less.bootcss.com/
 
 
 
+## 2.10 Tailwind CSS 学习
+
+推荐直接通过中文官网学习，从入门文档开始看：https://tailwind.nodejs.cn/docs/utility-first
+
+安装的话普通项目最好通过 PostCSS 进行安装：https://tailwind.nodejs.cn/docs/installation/using-postcss
+
+
+
+## 2.11 响应式交互方案
+
+首先我们来了解浏览器视口大小是什么，当浏览器最大化时为最大值。它由三个值决定：显示器尺寸和分辨率、浏览器缩放比。
+
+1. 显示器尺寸越大，最大化浏览器视口就越大；分辨率越大，最大化浏览器视口就越大。
+1. 当我们调整浏览器视口的时候，浏览器视口大小也会变化
+1. 当我们调整浏览器缩放比的时候，缩放百分比越小，浏览器视口越大（因此可模拟大屏观看效果）
+1. 下面是如何查看当前浏览器视口大小：
+
+![image-20241018174034941](mark-img/image-20241018174034941.png)
+
+
+
+清楚浏览器视口大小之后，我们就可以开始了解 px 像素值了。在浏览器视口大小确定（不用再管窗口大小、显示器尺寸、分辨率大小了）之后，px 变成了一个绝对单位！！那么在 UI 给的设计稿中通常 Web 的视口大小定义为 1920 * 1080，如果你的浏览器视口大小也为这个的话，你看到的页面效果就和设计稿的显示效果一模一样了。**那么响应式设计要解决的矛盾就是你的浏览器视口大小比设计稿视口大小小很多时，应该如何布局会比较舒服。**下面是几个响应式布局的方案：
+
+1. 设计稿根据不同大小比例设定：就是 1920 * 1080、1470 * 881、1200 * 440 分段设计不同的布局效果，前端再对应开发。
+
+2. 设计稿直接用 rem 响应式分辨率为单位，前端也用 rem 进行开发。实现自动通过设置缩放比达到一致的显示效果（H5 常用）。
+
+3. 设计稿内容像素大小固定，并且一直居中显示，浏览器视口大小很大时两边内容会空（论坛、推特之内的网站常用）。
+
+4. 使用 Flex、Grid和百分比布局，实现宽度自适应，高度实现给定高度或展示滚动条。
+
+
+
+
 
 
 # 第三章 JavaScript 笔记
-
-推荐阅读文档专栏，包含 JS 大部分语法和知识点复习：https://juejin.cn/column/6991485674788487205
 
 1. JavaScript 八大数据类型：Number、String、Boolean、Null、Undefined、Object、Symbol、BigInt 。其中 Object 为引用类型，其他七项为原始类型（原始值）
 2. 变量名必须以字母、下划线 `_` 或美元符号 `$` 开头，不能以数字开头。变量名可以包含字母、数字、下划线或美元符号，但不能包含其他特殊字符
@@ -556,7 +696,7 @@ console.log({...apple} === apple);	// false
 
 **更多复杂类型**
 
-Set（引用类型和 NaN 无法去重）：https://juejin.cn/post/7107449385264349191
+Set（引用类型无法去重）：https://juejin.cn/post/7107449385264349191
 
 Map：https://juejin.cn/post/7106898275290054692
 
@@ -679,12 +819,33 @@ console.log(Animal.foo); // Fu
 
 **普通函数和箭头函数的 this 指向问题**
 
-- 首先看普通函数的 this 指向，有全局函数（默认绑定）、对象函数（隐式绑定）、构造函数（new 绑定）
+- 首先看普通函数的 this 指向，有全局函数（默认绑定）、对象函数（隐式绑定）、构造函数（new 绑定、prototype）
 - 另外注意：`setTimeout`、`Promise` 里的内置函数作为全局函数（默认绑定）看待
 - 如果一个普通函数被调用 `apply`、`call`、`bind`（显示绑定），那等于是明确指定了 this 指向了
 - 然后箭头函数，就看两点：该箭头没有外层函数则 this 指向 window，有外层函数 this 就为外层函数的 this
-- 注：浏览器的全局对象为 `window`，node 环境的全局对象为 `globalThis`
+- 注：浏览器的全局对象为 `window`，node 环境的全局对象为 `globalThis`，如果实在无法对应函数，则一般就是匿名函数
+- **注：this 绑定的优先级：new 绑定 > 显式绑定 > 隐式绑定 > 默认绑定**
 - https://juejin.cn/post/7310415386405765159
+
+```js
+// 经典例题
+var a = 1;
+function printA(){
+  console.log(this.a);
+}
+var obj={
+  a:2,
+  foo:printA,
+  bar:function(){
+    printA();
+  }
+}
+
+obj.foo(); // 2
+obj.bar(); // 1
+var foo = obj.foo;
+foo(); // 1
+```
 
 
 
@@ -726,7 +887,7 @@ console.log(returnedTarget === target);
 
 **Object.keys、Object.values 、Object.entries**
 
-传入一个对象或者枚举类型，可返回它的键、值、键值对数组
+传入一个对象或者枚举类型，可返回它的键、值、键值对数组（不包含可继承的属性）
 
 ```js
 const person = {
@@ -747,7 +908,7 @@ console.log(Object.entries(person));
 
 for...in 遍历一个对象的可枚举属性，并且还可以遍历数组、字符串，依次遍历获得 key（数组获得 index ）
 
-注意：key 可以得到该对象所有的属性，**包括原型链上的属性，不按顺序遍历**
+**注：key 可以得到该对象所有的属性，包括原型链上的属性，不按顺序遍历**
 
 ```js
 for (let key in obj) {}
@@ -756,8 +917,7 @@ for (let index in arr) {}
 
 ```js
 for (const key in target) {
-    if (target.hasOwnProperty(key)) {
-    }
+  if (target.hasOwnProperty(key)) {}
 }
 ```
 
@@ -841,6 +1001,23 @@ let a= [].concat(1,2,3,[4,5],[6,7])
 
 
 **数组常用内置函数**
+
+- **arr.push**
+
+向数组末尾添加元素的方法，支持添加单个或多个元素，并返回数组的新长度，**直接改变原数组**
+
+```js
+const arr = [1, 2, 3];
+arr.push(4, 5, 6); // 添加元素 4, 5, 6
+console.log(arr); // 输出: [1, 2, 3, 4, 5, 6]
+
+const arr1 = [1, 2, 3];
+const arr2 = [4, 5];
+arr1.push(...arr2); // 将 arr2 的元素逐个添加到 arr1
+console.log(arr1); // 输出: [1, 2, 3, 4, 5]
+```
+
+
 
 - **arr.concat**
 
@@ -1090,6 +1267,22 @@ const TwoDimArrayUnique = (arr) => {
 
 ## 3.4 JavaScript 常用函数
 
+**lodash 常用函数**
+
+1. isEmpty：如果一个值为 null、undefined、[]、{}、''，那么返回 true
+2. omit：从一个对象中剔除出某几个属性并创建一个新对象：https://www.lodashjs.com/docs/lodash.omit
+3. pick：从一个对象中剔取出某几个属性并创建一个新对象：https://www.lodashjs.com/docs/lodash.pick
+4. groupBy：将一个数组根据某种规则返回一个组成聚合的对象：https://www.lodashjs.com/docs/lodash.groupBy
+
+```js
+// 根据rowNum进行分组
+const ruleDatasMapByRowNum = groupBy(ruleDatas, 'rowNum')
+// 根据指定规则进行分组
+const arr = groupBy([6.1, 4.2, 6.3], Math.floor); // { '4': [4.2], '6': [6.1, 6.3] }
+```
+
+
+
 **30 个常用函数**
 
 https://juejin.cn/post/7145036326373425159
@@ -1253,11 +1446,12 @@ Event MDN：https://developer.mozilla.org/zh-CN/docs/Web/API/Event
 
 
 
-如何判断一个元素是否在其父元素的可视区域中：https://vue3js.cn/interview/JavaScript/visible.html
+如何判断一个元素是否在**浏览器窗口**（也可换成其他父元素）的可视区域中
+
+- https://vue3js.cn/interview/JavaScript/visible.html
 
 ```js
 function isInViewPortOfOne (el) {
-    // viewPortHeight 兼容所有浏览器写法
     const viewPortHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight 
     const offsetTop = el.offsetTop
     const scrollTop = document.documentElement.scrollTop
@@ -1268,10 +1462,11 @@ function isInViewPortOfOne (el) {
 
 
 
-还有一个 API 可以获取当前盒子相对于父盒子的位置属性：getBoundingClientRect
+还有一个 API 可以获取当前盒子相对于**视口**（浏览器页面边缘）的位置属性：getBoundingClientRect
 
-- https://vue3js.cn/interview/JavaScript/visible.html#getboundingclientrect
-- https://developer.mozilla.org/zh-CN/docs/Web/API/Element/getBoundingClientRect
+- 还可用于判断当前元素是否在可视区：https://vue3js.cn/interview/JavaScript/visible.html#getboundingclientrect
+
+- MDN 官方文档：https://developer.mozilla.org/zh-CN/docs/Web/API/Element/getBoundingClientRect
 
 
 
@@ -1360,8 +1555,6 @@ https://cn.vuejs.org/guide/essentials/event-handling.html#event-modifiers
 
 
 
-
-
 ## 3.6 正则表达式介绍
 
 菜鸟教程：https://www.runoob.com/regexp/regexp-tutorial.html
@@ -1390,7 +1583,7 @@ https://cn.vuejs.org/guide/essentials/event-handling.html#event-modifiers
 
 ## 3.7 JavaScript 全局对象
 
-**JavaScript Global 对象：window**
+**JavaScript 全局对象：window**
 
 1. 可以理解为浏览器实例，包含多个内置对象和方法，作为浏览器窗口的一个接口
 2. 在全局作用域下，this 获取的就是 window 对象，全局定义的变量也会封装在 window 对象下
@@ -1436,10 +1629,12 @@ https://cn.vuejs.org/guide/essentials/event-handling.html#event-modifiers
 **变量提升和函数提升**
 
 1. var 定义的变量会在**作用域内最顶部**（不含块级作用作用域！）声明一个 `var a`，**但是赋值语句并不会提升**
-2. 函数提升是使用 function 定义的整个函数会被提升到最顶部（优先级最高）
+2. **函数提升是使用 function 定义的整个函数会被提升到最顶部（优先级最高）**
 3. 其次就是后面的赋值语句会覆盖同名变量：https://www.cnblogs.com/liuhe688/p/5891273.html
 
-4. 例题一
+
+
+例题一
 
 ```js
 function hoistFunction() {
@@ -1469,7 +1664,9 @@ function hoistFunction() {
 }
 ```
 
-5. 例题二
+
+
+例题二
 
 ```js
 var a = 100;
@@ -1489,7 +1686,9 @@ a = 100
 a() // 报错
 ```
 
-6. 例题三
+
+
+例题三
 
 ```js
 var a = 1;
@@ -1513,8 +1712,6 @@ function test() { //函数会先去找自己内部的变量，内部有就不会
 }
 test();
 ```
-
-
 
 
 
@@ -1546,12 +1743,6 @@ var foo = {n:1};
 })(foo);
 console.log(foo.n);        //实参foo的指向还是原来的内存空间，里面的n的值为3
 ```
-
-
-
-**块级作用域与异步函数**
-
-1. var 返回 5，而 let 返回 01234，虽然是异步函数但是依然是在块级作用域下执行的！
 
 
 
@@ -1761,11 +1952,297 @@ URL 对象：https://juejin.cn/post/7033570440224178189
 
 
 
+当后端接口直接返回一个文件时，前端如果只是调用接口后直接下载文件的话，可以使用下面这个简单方法
+
+```ts
+export const downloadURL = (options: {
+  url: string;
+  params?: Record<string, any>;
+  method?: 'POST' | 'GET';
+  target?: string;
+}) => {
+  const form = document.createElement('form');
+  document.body.appendChild(form);
+  form.style.display = 'none';
+  form.action = options.url;
+  form.method = options.method || 'GET';
+  form.target = options.target || '_blank';
+  const params = options.params || {};
+  Object.entries(params).forEach(([k, v]) => {
+    if (v != null) {
+      const input = document.createElement('input');
+      form.appendChild(input);
+      input.type = 'hidden';
+      input.name = k;
+      input.value = v;
+    }
+  });
+  form.submit();
+  form.remove();
+};
+```
 
 
-## 3.14 class 面向对象编程
 
-待补充 JS 的面向对象程序设计的学习与拓展！
+## 3.14 GASP 动画库指南
+
+官方文档：https://gsap.com/
+
+参考学习文档：https://gsap.framer.wiki/stated
+
+
+
+**基础使用**
+
+首先 GASP 导出了四种动画方式，或者说是数值变化方式。常用的是 `gasp.to(target, {...})` 就是让元素从初始状态变化到目标状态
+
+其中 target 可以选择 DOM 元素，配置项通常为 opacity 和 transform 来改变元素的状态和位移，属性参考：https://gsap.com/docs/v3/GSAP/CorePlugins/CSS。还有一些特殊的配置项如：https://gsap.com/docs/v3/GSAP/gsap.to()#special-properties，主要用于控制一些动画的配置 ease、yoyo、repeat、delay、duration
+
+这里再主要介绍 stagger 这个属性：如果 target 是一个数组或者选中了多个元素，那么可以让这些元素依次延时 stagger 执行相同的动画
+
+```js
+gsap.to(".box", {
+  duration: 1,
+  rotation: 360,
+  opacity: 1, 
+  delay: 0.5, 
+  stagger: 1,
+  ease: "sine.out", 
+  force3D: true
+});
+```
+
+targer 还可以是一个对象或者一个数值，GASP 依然可以精确实现数值的动态变化
+
+```js
+let obj = { myNum: 10, myColor: "red" };
+gsap.to(obj, {
+  myNum: 200,
+  myColor: "blue",
+  duration: 4,
+  onUpdate: () => console.log(obj.myNum, obj.myColor)
+});
+```
+
+
+
+**时间线的使用**
+
+通过 `let tl = gsap.timeline({...})` 创建时间线后，可以决定时间线上动画的执行。时间线本质也是个动画，只不过是拆成了一个个子动画，并且可以控制这些子动画的执行顺序。因此后面的配置项可以控制这个时间线动画的属性：https://gsap.com/docs/v3/GSAP/gsap.timeline()#special-properties-and-callbacks
+
+```js
+let tl = gsap.timeline({repeat: -1, repeatDelay: 1, yoyo: true}) // 设置时间线动画无限执行
+tl.to(".green", { rotation: 360 });
+tl.to(".purple", { rotation: 360 });
+tl.to(".orange", { rotation: 360 });
+```
+
+通过设置 `defaults: { duration: 1, ease: "elastic" }`，配置子动画的默认属性，得到配置的效率提升
+
+```js
+var tl = gsap.timeline({defaults: {duration: 1}});
+//这样每个动画都是1秒的时长，不用重复写了
+tl.to(".green", {x: 200})
+  .to(".purple", {x: 200, scale: 0.2})
+  .to(".orange", {x: 200, scale: 2, y: 20});
+```
+
+
+
+**tween 实例**
+
+通过 tween 实例可以实时控制动画，达到精确交互的效果，官方文档：https://gsap.com/docs/v3/GSAP/Tween
+
+```js
+let tween = gsap.to("#logo", {duration: 1, x: 100}); // 通过一个变量保存对Tween或者Timeline实例的引用
+tween.pause(); // 暂停
+tween.resume(); // 恢复（继续）
+tween.reverse(); // 反向变化
+tween.reversed(!tween.reversed()) // 如果在正向则实现正向到反向，否则反之
+tween.seek(0.5); // 直接切换到整个动画变化时长的0.5秒的时间点的状态
+tween.progress(0.25); // 直接切换到整个变化过程的1/4的节点的状态
+tween.timeScale(0.5); // 让运动减速到0.5倍
+tween.kill(); // 直接销毁tween实例，让垃圾回收机制可以处理该实例所占用的内存
+```
+
+
+
+**动画回调函数**
+
+动画属性除了可以传入 CSS 位移状态属性，特殊配置项属性，还可以传入动画回调函数 onStart、onComplete、onUpdate 等。通常使用的是 onUpdate，并且搭配 [requestAnimationFrame](https://blog.csdn.net/cwyp18809/article/details/105096048) 原生函数进行图形绘制，具体文档参考：https://gsap.com/docs/v3/GSAP/gsap.to()/#special-properties
+
+```js
+onUpdate: (self) => {
+  // self.progress 表示滚动的百分比 0-1
+  const frameIndex = Math.min(FRAME_COUNT, Math.ceil(self.progress * FRAME_COUNT + 1))
+  requestAnimationFrame(() => {
+    img.src = getCurrentFrame(frameIndex)
+    context?.drawImage(img, 0, 0)
+  })
+}
+```
+
+
+
+**关键帧动画**
+
+该配置是对一个元素进行分段式动画配置，使用方法参考文档：https://gsap.framer.wiki/keyframes
+
+```js
+// 数组分段形式
+gsap.to(".elem", {
+ keyframes: [ // 注意这里是数组
+  {x: 100, duration: 1, ease: 'sine.out'}, // 定义这个分段动画自己的ease曲线
+  {y: 200, duration: 1, delay: 0.5}, // 产生和前个分段动画0.5秒的间隔
+  {rotation: 360, duration: 2, delay: -0.25} // 和前一个分段动画产生0.25秒的重叠
+ ],
+ ease: 'expo.inOut' // 设置整个关键帧动画的曲线
+});
+
+// 百分比分段形式
+gsap.to(".elem", {
+ keyframes: {  // 注意这里是对象
+  "0%":   { x: 100, y: 100},
+  "75%":  { x: 0, y: 0, ease: 'sine.out'}, // 指定这个分段的动画曲线
+  "100%": { x: 50, y: 50 },
+   easeEach: 'expo.inOut' // 每个分段的动画曲线
+ },
+ ease: 'none' // 整个关键帧动画的动画曲线
+ duration: 2,
+})
+```
+
+
+
+**滚动插件**
+
+加上滚动插件可以让一个元素的动画和某个元素的滚动捆绑再一起，即滚动开始动画开始滚动停止动画停止。
+
+```js
+// 简单例子
+gsap.to(".green", { 
+  rotation: 900,
+  duration: 1,
+  scrollTrigger: {
+    trigger: '.box',
+    scrub: 2,
+    scrub: true, // 动画重复执行几次
+  }
+});
+```
+
+
+
+**在 React 中使用**
+
+基本规范就是使用 useLayoutEffect、gsap.context、context.revert。
+
+详细案例见：questionnaire-survey-web/src/views/DemoViews/GaspDemo/components/ContextDemo.tsx
+
+关于在使用动画方面的组件通信：https://gsap.framer.wiki/withreact2
+
+
+
+## 3.15 FramerMotion
+
+一个基于 React 好用的动画库，学习文档：https://motion.framer.wiki/introduction，官网：https://www.framer.com/motion/
+
+本地 Demo 文件地址：/Users/cocoon/Work/questionnaire-survey-web/src/views/DemoViews/FramerMotion/index.tsx
+
+
+
+## 3.16 滚动条交互方案
+
+当要实现复杂的滚动条交互时或者自定义滚动条样式时，可以参考社区资源和 CSS 原生滚动条属性。
+
+推荐使用 `react-custom-scrollbars`：https://github.com/malte-wessel/react-custom-scrollbars
+
+参考文档：https://juejin.cn/post/7216942649069142073
+
+
+
+## 3.17  Echarts 使用技巧
+
+**初始化 Echarts 并实现高宽度响应**
+
+通常创建一个 Echarts 实例并监听父盒子尺寸来实现
+
+```jsx
+import React, { useRef, useEffect } from "react"
+import { useSize } from "ahooks"
+import echarts from "echarts"
+import styles from "./index.module.scss"
+
+const MyAttendance = () => {
+  const chartRef = useRef(null)
+  const chartInstance = useRef(null)
+  const chartRefSize = useSize(chartRef)
+
+  useEffect(() => {
+    chartInstance.current = echarts.init(chartRef.current)
+    const option = {...}
+    chartInstance.current?.setOption(option)
+    return () => {
+      chartInstance.current?.dispose()
+    }
+  }, [])
+
+  useEffect(() => {
+    chartInstance.current?.resize()
+  }, [chartRefSize])
+
+  return <div className={styles.chartBody} ref={chartRef} />
+}
+
+export default MyAttendance
+```
+
+```scss
+.chartBody {
+  width: 100%;
+  height: 100%;
+  padding: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+```
+
+
+
+**常用属性介绍**
+
+title：标题组件，包含主标题和副标题。
+
+legend：图例组件展现了不同系列的标记(symbol)，颜色和名字。
+
+grid：直角坐标系内绘图网格，可自定义布局和样式
+
+yAxis：直角坐标系 grid 中的 y 轴
+
+xAxis：直角坐标系 grid 中的 x 轴
+
+
+
+## 3.18 JSDoc 学习指南
+
+最常用的只有给函数参数添加注释，其余的可以参考文章：https://juejin.cn/post/7072685382323830821
+
+```jsx
+/**
+ * 函数，待办事项
+ * @param {string} thing 加如一个待办
+ * @param {number} index 所以
+ * @return {string[]}
+ */
+function toDo (thing, index) {
+  const list = ['pay apple']
+  list[index] = thing
+  return list
+}
+```
+
 
 
 
@@ -1773,7 +2250,7 @@ URL 对象：https://juejin.cn/post/7033570440224178189
 
 # 第四章 Macbook Air M2 配置
 
-## 4.1 开发环境配置
+## 4.1 通用开发环境配置
 **brew**
 
 - 下载方式：https://zhuanlan.zhihu.com/p/111014448
@@ -1824,8 +2301,11 @@ URL 对象：https://juejin.cn/post/7033570440224178189
 
 **Java sdk**
 
+- 直接去官网下载安装包，可下载多个版本：https://www.oracle.com/java/technologies/downloads/
+
 - https://www.liaoxuefeng.com/wiki/1252599548343744/1280507291631649
 - 实际存放位置：`/Library/Java/JavaVirtualMachines/jdk-21.jdk`
+- 在环境变量里配置默认的 JDK 版本
 
 
 
@@ -1870,15 +2350,7 @@ URL 对象：https://juejin.cn/post/7033570440224178189
 
 
 
-**神速down 网盘加速**
-
-- Motrix 下载：https://motrix.app/
-- 脚本安装路径：https://greasyfork.org/zh-CN/scripts/480255-%E7%99%BE%E5%BA%A6%E7%BD%91%E7%9B%98%E4%B8%8D%E9%99%90%E5%88%B6%E4%B8%8B%E8%BD%BD-%E7%A5%9E%E9%80%9Fdown
-- 需要点击小齿轮配置 Motrix 下载路径和端口：`/Users/cocoon/Downloads`、`http://localhost:16800/jsonrpc`
-
-
-
-## 4.2 Typora 使用设置
+## 4.2 Typora 配置指南
 
 **图像配置**
 
@@ -1911,4 +2383,75 @@ URL 对象：https://juejin.cn/post/7033570440224178189
 代码语法：`[任意内容](#标题名称)`
 
 
+
+## 4.3 VS code 配置指南
+### 4.3.1 VS code 插件介绍
+
+- Pritter - Code formatter - 代码格式化，https://blog.csdn.net/qq_45981075/article/details/114551233
+
+- Vue Language Features (Volar) + TypeScript Vue Plugin - Vue3 和 TS 代码支持，Vetur - Vue2 代码支持
+- GitHub Copilot：AI 代码自动补全，https://blog.csdn.net/RetroFlux/article/details/124205948
+- Code Spell Checker - 单词拼写检查，https://blog.csdn.net/qq_42078081/article/details/115014474
+- DotENV - .env 环境变量文件语法高亮，https://blog.csdn.net/qq_45905655/article/details/130680442
+- EditorConfig for VS Code - .editorconfig 文件高亮效果
+- HTML CSS Support - 在 HTML 编写中提示 CSS 的类名和 id 名 
+- JavaScript (ES6) code snippets - ES6 代码片段，https://github.com/xabikos/vscode-javascript
+- npm Intellisense：自动补全引入 node modules 里面所安装的依赖，Path Intellisense：自动补全文件名
+- GitLens - 在每行代码后面都会显示最近一次的 Git 提交，另外在终端中还有单独的可视化面板
+- Project Manager - 项目管理插件，https://cloud.tencent.com/developer/article/2196913
+
+
+
+
+### 4.3.2 VS code 设置记录
+
+- 在 VScode 中关闭对 js、ts 文件校验：搜索 validate 点击 TypeScript
+- Volar 关闭箭头函数和 CSS 的 reference：搜索一下即可
+- 关闭 VScode Git 功能： 设置中搜索 `git:Enabled`
+- 关闭 VScode ESlint 检查：设置中搜索 `eslint.enable` 
+- 显示为文件在上，文件夹在下：搜索 `Explorer Sort Order`，选择 `filesFirst`
+- 配置编辑器提示建议，输入空格之后就会有提示出现：设置中搜索 `editor.quickSuggestions`
+- 保存时开启自动 Eslint 修复：`"editor.codeActionsOnSave": {"source.fixAll.eslint": true}`
+- 保存时开启自动代码格式化，并选择 Prettier 格式化：`"editor.formatOnSave": true`
+- 粘贴时关闭自动代码格式化：`"editor.formatOnPaste": false`
+
+
+
+### 4.3.3 VS code 配置代码片段
+
+1. 快捷键：Ctrl + Shift + P 打开搜索，搜索 snippets 选择配置用户代码片段
+
+2. 给当前项目单独配置，输入配置文件的名字如 `react` 回车，会在 .vscode 文件夹下指定生成 `react.code-snippets` 文件
+
+3. 进入网站：https://snippet-generator.app，配置之后然后粘贴到哪个文件对象下即可
+
+4. 一个配置文件可以使用多个代码片段。选择 vue.json 可以配置全局的代码片段
+
+5. 自主配置可以参考：https://zhuanlan.zhihu.com/p/475137755
+
+
+
+## 4.4 Android Studio 配置指南
+
+### 4.4.1 快捷键
+
+```
+快速创建Widget:在dart文件中输入stf或st飞出现提示后按回车即可
+快速修复: option + 回车
+自动生成构造函数:选中 final参数，快捷键:option + 回车
+添加父组件、变为子组件、删除子组件:option+回车
+万能的搜索:双击shift
+查看最近打开的文件:command + E
+重命名:fn+shift+f6
+查看当前类结构: command + fn + f12
+查看源码:将光标放到要查看源码的类名或方法名上，长按command 然后的点击
+查看类的子类:选中要查看的类，然后:command + B或 option + command + B
+将代码更新到模拟器上:选中模拟器然后 command +R
+导入类的快捷键:将光标放在要导入类的上面，然后按 option + enter
+前进后退:当跟踪代码的时候，经常跳转到其他类，后退快捷键:option+command+方向左键，
+全局搜索:command + shift +F
+全局替换: command + shift +R
+查找引用:option + shift + F7
+格式化：opt+cmd+l
+```
 

@@ -10,16 +10,7 @@
 
 
 
-## 03.31
-
-- 盒模型
-
-CSS 的盒模型主要包括以下两种，可通过 box-sizing 属性进行配置：
-
-content-box：默认属性。width 只包含 content
-border-box：width 包含 (content、padding、border)
-
-
+## 第一节
 
 - CSS选择器及其优先级
 
@@ -51,7 +42,13 @@ https://juejin.cn/post/6905539198107942919#heading-6
 
 
 
-- 说说 var、let、const 之间的区别
+- 谈谈你对 BFC 的理解
+
+https://vue3js.cn/interview/css/BFC.html
+
+
+
+- **说说 var、let、const 之间的区别**
 
 变量提升、暂时性死区、重复声明、块级作用域、修改声明的变量
 
@@ -59,9 +56,15 @@ https://vue3js.cn/interview/es6/var_let_const.html#%E4%B8%80%E3%80%81var
 
 
 
+- **ES6 新增了哪些特性**
+
+点击链接查看和 Kimi 智能助手的对话 https://kimi.moonshot.cn/share/co9mfluaofou902iotjg
+
+
+
 - ES6中数组新增了哪些扩展
 
-**扩展运算符**、构造函数：Array.from()、Array.of()、实例对象方法：copyWithin()，find()、findIndex()，fill()，entries()，keys()，values()，includes()，flat()，flatMap()
+扩展运算符、构造函数：Array.from()、Array.of()、实例对象方法：copyWithin()，find()、findIndex()，fill()，entries()，keys()，values()，includes()，flat()，flatMap()
 
 https://vue3js.cn/interview/es6/array.html#%E4%B8%80%E3%80%81%E6%89%A9%E5%B1%95%E8%BF%90%E7%AE%97%E7%AC%A6%E7%9A%84%E5%BA%94%E7%94%A8
 
@@ -69,20 +72,13 @@ https://vue3js.cn/interview/es6/array.html#%E4%B8%80%E3%80%81%E6%89%A9%E5%B1%95%
 
 - ES6 对象新增了哪些扩展
 
-属性名简写、属性名表达式、拓展运算符，关于对象新增的方法，分别有以下：
-```js
-Object.is()
-Object.assign()
-Object.getOwnPropertyDescriptors()
-Object.setPrototypeOf()，Object.getPrototypeOf()
-Object.keys()，Object.values()，Object.entries()
-Object.fromEntries()
-```
+属性名简写、属性名表达式、拓展运算符，关于对象新增的方法
+
 https://vue3js.cn/interview/es6/object.html#%E4%B8%80%E3%80%81%E5%B1%9E%E6%80%A7%E7%9A%84%E7%AE%80%E5%86%99
 
 
 
-- ES6 函数新增了哪些扩展
+- **ES6 函数新增了哪些扩展**
 
 函数参数允许设置默认值，新增箭头函数，箭头函数与普通函数的区别
 
@@ -102,31 +98,11 @@ https://vue3js.cn/interview/es6/set_map.html#%E4%B8%80%E3%80%81set
 
 
 
-## 04.01
+## 第二节
 
-- 什么是线程，什么是进程？
+- **减少页面加载有哪几种方法**
 
-**线程**是操作系统能够进行运算调度的最小单位，它被包含在进程之中，是进程中的实际运作单位。一个进程可以包含多个线程，这些线程共享进程的资源，如内存空间、文件句柄等。不同线程之间可以并行执行，每个线程都有自己的堆栈和局部变量，但它们共享全局变量和静态变量。
-
-**进程**是计算机中的程序关于某数据集合上的一次运行活动，是系统进行资源分配和调度的基本单位。一个进程可以包含多个线程，同时也拥有独立的地址空间。进程之间通常是相互独立的，每个进程都有自己的内存空间和系统资源，它们之间的通信需要特殊的机制来实现，比如进程间通信（IPC）。
-
-简而言之，进程是系统进行资源分配和调度的基本单位，而线程是进程中的实际运作单位，用于完成进程内的各种任务。
-
-
-
-- 减少页面加载有哪几种方法？
-
-压缩资源文件：对 HTML、CSS 和 JavaScript 文件进行压缩，去除空白字符和注释，以减小文件大小，从而加快下载速度。
-
-使用缓存：利用浏览器缓存机制，将页面所需的资源文件（如图片、样式表、脚本）设置为可缓存，以便在用户再次访问时可以直接从本地加载，减少网络请求。
-
-延迟加载：将不是立即需要的资源，如图片、视频或某些 JavaScript 文件，延迟到页面其他内容加载完成后再进行加载，以提高初始页面加载速度。
-
-使用 CDN：将静态资源部署到内容分发网络（CDN），使用户可以从距离较近的服务器获取资源，减少网络延迟和提高下载速度。
-
-精简页面内容：删除不必要的元素和代码，减少 HTTP 请求次数，优化页面结构和布局，以降低页面加载时间。
-
-异步加载：对于不影响首屏展示的内容，可以采用异步加载的方式，如使用<script>标签的async和defer属性，使页面在下载 JavaScript 文件时能够同时加载其他内容。
+点击链接查看和 Kimi 智能助手的对话 https://kimi.moonshot.cn/share/co9mepeaofou902imjn0
 
 
 
@@ -136,7 +112,7 @@ https://vue3js.cn/interview/es6/promise.html#%E4%B8%80%E3%80%81%E4%BB%8B%E7%BB%8
 
 
 
-- 原型与原型链
+- **原型与原型链**
 
 ```js
 function Cat() {}
@@ -154,13 +130,13 @@ https://juejin.cn/post/6844903989088092174
 
 
 
-- 浅拷贝和深拷贝的什么，利用循环递归的方式手写深拷贝
+- **浅拷贝和深拷贝的什么，利用循环递归的方式手写深拷贝**
 
 https://vue3js.cn/interview/JavaScript/copy.html#%E4%B8%80%E3%80%81%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AD%98%E5%82%A8
 
 
 
-- 什么是闭包
+- **什么是闭包**
 
 例如计数器、延迟调用、回调等闭包的应用，其核心思想还是创建私有变量和延长变量的生命周期
 
@@ -181,13 +157,13 @@ https://vue3js.cn/interview/JavaScript/event_Model.html
 
 
 
-- typeof 与 instanceof 区别
+- **typeof 与 instanceof 区别**
 
 https://vue3js.cn/interview/JavaScript/typeof_instanceof.html#%E4%B8%80%E3%80%81typeof
 
 
 
-- 说说你对事件循环的理解
+- **说说你对事件循环的理解**
 
 同步任务、异步任务，宏任务、微任务
 
@@ -195,30 +171,13 @@ https://vue3js.cn/interview/JavaScript/event_loop.html
 
 
 
-
-- react 与 vue 数组中 key 的作用是什么
-
-diff算法需要比对虚拟dom的修改，然后异步的渲染到页面中，当出现大量相同的标签时，vnode会首先判断key和标签名是否一致，如果一致再去判断子节点一致，使用key可以帮助diff算法提升判断的速度，在页面重新渲染时更快消耗更少
-
-https://q.shanyue.tech/fe/react/72
-
-
-
-- 什么是 virtual DOM
-
-打开了函数式 UI 编程的大门，dom 把渲染过程抽象化了，从而使得组件的抽象能力也得到提升，并且可以适配 DOM 以外的渲染目标。Virtual DOM 在牺牲(牺牲很关键)部分性能的前提下，增加了可维护性
-
-https://q.shanyue.tech/fe/react/70
-
-
-
-- React hooks 的优点有哪些
+- **React hooks 的优点有哪些**
 
 点击链接查看和 Kimi 智能助手的对话 https://kimi.moonshot.cn/share/co7a4l9hd0n1ufg6hfcg
 
 
 
-- 有哪些常见的 React Hooks？
+- **有哪些常见的 React Hooks**
 
 https://vue3js.cn/interview/React/React%20Hooks.html
 
@@ -232,68 +191,138 @@ https://kimi.moonshot.cn/share/co5aruhhmfr8ji71aqvg
 
 
 
-## 04.02
+## 第三节
 
-从今天开始主要针对这篇专栏进行八股文的背诵：https://juejin.cn/column/7243016090816905275
+- Vue 中常见的事件修饰符及其作用
 
-- Computed 和 Watch 的区别
-- 常见的事件修饰符及其作用
-- v-if 和 v-show 的区别
-- data 为什么是一个函数而不是对象
-- 谈谈MVVM架构
-- 使用 Object.defineProperty() 来进行数据劫持有什么缺点？
-- 双向数据绑定的原理
-- 说一下Vue的生命周期
-- 说说 Vue Router 的 hash模式
-- Reac生命周期是怎样的?
-- 虚拟DOM实现原理?
-- setState到底是异步还是同步?
-- React如何进行组件/逻辑复用?
-- redux的工作流程?
-- Vuex 是什么？核心流程？
+https://juejin.cn/post/7250012486992511033#heading-2
 
 
 
-## 04.03
-从今天继续针对这篇专栏进行八股文的背诵：https://juejin.cn/column/7243016090816905275
+- Vue 中 v-if 和 v-show 的区别
 
-- Vue3.0有什么更新
-- defineProperty和proxy的区别
-- Diff 算法
-- Vue 为什么要设置 key？
-- 为什么不建议用index作为key?
-- React 合成事件是什么？
-- 用过哪些 React Hook
-- React Hooks 原理？
+https://juejin.cn/post/7250012486992511033#heading-3
 
 
 
-JS 基础这一块面试题也得加强：https://juejin.cn/post/7244335987575521336#heading-0
+- Vue 选项配置中的 data 为什么是一个函数而不是对象
 
-- 为什么0.1+0.2 ! == 0.3，精度丢失问题
-- typeof null 输出 object 的原因分析
-- 箭头函数的 this 指向情况：https://juejin.cn/post/7310415386405765159
-- JS 的 new 操作符做了哪些事情
-- 垃圾回收机制
-- 哪些情况会导致内存泄漏
+https://juejin.cn/post/7250012486992511033#heading-4
 
 
 
-## 04.04
+- **谈谈 MVVM 架构**
 
-- React中组件之间如何通信？
+https://juejin.cn/post/7250012486992511033#heading-6
+
+
+
+- **双向数据绑定的原理**
+
+https://juejin.cn/post/7250012486992511033#heading-24
+
+
+
+- **说一下 Vue 的生命周期**
+
+https://juejin.cn/post/7250012486992511033#heading-8
+
+
+
+- **说一下 Reac 生命周期是怎样的**
+
+https://juejin.cn/post/7250357906712838205#heading-0
+
+
+
+- **虚拟 DOM 实现原理，如何理解**
+
+https://juejin.cn/post/7250012486992511033#heading-22
+
+
+
+- 介绍一下 Rudex 的工作流程
+
+https://juejin.cn/post/7250357906712838205#heading-10
+
+
+
+- 介绍一下 Vuex 的工作流程
+
+https://juejin.cn/post/7250012486992511033#heading-16
+
+
+
+## 第四节
+- **Vue3 有什么更新，和 Vue2 的区别是什么**
+
+https://vue3js.cn/interview/vue/vue3_vue2.html
+
+
+
+- **描述一下 Diff 算法**
+
+https://juejin.cn/post/7250012486992511033#heading-25
+
+
+
+- Vue 和 React 为什么都要设置 key，为什么不建议用 index 作为 key
+
+https://juejin.cn/post/7250012486992511033#heading-26
+
+
+
+- React 合成事件是什么
+
+https://juejin.cn/post/7250357906712838205#heading-14
+
+
+
+- React Hooks 原理以及核心是什么
+
+https://juejin.cn/post/7250357906712838205#heading-15
+
+
+
+- 普通函数和箭头函数的 this 指向问题
+
+https://juejin.cn/post/7310415386405765159
+
+
+
+- 为什么 typeof null 输出 object
+
+https://juejin.cn/post/7244335987575521336#heading-7
+
+
+
+- **JS 的 new 操作符做了哪些事情**
+
+https://juejin.cn/post/7244335987575521336#heading-12
+
+
+
+- **垃圾回收机制是什么，哪些情况会导致内存泄漏**
+
+https://juejin.cn/post/7244335987575521336#heading-26
+
+
+
+## 第五节
+
+- React 中组件之间如何通信
 
 https://vue3js.cn/interview/React/communication.html
 
 
 
-- 说说对React中类组件和函数组件的理解？有什么区别？
+- **说说对 React 中类组件和函数组件的区别**
 
 https://vue3js.cn/interview/React/class_function%20component.html
 
 
 
-- 说说对高阶组件的理解？应用场景?
+- **说说对高阶组件的理解和它的应用场景**
 
 把通用的逻辑放在高阶组件中，对组件实现一致的处理，从而实现代码的复用
 
@@ -304,7 +333,7 @@ https://vue3js.cn/interview/React/High%20order%20components.html
 
 
 
-- 说说你是如何提高组件的渲染效率的？
+- 说说你是如何提高组件的渲染效率的
 
 父组件渲染导致子组件渲染，子组件并没有发生任何改变，这时候就可以从避免无谓的渲染
 
@@ -312,19 +341,19 @@ https://vue3js.cn/interview/React/improve_render.html
 
 
 
-- Vue组件之间的通信方式都有哪些？
+- **Vue 组件之间的通信方式都有哪些**
 
 https://vue3js.cn/interview/vue/communication.html
 
 
 
-- Vue3.0 所采用的 Composition Api 与 Vue2.x 使用的 Options Api 有什么不同？
+- Vue3.0 所采用的 Composition Api 与 Vue2.x 使用的 Options Api 有什么不同
 
 https://vue3js.cn/interview/vue3/composition.html
 
 
 
-- **双向数据绑定是什么，如何简单的手动实现？（难点）**
+- **双向数据绑定是什么，如何简单的手动实现**
 
 先讲一遍 MVVM 架构，再讲一下 Vue 是如何实现双向数据绑定的，手写双向数据绑定的原理
 
@@ -332,39 +361,33 @@ https://vue3js.cn/interview/vue/bind.html
 
 
 
-- **什么是 Diff 算法（难点）**
-
-https://juejin.cn/post/7250012486992511033#heading-25
-
-
-
-- Javascript 本地存储的方式有哪些？区别及应用场景？
+- 说一说 Javascript 本地存储的方式有哪些，区别及应用场景
 
 https://vue3js.cn/interview/JavaScript/cache.html
 
 
 
-- 说说 Javascript 数字精度丢失的问题，如何解决？
+- **说说 Javascript 数字精度丢失的问题，以及如何解决**
 
-计算机存储双精度浮点数需要先把十进制数转换为二进制的科学记数法的形式，**因为存储时有位数限制（64位），并且某些十进制的浮点数在转换为二进制数时会出现无限循环，会造成二进制的舍入操作(0舍1入)，当再转换为十进制时就造成了计算误差**
+计算机存储双精度浮点数需要先把十进制数转换为二进制的科学记数法的形式，因为存储时有位数限制（64位），并且十进制的浮点数在转换为二进制数时会出现无限循环，会造成二进制的舍入操作(0舍1入)，当再转换为十进制时就造成了计算误差
 
 https://vue3js.cn/interview/JavaScript/loss_accuracy.html
 
 
 
-- 如何判断一个元素是否在可视区域中？
+- 如何判断一个元素是否在可视区域中
 
 https://vue3js.cn/interview/JavaScript/visible.html
 
 
 
-- 什么是 CSRF 攻击？
+- 什么是 CSRF 攻击
 
 https://juejin.cn/post/7256702654578409532#heading-0
 
 
 
-- **进程与线程的概念**
+- 进程与线程的概念
 
 https://juejin.cn/post/7256702654578409532#heading-2
 
@@ -382,7 +405,7 @@ https://vue3js.cn/interview/http/after_url.html#%E9%A1%B5%E9%9D%A2%E6%B8%B2%E6%9
 
 
 
-- 说说地址栏输入 URL 敲下回车后发生了什么
+- **说说地址栏输入 URL 敲下回车后发生了什么**
 
 URL 解析、DNS 查询、TCP 连接、HTTP 请求、响应请求、响应资源解析、页面渲染
 
@@ -390,21 +413,21 @@ https://vue3js.cn/interview/http/after_url.html
 
 
 
-## 04.05
+## 第六节
 
-- 说说TCP为什么需要三次握手和四次挥手？
+- 说说 TCP 为什么需要三次握手和四次挥手
 
 https://vue3js.cn/interview/http/handshakes_waves.html
 
 
 
-- 说说HTTP 常见的状态码有哪些，适用场景
+- 说说 HTTP 常见的状态码有哪些，适用场景
 
 https://vue3js.cn/interview/http/status.html
 
 
 
-- css 加载会造成阻塞吗？
+- css 加载会造成阻塞吗
 
 https://juejin.cn/post/7256702654578409532#heading-5
 
@@ -438,7 +461,7 @@ https://vue3js.cn/interview/vue/cors.html
 
 
 
-## 04.06
+## 第七节
 
 - async 与 await，`await` 会阻塞下面的代码（即加入微任务队列）
 
@@ -460,27 +483,91 @@ https://vue3js.cn/interview/JavaScript/inherit.html
 
 
 
+## 第八节
+
+- 常量枚举和 enum 枚举有什么区别
+
+顾名思义就是一个是常量一个是变量，并且常量枚举在编译 TypeScript 代码时会被直接替换到实际使用它们的地方，而不会创建一个真实的对象，减少了代码量。后者会产生一个真实的对象。
+
+点击链接查看和 Kimi 智能助手的对话 https://kimi.moonshot.cn/share/coa9s6cudu6bkp82ar10
+
+
+
+- Node 事件循环机制和浏览器的有什么不同
+
+点击链接查看和 Kimi 智能助手的对话 https://kimi.moonshot.cn/share/coaa7o017fmccaal69n0
+
+
+
+- 数组去重有哪些实现方法
+
+https://juejin.cn/post/7023906112843808804#heading-7
+
+
+
+- TS 中 interface和 type 区别
+
+当你需要描述对象的形状时，可以优先选择使用 `interface`。而对于其他类型定义，比如联合类型、交叉类型、函数类型等，可以考虑使用 `type` 创建一个类型变量并定义别名
+
+https://juejin.cn/post/7321542773076082699#heading-2
+
+
+
+- React 中 setState 到底是异步还是同步
+
+https://juejin.cn/post/7250357906712838205#heading-3
+
+
+
+- 说说对 Fiber 架构的理解，解决了什么问题
+
+https://vue3js.cn/interview/React/Fiber.html
+
+
+
+## 第九节
+
+- React18 有什么新特性
+
+https://juejin.cn/post/7290815534207189033
+
+
+
+- 为什么有时候⽤ translate 来改变位置⽽不是定位
+
+https://juejin.cn/post/6905539198107942919#heading-13
+
+
+
+- SPA首屏加载速度慢的怎么解决
+
+https://vue3js.cn/interview/vue/first_page_time.html
+
+
+
+- SSR 解决了什么问题，有做过 SSR 吗
+
+https://vue3js.cn/interview/vue/ssr.html
+
+
+
 # 第二章 前端笔试题
 
- ## 04.05
+ ## 第一节
 
-今天主要参考文章：https://juejin.cn/post/6959043611161952269
-
-- 异步&事件循环（1 - 12）
+异步&事件循环：https://juejin.cn/post/6959043611161952269
 
 
 
-## 04.06
+## 第二节
 
-今天主要参考文章：https://juejin.cn/post/6959043611161952269
-
-
+this 指针问题：https://juejin.cn/post/6959043611161952269
 
 
 
 # 第三章 算法与手写
 
-## 04.04
+## 第一节
 
 今天的手写题主要参考：https://juejin.cn/post/7023906112843808804#heading-0
 
@@ -493,21 +580,21 @@ https://vue3js.cn/interview/JavaScript/inherit.html
 
 
 
-## 04.05
+## 第二节
 
 今天的手写题主要参考：https://juejin.cn/post/7023906112843808804#heading-13
 
 - 简单实现 发布订阅模式
-- 实现JSON.parse
+- 实现 JSON.parse
 - 递归循环实现基础的深拷贝：https://vue3js.cn/interview/JavaScript/copy.html
 - 手写防抖和节流
 - 手写数组去重
 - 手写 call、apply
-- 手写bind，既要实现改变指向又要兼容构造函数
+- 手写 bind，既要实现改变指向又要兼容构造函数
 
 
 
-## 04.06
+## 第三节
 
 今天的手写题主要参考：https://juejin.cn/post/6994594642280857630
 
@@ -538,7 +625,7 @@ https://www.hello-algo.com/chapter_sorting/quick_sort/
 
 
 
-# 第四章 项目难点
+# 第四章 难点与经验
 
 ## 小智问卷
 
@@ -598,6 +685,14 @@ Vue3 项目由于电脑本地没有拉取代码，无法本地调试，具体代
 
 
 
+实习难点 & 突破点
+
+
+
+实习个人优势
+
+
+
 # 第五章 非技术面
 
 ## 自我介绍
@@ -626,9 +721,187 @@ Vue3 项目由于电脑本地没有拉取代码，无法本地调试，具体代
 
 
 
+- 为什么来杭州
+
+个人憧憬、就业机会、学习机会、亲戚朋友、认识更多志同道合的朋友
+
+
+
+- 个人优势有哪些，缺点有哪些
+
+专注、有责任心、比较注重代码规范和文档规范、做一件事情或者任务会想要去达到一个最满意的状态
+
+首先是个慢热型的人，需要先接触一段时间才能放的开一些、然后是有一点点轻微强迫症。心态不够成熟，还缺乏锻炼和成长。
+
+
+
+- 你是如何处理压力和挑战的
+
+处理压力是通过兴趣爱好来达到放松的效果，面对挑战的话是先梳理清除的逻辑和规划好日程安排，一步一步来解决
+
+
+
+- 你最引以为傲的成就是什么
+
+做出来了一个全栈项目，从产品到开发再到测试都由自己完成
+
+
+
+- 你对个人发展和职业规划有哪些想法
+
+未来 3-5 年还是打算在杭州发展，巩固前端技术、提示自身实力、从初级前端慢慢成长为中级前端再到高级前端工程师。认真对待工作和布置的任务。最后希望和公司一起稳定发展和进步。
+
+
+
+- 反问：前端管培生的一个大概的培养计划和安排是怎么样的
+
+
+
+- 反问：实习期间在技术部门的主要业务场景和工作内容是什么
+
+
+
+- 反问：您可以评价一下我今天面试的表现吗
+
+
+
 ## 个人反问
 
 - 研发部的工作时间安排
 - 公司项目大概的业务，项目的技术栈
 - 前面不清楚的问题请教
+- 实习生主要任务和安排
 - 可以评价一下我今天面试的表现吗？有哪些地方需要改进的呢
+- 有 code review 和技术分享会之内的
+
+
+
+# 第六章 面试记录
+
+- 大智慧（1000-9999）技术一面
+
+```ts
+// node事件循环机制和浏览器有什么不同
+// 数组去重有哪些实现方法
+// 判断一个对象（直接判断内部的值）是否相等
+// react 的useMemo和useCallback，useCallback传入多个依赖变量应该如何进行性能优化
+// React18有什么新特性
+// fiber 渲染机制，什么中断机制的概念
+// interface和type区别
+// antd按需加载如何实现
+// ES6有哪些新特性
+// 高阶函数是什么，有什么作用和缺点
+// 遍历数组和对象的方式有哪些
+// Object.keys()和forin循环遍历对象有什么区别
+// 路由拦截器怎么实现的
+```
+
+
+
+- 大智慧（1000-9999）技术二面
+
+```js
+// 八股文基本不考了，考一些个人的硬实力和经验方面的问题
+// 为什么选择前端
+// 平时是如何学习前端的
+// React和Vue有什么区别
+// 为什么选择来合肥
+// 在实习期间最有挑战性的事情是什么
+// 在做项目期间有哪些性能优化的点
+// 白屏时间长应该怎么解决
+// 项目里的权限管理有哪些，如何实现的
+// 有参与项目的组件封装吗
+// useMemo和useCallback有什么区别
+// 拖拽排序是如何实现的
+// 受控组件和非受控组件的区别
+// 什么是虚拟dom
+```
+
+
+
+- 理想连线（1000-9999）高管面
+
+```js
+// 你的个人优势和缺点是什么
+// 你最引以为傲的成就是什么
+// 你有哪些管理层面的经历
+// 为什么想要学习前端
+// 你觉得是完成一个个人项目更有成就感还是带领好团队成功更有成就感
+// 为什么选这个专业
+// 你是外向还是内向
+```
+
+
+
+- 华世界（500-999）技术一面
+
+```js
+// HTML5有哪些新增标签
+// ES6有哪些新特性
+// Vue3到Vue2有哪些更新
+// React有哪些常用的hooks
+// Less和CSS有什么区别
+// 路由权限拦截器怎么实现的
+```
+
+
+
+- 半糖科技（100-499）技术一面
+
+```js
+// 什么是BFC
+// 有了解过React18吗
+// 有搭建过webpack的其他配置吗
+// 能不能从0开始搭建一套webpack工程化
+// CSS阻塞是什么情况
+// 箭头函数和普通函数的区别
+// 如何手动实现一个虚拟列表
+// 什么是宏任务和微任务
+// 普通函数中的this指向问题
+// 原型链的概念
+// forof和forin的区别
+// 如何使得forof可以遍历一个对象
+// 什么是迭代对象，底层原理是什么
+// 迭代器和迭代对象有什么区别，如何实现迭代器
+// 什么是事件委托
+// React的fiber机制是什么
+// React的合成事件是什么
+// URL从输入到页面渲染经历了哪些过程
+// 如何实现拖拽排序，底层原理是什么，哪个html标签支持拓展
+// 什么是同源策略
+// 什么是回流和重绘
+// 什么是浏览器的缓存机制
+// 当我们要进行一个元素的位移，使用移动更好还是定位更好，为什么
+// Vue中的data返回的为什么是一个函数而不是对象
+// SSR是什么，有什么哪些方面的优点
+// 在实习过程中有没有遇到什么难点
+```
+
+
+
+- 半糖科技（100-499）技术二面
+
+```js
+// 面过最严肃和最真实的高管
+// 实习过程中碰到过哪些难点，难题、方案、结果
+// 实习过程中你表现最好的方面是什么
+// 反问：实习期的主要任务是什么？不会把你当成实习生，给的任务和正式员工的一样
+// 反问：有没有code review和技术分析会之内的？没有，这些都对实际工作没有任何推动
+```
+
+
+
+- 玩点科技（100-499）技术一面
+
+```js
+// 全是照着简历问的
+// 项目中的虚拟列表是怎么实现的
+// 项目中的登录拦截器是怎么实现得到
+// 了解哪些浏览器存储
+// 介绍一下promise
+// 介绍一下flex
+// 说一下八种数据结构
+// 说一下如何快速搭建一个node服务器吧
+// 你是如何实现项目中的全局弹窗管理的
+```
+
