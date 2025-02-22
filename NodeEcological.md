@@ -1,9 +1,5 @@
 # 第一章 Nodejs 环境配置
 
-在新电脑里面直接可以用我写的这篇文章的配置，当电脑本地环境报错的时候就找解决办法，解决不了就直接卸载重来！另外还有 vs code 如果出现什么问题直接更新一下就行了，最好 3 个月更新一次
-
-
-
 ## 1.1 安装 NVM 管理版本
 
 **安装方式如下：**
@@ -44,6 +40,19 @@ $ nvm alias default 14.10.0   # 设置环境默认node版本
 
 
 
+**npm 常用命令：**
+
+- `npm init -y` ：初始化一个 package.json 文件
+- `npm i` 或 `npm install` ：安装项目中所有依赖，`npm i --force` 强制安装依赖
+- `npm uninstall [package name]`：卸载项目中的依赖
+- `npm update [package name]`：升级项目中的依赖
+- `npm i [package name] -S/--save`：安装到 dependencies（生产环境）
+- `npm i [package name] -D/--save-dev`：安装到 devDependencies（开发环境） 
+- `npm install -global/-g <package name>`：全局安装依赖
+
+
+
+
 ## 1.2 使用 NRM 切换镜像源
 
 可以直接使用 npm 命令来查看或者设置当前 npm（包括 yarn） 的镜像源：
@@ -74,25 +83,20 @@ $ nrm ls # 列出所有镜像源
 
 
 
-以下是 npm 常用命令总结：
+**注意：切换成 nrm 镜像源之后不一定成功，因为如果项目中存在 .npmrc 或者 .yarnrc 则以这个配置文件的镜像源为准**
 
-- `npm init -y` ：初始化一个 package.json 文件
-- `npm i` 或 `npm install` ：安装项目中所有依赖，`npm i --force` 强制安装依赖
-- `npm uninstall [package name]`：卸载项目中的依赖
-- `npm update [package name]`：升级项目中的依赖
-- `npm i [package name] -S/--save`：安装到 dependencies（生产环境）
-- `npm i [package name] -D/--save-dev`：安装到 devDependencies（开发环境） 
-- `npm install -global/-g <package name>`：全局安装依赖
 
 
 
 ## 1.3 使用 yarn 包管理工具
 
-下载 yarn 这个全局包管理工具，注意切换 Nodejs 版本之后需要另外再下载
+官网：https://chore-update--yarnpkg.netlify.app/zh-Hans/
 
-全局安装：`npm i yarn -g`
+全局安装：`npm i yarn -g`，切换 Nodejs 版本之后需要另外再下载
 
-下面是 yarn 的一些常用命令：
+
+
+**常用命令**
 
 ```bash
 $ yarn init # 同npm init，执行输入信息后，会生成package.json文件
@@ -110,6 +114,29 @@ $ yarn add <packageName> # 安装一个包的最新版本
 $ yarn config set registry http://registry.npm.taobao.org/ # 设置镜像源
 
 $ yarn global add typescript # 全局下载命令（最好使用npm下载全局包）
+```
+
+
+
+**.yarnrc**
+
+在本地系统中的位置：/Users/cocoon/.yarnrc，另外在单独的项目中也可以配置。通常用于指定这个项目的镜像源，因此无需使用 nrm 来回进行镜像源的切换。还可以指定某个第三方库单独的镜像源：
+
+```
+registry "https://npm.ekuaibao.com/"
+"@ant-design:registry" "https://registry.npmmirror.com/"
+```
+
+
+
+**安装本地  tgz**
+
+如果你有一个本地第三方库 tgz，你可以通过一下命令来安装：
+
+```bash
+$ yarn add file:./enhance-layer-manager-7.0.3.tgz
+
+$ yarn add file:/Users/cocoon/Downloads/enhance-layer-manager-7.0.3.tgz
 ```
 
 

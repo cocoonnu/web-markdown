@@ -908,6 +908,38 @@ $ git push --force
 
 
 
+### 1.5.6 使用脚本切换 Git 签名
+
+在根目录中创建 .git-switch-profile.sh
+
+```bash
+#!/bin/bash
+
+if [ "$1" == "work" ]; then
+    git config --global  user.name "chenzhiyi"
+    git config --global user.email "chenzhiyi@ideal-link.cn"
+    echo "Switched to work profile."
+elif [ "$1" == "cocoon" ]; then
+    git config --global user.name "cocoon"
+    git config --global user.email "2806525575@qq.com"
+    echo "Switched to cocoon profile."
+else
+    echo "Usage: .git-switch-profile.sh [work|cocoon]"
+fi
+```
+
+
+
+执行命令进行切换和查看是否成功
+
+```bash
+$ /Users/cocoon/.git-switch-profile.sh cocoon
+
+$ git config user.name
+```
+
+
+
 
 ## 1.6 Git 打标签与发版
 
