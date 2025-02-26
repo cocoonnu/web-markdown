@@ -1,18 +1,8 @@
 # 第一章 认识 React
 
-A JavaScript library for building user interfaces （用于构建用户界面的 JavaScript 库）
-
-
-
-`ReactJS` 是由 Facebook 在 2013年 5 月推出的一款 JS 前端开源框架，推出式主打特点式函数式编程风格。值得一说的是，到目前为止 `ReactJS` 是世界上使用人数最多的前端框架，它拥有全球最健全的文档和社区体系。
-
-
-
 React 的官方英文网站：https://reactjs.org  React 的中文网站：https://zh-hans.reactjs.org
 
 直接看 React API 文档：https://zh-hans.react.dev/reference/react
-
-
 
 ## 1.1 项目启动初始化
 
@@ -96,8 +86,6 @@ $ npm run eject
 执行之后，会多出以下项目配置文件夹：scripts、config。
 
 通常不需要动这些文件，如果要实现某些配置的业务逻辑，直接现搜即可！！一般会有第三方解决方法
-
-
 
  
 
@@ -2106,10 +2094,6 @@ const { data, loading, loadMore, loadingMore } = useInfiniteScroll((d) => getLoa
 
 
 
-## 2.5 React 渲染进程解析
-
-
-
 
 
 #  第三章 React 进阶知识点
@@ -2290,41 +2274,5 @@ useBoundStore.setState((state) => ({ count: state.count + 1 }))
 
 
 
-## 4.5 API 功能预览
-
-https://docs.pmnd.rs/zustand/recipes/recipes#fetching-everything
-
-
-
-销毁仓库的所有属性及函数
-
-```ts
-deleteEverything: () => set({}, true), // clears the entire store, actions included
-```
-
-
-
-使用 subscribe 实现监听效果，最好搭配中间件使用，效果更佳
-
-https://docs.pmnd.rs/zustand/recipes/recipes#reading/writing-state-and-reacting-to-changes-outside-of-components
-
-
-
-可以通过 hook 的方式创建仓库，仅作为 api 的使用，使得仓库仅有这四个方法
-
-https://docs.pmnd.rs/zustand/recipes/recipes#using-zustand-without-react 
-
-
-
-map 和 set 的使用方式
-
-https://docs.pmnd.rs/zustand/guides/maps-and-sets-usage
-
-
-
-开启持久化存储
-
-https://github.com/pmndrs/zustand/blob/main/docs/integrations/persisting-store-data.md
-
-
+# 第五章 认识 NextJs
 

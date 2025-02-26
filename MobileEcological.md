@@ -1417,7 +1417,7 @@ ListView({
   double? itemExtent,
   Widget? prototypeItem, //列表项原型，后面解释
   bool shrinkWrap = false,
-  bool addAutomaticKeepAlives = true,
+  bool addAutomaticKeepAlives = true, // 是否缓存子组件
   bool addRepaintBoundaries = true,
   double? cacheExtent, // 预渲染区域长度
     
@@ -1445,9 +1445,9 @@ ListView(
 
 ```dart
 ListView.builder(
-  itemCount: 100,
-  itemExtent: 50.0, //强制高度为50.0
-  itemBuilder: (BuildContext context, int index) {
+  itemCount?: 100,
+  itemExtent?: 50.0, //强制高度为50.0
+  itemBuilder!: (BuildContext context, int index) {
     return ListTile(title: Text("$index"));
   }
 );
@@ -1684,6 +1684,182 @@ GridView.builder(
 
 
 #### 1.2.6.5 PageView
+
+如果要实现页面切换和 Tab 布局，我们可以使用 PageView 组件：https://book.flutterchina.club/chapter6/pageview.htm
+
+```dart
+PageView({
+  Key? key,
+  this.scrollDirection = Axis.horizontal, // 滑动方向
+  this.reverse = false,
+  PageController? controller,
+  this.physics,
+  List<Widget> children = const <Widget>[],
+  this.onPageChanged,
+  
+  //每次滑动是否强制切换整个页面，如果为false，则会根据实际的滑动距离显示页面
+  this.pageSnapping = true,
+  //主要是配合辅助功能用的，后面解释
+  this.allowImplicitScrolling = false,
+  //后面解释
+  this.padEnds = true,
+})
+```
+
+
+
+下面是一个简单的页面切换的例子，每个页面只展示一个数字，KeepAliveWrapper 用于组件缓存
+
+```dart
+class PageViewRoute extends StatelessWidget {
+  const PageViewRoute({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var children = <Widget>[];
+    // 生成 6 个 Tab 页
+    for (int i = 0; i < 6; ++i) {
+      children.add(KeepAliveWrapper(child: Page(text: '$i')));
+    }
+    return Scaffold(
+        appBar: AppBar(title: const Text('PageView')),
+        body: PageView(
+          // scrollDirection: Axis.vertical, // 滑动方向为垂直方向
+          children: children,
+        ));
+  }
+}
+```
+
+> /Users/cocoon/Work/flutter-study/lib/page_view.dart
+
+
+
+#### 1.2.6.6 KeepAliveWrapper
+
+参考：https://book.flutterchina.club/chapter6/keepalive.html
+
+实现组件缓存的方案：通过将一个组件混入 AutomaticKeepAliveClientMixin 变成一个 AutomaticKeepAlive Client 即可，但是单独对业务组件进行混入不太规范，因此需要封装一个通用的缓存组件：
+
+```dart
+class _KeepAliveWrapperState extends State<KeepAliveWrapper>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
+  }
+
+  @override
+  void didUpdateWidget(covariant KeepAliveWrapper oldWidget) {
+    if (oldWidget.keepAlive != widget.keepAlive) {
+      // keepAlive 状态需要更新，实现在 AutomaticKeepAliveClientMixin 中
+      updateKeepAlive();
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  bool get wantKeepAlive => widget.keepAlive;
+}
+```
+
+> /Users/cocoon/Work/flutter-study/lib/utils/keep_alive_wrapper.dart
+
+
+
+只需要用 KeepAliveWrapper 包装一下即可
+
+```dart
+@override
+Widget build(BuildContext context) {
+  var children = <Widget>[];
+  for (int i = 0; i < 6; ++i) {
+    children.add(KeepAliveWrapper(child:Page( text: '$i'));
+  }
+  return PageView(children: children);
+}
+```
+
+
+
+#### 1.2.6.7 TabBarView
+
+参考：https://book.flutterchina.club/chapter6/tabview.html
+
+在这一章我们会用到 TabBarView、TabBar、Tab、DefaultTabController 等组件，来构建 Tabs 页面。如果需要和 TabBarView 联动， TabBar 和 TabBarView 使用同一个 TabController 即可，注意，联动时 TabBar 和 TabBarView 的孩子数量需要一致。下面来看一个手动构建 controller 实现的联动实例：
+
+```dart
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text("App Name"),
+      bottom: TabBar(
+        controller: _tabController,
+        tabs: tabs.map((e) => Tab(text: e)).toList(),
+      ),
+    ),
+    body: TabBarView( //构建
+      controller: _tabController,
+      children: tabs.map((e) {
+        return KeepAliveWrapper(
+          child: Container(
+            alignment: Alignment.center,
+            child: Text(e, textScaleFactor: 5),
+          ),
+        );
+      }).toList(),
+    ),
+  );
+}
+```
+
+> https://book.flutterchina.club/chapter6/tabview.html#_6-9-3-%E5%AE%9E%E4%BE%8B
+
+
+
+但由于创建 TabController 的过程还是比较复杂，实战中，如果需要 TabBar 和 TabBarView 联动，通常会创建一个 DefaultTabController 作为它们共同的父级组件
+
+```dart
+@override
+Widget build(BuildContext context) {
+  List tabs = ["新闻", "历史", "图片"];
+  return DefaultTabController(
+    length: tabs.length,
+    child: Scaffold(
+      appBar: AppBar(
+        title: Text("App Name"),
+        bottom: TabBar(
+          tabs: tabs.map((e) => Tab(text: e)).toList(),
+        ),
+      ),
+      body: TabBarView( //构建
+        children: tabs.map((e) {
+          return KeepAliveWrapper(
+            child: Container(
+              alignment: Alignment.center,
+              child: Text(e, textScaleFactor: 5),
+            ),
+          );
+        }).toList(),
+      ),
+    ),
+  );
+}
+```
+
+
+
+#### 1.2.6.8 CustomScrollView
+
+参考：https://book.flutterchina.club/chapter6/custom_scrollview.html#_6-10-1-customscrollview
+
+前面介绍的 ListView、GridView、PageView 都是一个**完整**的可滚动组件，所谓完整是指它们都包括Scrollable 、 Viewport 和 Sliver。假如我们想要在一个页面中，同时包含多个可滚动组件，且使它们的滑动效果能统一起来。为此 Flutter 提供了一个 CustomScrollView 组件来帮助我们创建一个公共的 Scrollable 和 Viewport ，然后它的 slivers 参数接受一个 Sliver 数组。
+
+之前小节介绍过的可滚动组件都有对应的 Sliver：SliverGrid、SliverAnimatedList、SliverFixedExtentList、SliverList，另外还有其他一些常用 Sliver：SliverPersistentHeader、SliverAppBar、SliverFadeTransition、SliverPadding......
+
+这一节主要是实现复杂的滚动效果，比如滚动组件套滚动组件、滚动组件里使用 RenderBox 组件等等，这里先存档！
 
 
 
