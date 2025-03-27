@@ -413,42 +413,7 @@ MDN：https://developer.mozilla.org/zh-CN/docs/Web/CSS/::-webkit-scrollbar
 
 
 
-## 2.4 响应式布局介绍
-
-**Rem 布局**
-
-html 默认 font-size 为16px ,  `1rem = html-font-size * 1`
-
-
-
-**媒体查询**
-
-概念：通过视口宽度实现不同适配方案
-
-作用：手动设置 `html-font-size `  、  手动修改不同视口宽度的样式
-
-使用方法：
-
-- 先把常规布局写完（视口宽度为1024px）
-- 然后从大到下 设置媒体查询   **下面的会继承上面的样式**
-- 通过不同视口宽度下 修改某些元素的布局或样式
-
-``` css
-/* 常规 css（750 - ） */
-...
-
-/* 视口宽度：320 - 750 */
-@media screen and (max-width: 750px) {...}
-
-/* 视口宽度：0 - 320 */
-@media screen and (max-width: 30px) {...}
-```
-
-
-
-
-
-## 2.5 flex/grid 布局
+## 2.5 Flex/Grid 布局
 
 **flex 布局**
 
@@ -518,17 +483,7 @@ Grid 备忘清单：[https://wangchujiang.com/reference/docs/css.html#css-grid-�
 
 
 
-## 2.6 背景属性与渐变
-
-
-
-## 2.7 移动属性与动画
-
-通常对一个盒子进行简单动画一般用到这三个属性：`transform`、`transition`、`opacity`
-
-
-
-## 2.8 CSS 技巧总结
+## 2.6 CSS 技巧总结
 
 **父级元素清除浮动的方式**
 
@@ -615,7 +570,7 @@ https://juejin.cn/post/7035445933152141342
 
 
 
-## 2.9 Less 常用技巧
+## 2.7 Less 常用技巧
 
 Less 官网：https://less.bootcss.com/
 
@@ -628,7 +583,7 @@ Less 官网：https://less.bootcss.com/
 
 
 
-## 2.10 Tailwind CSS 学习
+## 2.8 Tailwind CSS
 
 推荐直接通过中文官网学习，从入门文档开始看：https://tailwind.nodejs.cn/docs/utility-first
 
@@ -636,28 +591,40 @@ Less 官网：https://less.bootcss.com/
 
 
 
-## 2.11 响应式交互方案
+## 2.9 响应式交互方案
 
-首先我们来了解浏览器视口大小是什么，当浏览器最大化时为最大值。它由三个值决定：显示器尺寸和分辨率、浏览器缩放比。
+首先我们来了解浏览器视口大小是什么，当浏览器最大化时为最大值。它由三个值决定：显示器尺寸、显示器分辨率和浏览器缩放比。
 
-1. 显示器尺寸越大，最大化浏览器视口就越大；分辨率越大，最大化浏览器视口就越大。
-1. 当我们调整浏览器视口的时候，浏览器视口大小也会变化
+1. 显示器尺寸越大，最大化浏览器视口就越大；显示器分辨率越大，最大化浏览器视口就越大。
 1. 当我们调整浏览器缩放比的时候，缩放百分比越小，浏览器视口越大（因此可模拟大屏观看效果）
 1. 下面是如何查看当前浏览器视口大小：
 
 ![image-20241018174034941](mark-img/image-20241018174034941.png)
 
-
-
 清楚浏览器视口大小之后，我们就可以开始了解 px 像素值了。在浏览器视口大小确定（不用再管窗口大小、显示器尺寸、分辨率大小了）之后，px 变成了一个绝对单位！！那么在 UI 给的设计稿中通常 Web 的视口大小定义为 1920 * 1080，如果你的浏览器视口大小也为这个的话，你看到的页面效果就和设计稿的显示效果一模一样了。**那么响应式设计要解决的矛盾就是你的浏览器视口大小比设计稿视口大小小很多时，应该如何布局会比较舒服。**下面是几个响应式布局的方案：
 
 1. 设计稿根据不同大小比例设定：就是 1920 * 1080、1470 * 881、1200 * 440 分段设计不同的布局效果，前端再对应开发。
-
 2. 设计稿直接用 rem 响应式分辨率为单位，前端也用 rem 进行开发。实现自动通过设置缩放比达到一致的显示效果（H5 常用）。
-
 3. 设计稿内容像素大小固定，并且一直居中显示，浏览器视口大小很大时两边内容会空（论坛、推特之内的网站常用）。
-
 4. 使用 Flex、Grid和百分比布局，实现宽度自适应，高度实现给定高度或展示滚动条。
+
+
+
+**媒体查询方案**
+
+概念：通过视口宽度实现不同适配方案，作用：手动设置 `html-font-size `  、  手动修改不同视口宽度的样式
+
+- 先把常规布局写完（视口宽度为1024px）
+- 然后从大到下 设置媒体查询   **下面的会继承上面的样式**
+- 通过不同视口宽度下 修改某些元素的布局或样式
+
+``` css
+/* 视口宽度：320 - 750 */
+@media screen and (max-width: 750px) {...}
+
+/* 视口宽度：0 - 320 */
+@media screen and (max-width: 30px) {...}
+```
 
 
 
@@ -666,13 +633,13 @@ Less 官网：https://less.bootcss.com/
 
 # 第三章 JavaScript 笔记
 
-1. JavaScript 八大数据类型：Number、String、Boolean、Null、Undefined、Object、Symbol、BigInt 。其中 Object 为引用类型，其他七项为原始类型（原始值）
-2. 变量名必须以字母、下划线 `_` 或美元符号 `$` 开头，不能以数字开头。变量名可以包含字母、数字、下划线或美元符号，但不能包含其他特殊字符
-4. JavaScript 的保留字：abstract、double、goto、native、static、boolean、enum、implements、package、super、byte、char、class、const、public等
+MDN 官方：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript
+
+JavaScript Guidebook：https://tsejx.github.io/javascript-guidebook/
 
 
 
-## 3.1 ES6 使用笔记
+## 3.1 ECMAScript 6
 
 **展开运算符**
 
@@ -684,11 +651,11 @@ const arr = [1,2,3]
 console.log([...arr] === arr);	// false
 // 对象
 const apple = {
-    color: '红色',
-    shape: '球形',
-    taste: '甜'
+  color: '红色',
+  shape: '球形',
+  taste: '甜'
 };
-console.log({...apple});			// { color: '红色', shape: '球形', taste: '甜' }
+console.log({...apple});  // { color: '红色', shape: '球形', taste: '甜' }
 console.log({...apple} === apple);	// false
 ```
 
@@ -718,54 +685,15 @@ Date：https://juejin.cn/post/6996926386405376037
 
 
 
-**原型和原型链**
+**对象与原型的概念**
 
-- 详细解析：https://juejin.cn/post/6844903989088092174
-- 对于 ES6 复杂类型，实例里面都有一个 `__proto__` 属性指向构造函数的 `prototype`
-- 构造函数的 `prototype` 里面有多个原型方法，不同复杂类型对应不同方法
-- 因此一个实例对象上的属性来自其本身的属性还有其原型链上的属性
-- 因此一个构造函数上的属性为私有属性，无法继承到实例对象上，而它的 `prototype` 上的属性可以被继承
-- JS 内置的构造函数如下所示
+- 文档参考：https://juejin.cn/post/6844903989088092174
 
-```js
-// 可查看原型及其方法
-let s = new Set()
-console.log(s)
-let o = new Object()
-console.log(o);
-let m = new Map()
-console.log(m)
-let r = new RegExp()
-console.log(r)
-let w = new WeakMap()
-console.log(w)
-let f = new Function()
-console.log(f)
-let a = new Array()
-```
+- 构造函数和对象实例都是**对象**，只有构造函数有 `prototype`，任何对象都有 `__proto__`
+- **对象的 `__proto__` 指向其构造函数的 `prototype`**，构造函数的构造函数是 `Function`，`prototype` 的构造函数是 `Object`
+- 对象里面有一个属性 `constructor`，它直接指向其构造函数
 
 ```js
-// 构造函数的使用
-let a1 = new a.constructor() // 等效于 new Arrar()
-console.log(a1);
-
-// 复制内容
-let a1 = new a.constructor(a)
-```
-
-
-
-**经典的原型链**
-
-只要记住三个法则：
-
-- 构造函数和对象实例都是对象，只有构造函数有 prototype（原型对象），任何对象都有 `__proto__`
-- 对象的 `__proto__` 指向其构造函数的 prototype
-- 构造函数的 prototype 里面有一个属性 constructor，就等于该构造函数，其实例对象直接有该属性
-
-```js
-// 构造函数Function（构造函数的构造函数）
-// 构造函数Object（对象的构造函数）
 function Foo() {} // 构造函数Foo
 const foo = new Foo() // 对象实例foo
 
@@ -791,7 +719,15 @@ Object.prototype.constructor == Object
 
 
 
-**例题一**
+**原型链的概念**
+
+- `__proto__` 为实例对象的隐式原型，指向其构造函数的 `prototype`
+- `prototype` 为构造函数的原型对象，包含该构造函数实例化后对象可以共享的属性和方法
+- 原型链就是多个对象通过 `__proto__` 属性形成的一条查找路径，当访问某个对象的属性或方法时，如果当前对象没有，就会沿着原型链向上查找，直到 `null` 为止
+
+
+
+**原型和原型链例题**
 
 ```js
 Object.prototype.foo = 'Object';
@@ -799,7 +735,7 @@ Function.prototype.foo = 'Function';
 function Animal () {};
 var cat = new Animal();
 console.log(cat.foo); // Object
-console.log(Animal.foo); // Fu
+console.log(Animal.foo); // Function
 ```
 
 > cat -> Animal.prototype -> Object.prototype，原型链查找路径
@@ -857,6 +793,39 @@ foo(); // 1
 - 所以可迭代对象不一定是迭代器,但是迭代器一定是可迭代对象
 - 常见的迭代器有：Map 迭代器：keys、values、entries，Set 迭代器：values、keys、entries
 - https://juejin.cn/post/6844903749610127373
+
+
+
+**对象引用问题详解**
+
+如果两个变量都是引用地址，那么不能直接将这两个对象划上等号。一但划上等号之后那么这两个变量会指向**同一块内存地址**，会导致两块地址的数据同步修改，产生严重的数据污染问题。下面是一个实际案例：
+
+```jsx
+const handelEffectiveCol = () => {
+  const formDataList = form.getFieldValue('formDataList') || [];
+  // 这是一个引用地址
+  const titleData = formDataList?.[formDataList.length - 1];
+  const handleIds = formDataList
+    ?.slice((pagination.current - 1) * pagination.pageSize, pagination.current * pagination.pageSize)
+    .map(({ _id }) => _id);
+  const newFormDataList = formDataList.map((item) => {
+    if (!handleIds.includes(item._id)) return item;
+    // 这只是浅拷贝，依然是一个引用地址
+    const newItem = { ...item };
+    Object.keys(newItem).forEach((key) => {
+      if (key === '_id') return;
+      const tagObj = newItem[key];
+      const titleTagObj = titleData[key];
+      // 因此这里就典型的将两个引用地址划上等号了！虽然层级比较深。
+      tagObj.tagValues = titleTagObj.tagValues;
+    });
+    return newItem;
+  });
+  form.setFieldValue('formDataList', newFormDataList);
+};
+```
+
+> 解决方案有三个：1. 在第一个 titleData 定义的地方用一个深拷贝生成 2. 在 newItem 那里不能用浅拷贝，而是改用将 item 深拷贝 3. 在最后等于的地方将右边的地址进行的深拷贝
 
 
 
@@ -1051,7 +1020,7 @@ arr.splice(index, 1)
 截取数组某个区间并返回，**该方法不会改变原始数组**
 
 ```ts
-const newArr = arr.slice(a,b) // 截取a-b区间，改变arr同时返回改变之后的数组（不包含b！！）
+const newArr = arr.slice(a,b) // 截取a-b区间，返回改变之后的数组（不包含b！！）
 const newArr = arr.slice() // 经典的浅拷贝！！
 ```
 
@@ -2135,9 +2104,7 @@ gsap.to(".green", {
 
 **在 React 中使用**
 
-基本规范就是使用 useLayoutEffect、gsap.context、context.revert。
-
-详细案例见：questionnaire-survey-web/src/views/DemoViews/GaspDemo/components/ContextDemo.tsx
+基本规范就是使用 useLayoutEffect、gsap.context、context.revert
 
 关于在使用动画方面的组件通信：https://gsap.framer.wiki/withreact2
 
@@ -2146,8 +2113,6 @@ gsap.to(".green", {
 ## 3.15 FramerMotion
 
 一个基于 React 好用的动画库，学习文档：https://motion.framer.wiki/introduction，官网：https://www.framer.com/motion/
-
-本地 Demo 文件地址：/Users/cocoon/Work/questionnaire-survey-web/src/views/DemoViews/FramerMotion/index.tsx
 
 
 
@@ -2241,6 +2206,153 @@ function toDo (thing, index) {
   list[index] = thing
   return list
 }
+```
+
+
+
+## 3.19 TypeScript 基础
+
+基础的几个类型：https://www.codecrack.cn/zh/typescript/basic-types
+
+1. any 类型表示任意类型的值，使用 any 类型可以跳过类型检查
+2. unknown 类型表示未知类型的值，类似于 any，但更安全，因为**对 unknown 类型的值进行操作之前需要进行类型检查**
+3. never 类型表示那些永不存在的值类型，例如总是会**抛出错误**或无限循环的函数的返回值
+4. **元组类型**允许表示一个**已知元素数量和类型的数组**，数组里的元素可以为任意类型
+5. **交叉类型**用来组合多个类型成一个类型，表示对象可以同时具有多个类型的成员
+6. **索引类型**允许使用动态属性名来访问类型中的属性
+7. **条件类型**是一种基于类型的条件判断语法，可以根据条件返回不同的类型
+8. **联合类型**允许一个变量可以是几种类型之一，用竖线 `|` 分隔不同的类型
+9. **映射类型**是一种根据已存在的类型生成新类型的方法。它通过在类型中**遍历已有的键来创建新的类型**
+
+
+
+ infer 关键字：https://www.codecrack.cn/zh/typescript/infer
+
+1. 它用于推断一个类型。这在处理复杂类型时非常有用，可以帮助我们提取或转换类型
+2. infer 声明仅在条件类型的 extends 子句中才允许使用，并且 infer 声明的类型变量只有在 true 分支中可用
+
+```ts
+// 提取函数返回类型
+type GetReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
+type ExampleFunction = (x: number, y: string) => boolean;
+type ReturnTypeOfExampleFunction = GetReturnType<ExampleFunction>; // boolean
+```
+
+```ts
+// 提取数组元素类型
+type GetArrayElementType<T> = T extends (infer E)[] ? E : never;
+type ArrayType = number[];
+type ArrayElementType = GetArrayElementType<ArrayType>
+```
+
+```ts
+// 提取 Promise 的值类型
+type GetPromiseReturnType<T> = T extends Promise<infer R> ? R : never;
+type PromiseType = Promise<number>;
+type PromiseReturnType = GetPromiseReturnType<PromiseType>
+```
+
+
+
+类型保护：https://www.codecrack.cn/zh/typescript/type-guards
+
+1. TypeScript 的类型保护是一种机制，用于在代码中根据特定条件细化变量的类型，从而确保代码在运行时更安全和准确
+2. typeof 检查主要用于基本类型（如 string、number、boolean、symbol）的类型保护
+3. in 关键字可以用于实现类型保护，帮助你在类型不明确时进行类型检查，并保证特定类型的属性在安全范围内使用
+
+```ts
+function padLeft(value: string, padding: string | number) {
+  if (typeof padding === 'number') {
+    return Array(padding + 1).join(' ') + value;
+  }
+  if (typeof padding === 'string') {
+    return padding + value;
+  }
+  throw new Error(`Expected string or number, got '${typeof padding}'.`);
+}
+```
+
+
+
+TypeScript 中的面向对象：https://www.codecrack.cn/zh/typescript/class-in-typescript
+
+1. 类的成员可以分为静态成员和非静态成员，类的属性支持设置访问修饰符用于控制类成员的访问权限
+2. 抽象类是不能被实例化的类，它们通常用作基类，定义子类必须实现的抽象方法，由 extends 继承
+3. **抽象类可以包含构造函数、字段（属性）、具体方法、抽象方法**，并且抽象方法必须由子类实现，具体方法可以由子类继承和使用
+4. 接口是用来定义类的行为规范的，它只包含方法和属性的签名，不包含具体实现，由 implements 实现
+5. **接口只能定义方法和属性的签名**，不包含任何实现，而且一个类可以实现多个接口，每个接口可以定义类的不同方面的行为
+
+
+
+泛型的使用：https://www.codecrack.cn/zh/typescript/generics-in-typescript
+
+1. 泛型函数、泛型接口、泛型数组、泛型类....用法基本一致，另外泛型还可以指定默认值
+2. 泛型约束：有时你可能希望泛型类型参数能够满足某种条件，比如它必须是一个特定类型的子类，可以使用泛型约束来实现
+
+```ts
+const logStrA = <T extends { length: number }>(str: T): T => str
+```
+
+
+
+映射类型的常用方法：https://www.codecrack.cn/zh/typescript/mapped-types-in-typescript
+
+1. keyof 关键字用于获取某个接口或者对象类型的所有键，组成一个字符串的联合类型
+2. in 关键字用于遍历一个联合类型，形成一个遍历循环
+
+```typescript
+// 使所有属性变为可选
+type OptionalPerson = {
+  [P in keyof Person]?: Person[P];
+};
+
+// 将T的所有字符串类型的键名都加上前缀
+type PrefixString<T> = {
+  [K in keyof T as `prefix_${string & K}`]: T[K]
+}
+```
+
+
+
+## 3.20 TypeScript 进阶
+
+TypeScript 提供了一些全局工具类型：https://www.codecrack.cn/zh/typescript/Partial
+
+1. Partial 是 TypeScript 提供的一个实用工具类型，用于将对象类型中的**所有属性变为可选属性**
+2. Omit 是 TypeScript 提供的一个高级类型工具，用于从一个类型中**排除指定的键**，从而构造一个新的类型
+3. Pick 是 TypeScript 中的一个实用类型，用于从**已有的类型中选择一组属性**，生成一个新的类型
+4. Exclude 是 TypeScript 提供的一个 条件类型工具，它用于从一个**联合类型** T 中排**除掉**另一个类型 U
+5. Extract 是 TypeScript 提供的一个 条件类型工具，用于从一个**联合类型** T 中**提取**出与另一个类型 U 兼容的类型
+6. NonNullable 是 TypeScript 提供的一个 条件类型工具，等效于 Exclude 的 U 固定为 null | undefined
+7. ReturnType 是 TypeScript 提供的一个内置条件类型工具，用于获取一个函数类型的返回值类型
+8. Readonly 是 TypeScript 一个非常实用的内置工具类型，它用于将对象类型的所有属性变成只读
+9. Required 是 TypeScript 一个非常实用的内置工具类型，它用于将对象类型的所有属性变成必填
+10. Record 是 TypeScript 提供的一个内置工具类型，它允许你构建一个对象类型，映射特定的键到指定的值类型
+
+```ts
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+}
+type PartialUser = Partial<User>;
+type UserWithoutPassword = Omit<User, 'password'>;
+type UserContactInfo = Pick<User, 'name' | 'email'>;
+
+type Fruit = 'apple' | 'banana' | 'orange';
+type ExcludeBanana = Exclude<Fruit, 'banana'>;
+type ExcludeBanana = Extract<Fruit, 'banana'>;
+
+// 使用 ReturnType 提取 add 函数的返回类型
+type AddReturnType = ReturnType<typeof add>;
+                                
+type Status = 'pending' | 'approved' | 'rejected';
+const statusCodes: Record<Status, number> = {
+  pending: 0,
+  approved: 1,
+  rejected: 2,
+};                                
 ```
 
 
@@ -2428,30 +2540,4 @@ function toDo (thing, index) {
 4. 一个配置文件可以使用多个代码片段。选择 vue.json 可以配置全局的代码片段
 
 5. 自主配置可以参考：https://zhuanlan.zhihu.com/p/475137755
-
-
-
-## 4.4 Android Studio 配置指南
-
-### 4.4.1 快捷键
-
-```
-快速创建Widget:在dart文件中输入stf或st飞出现提示后按回车即可
-快速修复: option + 回车
-自动生成构造函数:选中 final参数，快捷键:option + 回车
-添加父组件、变为子组件、删除子组件:option+回车
-万能的搜索:双击shift
-查看最近打开的文件:command + E
-重命名:fn+shift+f6
-查看当前类结构: command + fn + f12
-查看源码:将光标放到要查看源码的类名或方法名上，长按command 然后的点击
-查看类的子类:选中要查看的类，然后:command + B或 option + command + B
-将代码更新到模拟器上:选中模拟器然后 command +R
-导入类的快捷键:将光标放在要导入类的上面，然后按 option + enter
-前进后退:当跟踪代码的时候，经常跳转到其他类，后退快捷键:option+command+方向左键，
-全局搜索:command + shift +F
-全局替换: command + shift +R
-查找引用:option + shift + F7
-格式化：opt+cmd+l
-```
 

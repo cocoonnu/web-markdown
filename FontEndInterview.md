@@ -6,188 +6,134 @@
 - https://juejin.cn/post/6905294475539513352
 - https://juejin.cn/column/7243016090816905275
 - https://juejin.cn/post/7023906112843808804
-- 包含初中高三个等级的面试收集：https://github.com/pro-collection/interview-question
+- https://github.com/pro-collection/interview-question
 
 
 
 ## 第一节
 
-- CSS选择器及其优先级
+**CSS选择器及其优先级**
 
-id - 属性、类、伪类 - 标签、伪元素选择器
+- id - 属性、类、伪类 - 标签、伪元素选择器
 
-https://juejin.cn/post/6905539198107942919#heading-2
-
-
-
-- CSS中可继承与不可继承属性有哪些
-
-不可继承性属性：背景、盒子模型、定位、display 等属性
-
-继承性属性：文字、文本系列属性
-
-https://juejin.cn/post/6905539198107942919#heading-3
+- https://juejin.cn/post/6905539198107942919#heading-2
 
 
 
-- 块元素、行内元素、行内块元素的区别
+**CSS中可继承与不可继承属性有哪些**
 
-https://juejin.cn/post/6905539198107942919#heading-4
+- 不可继承性属性：背景、盒子模型、定位、display 等属性，继承性属性：文字、文本系列属性
 
-
-
-- 隐藏元素的方法有哪些
-
-https://juejin.cn/post/6905539198107942919#heading-6
+- https://juejin.cn/post/6905539198107942919#heading-3
 
 
 
-- 谈谈你对 BFC 的理解
+**块元素、行内元素、行内块元素的区别、display的属性值及其作用**
 
-https://vue3js.cn/interview/css/BFC.html
-
-
-
-- **说说 var、let、const 之间的区别**
-
-变量提升、暂时性死区、重复声明、块级作用域、修改声明的变量
-
-https://vue3js.cn/interview/es6/var_let_const.html#%E4%B8%80%E3%80%81var
+- https://juejin.cn/post/6905539198107942919#heading-4
 
 
 
-- **ES6 新增了哪些特性**
+**隐藏元素的方法有哪些**
 
-点击链接查看和 Kimi 智能助手的对话 https://kimi.moonshot.cn/share/co9mfluaofou902iotjg
-
-
-
-- ES6中数组新增了哪些扩展
-
-扩展运算符、构造函数：Array.from()、Array.of()、实例对象方法：copyWithin()，find()、findIndex()，fill()，entries()，keys()，values()，includes()，flat()，flatMap()
-
-https://vue3js.cn/interview/es6/array.html#%E4%B8%80%E3%80%81%E6%89%A9%E5%B1%95%E8%BF%90%E7%AE%97%E7%AC%A6%E7%9A%84%E5%BA%94%E7%94%A8
+- https://juejin.cn/post/6905539198107942919#heading-6
 
 
 
-- ES6 对象新增了哪些扩展
+**谈谈你对 BFC 的理解**
 
-属性名简写、属性名表达式、拓展运算符，关于对象新增的方法
-
-https://vue3js.cn/interview/es6/object.html#%E4%B8%80%E3%80%81%E5%B1%9E%E6%80%A7%E7%9A%84%E7%AE%80%E5%86%99
+- https://vue3js.cn/interview/css/BFC.html
 
 
 
-- **ES6 函数新增了哪些扩展**
+**说说 var、let、const 之间的区别**
 
-函数参数允许设置默认值，新增箭头函数，箭头函数与普通函数的区别
+- 变量提升、暂时性死区、重复声明、块级作用域、修改声明的变量
+
+- https://vue3js.cn/interview/es6/var_let_const.html#%E4%B8%80%E3%80%81var
+
+
+
+**ES6中数组新增了哪些扩展**
+
+- 扩展运算符、构造函数：Array.from()、Array.of()、实例对象方法：copyWithin()，find()、findIndex()，fill()，entries()，keys()，values()，includes()，flat()，flatMap()
+
+- https://vue3js.cn/interview/es6/array.html#%E4%B8%80%E3%80%81%E6%89%A9%E5%B1%95%E8%BF%90%E7%AE%97%E7%AC%A6%E7%9A%84%E5%BA%94%E7%94%A8
+
+
+
+**ES6 对象新增了哪些扩展**
+
+- 属性名简写、属性名表达式、拓展运算符，关于对象新增的方法
+
+- https://vue3js.cn/interview/es6/object.html#%E4%B8%80%E3%80%81%E5%B1%9E%E6%80%A7%E7%9A%84%E7%AE%80%E5%86%99
+
+
+
+**ES6 函数新增了哪些扩展**
+
+- 函数参数允许设置默认值，新增箭头函数，箭头函数与普通函数的区别
 
 - 函数体内的`this`对象，就是定义时所在的对象，而不是使用时所在的对象
 - 不可以当作构造函数，也就是说，不可以使用`new`命令，否则会抛出一个错误
 - 不可以使用`arguments`对象，该对象在函数体内不存在。如果要用，可以用 `rest` 参数代替
 
-https://vue3js.cn/interview/es6/function.html#%E4%B8%80%E3%80%81%E5%8F%82%E6%95%B0
-
-
-
-- 介绍一下 ES6 新增 Set、Map 两种数据结构
-
-WeakSet 和 WeakMap 的理解
-
-https://vue3js.cn/interview/es6/set_map.html#%E4%B8%80%E3%80%81set
+- https://vue3js.cn/interview/es6/function.html#%E4%B8%80%E3%80%81%E5%8F%82%E6%95%B0
 
 
 
 ## 第二节
 
-- **减少页面加载有哪几种方法**
+**介绍一下原型与原型链的概念**
 
-点击链接查看和 Kimi 智能助手的对话 https://kimi.moonshot.cn/share/co9mepeaofou902imjn0
-
-
-
-- Promis 的应用
-
-https://vue3js.cn/interview/es6/promise.html#%E4%B8%80%E3%80%81%E4%BB%8B%E7%BB%8D
+- 讲解构造函数和实例的对象的关系，隐式原型和原型对象的关系，共享字段和方法还有原型链的查找等等
+- https://juejin.cn/post/6844903989088092174
 
 
 
-- **原型与原型链**
+**介绍一下浅拷贝和深拷贝的概念，并利用循环递归的方式手写深拷贝**
 
-```js
-function Cat() {}
-const cat = new Cat()
-
-// 原型链
-cat.__proto__ = Cat.ProtoType
-Cat.ProtoType.__proto__ = Object.Prototype
-Object.Prototype = null
-```
-
-ProtoType 称为构造函数的原型，当要获取一个对象的属性和方法时，就可以通过原型链层层追溯
-
-https://juejin.cn/post/6844903989088092174
+- https://vue3js.cn/interview/JavaScript/copy.html#%E4%B8%80%E3%80%81%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AD%98%E5%82%A8
 
 
 
-- **浅拷贝和深拷贝的什么，利用循环递归的方式手写深拷贝**
+**什么是闭包，它的作用是什么**
 
-https://vue3js.cn/interview/JavaScript/copy.html#%E4%B8%80%E3%80%81%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AD%98%E5%82%A8
+- 例如计数器、延迟调用、回调等闭包的应用，其核心思想还是创建私有变量和延长变量的生命周期
 
-
-
-- **什么是闭包**
-
-例如计数器、延迟调用、回调等闭包的应用，其核心思想还是创建私有变量和延长变量的生命周期
-
-https://vue3js.cn/interview/JavaScript/closure.html#%E4%B8%80%E3%80%81%E6%98%AF%E4%BB%80%E4%B9%88
+- https://vue3js.cn/interview/JavaScript/closure.html#%E4%B8%80%E3%80%81%E6%98%AF%E4%BB%80%E4%B9%88
 
 
 
-- 谈谈对 this 对象的理解
+**谈谈你对 this 对象的理解**
 
-https://vue3js.cn/interview/JavaScript/this.html#%E4%B8%80%E3%80%81%E5%AE%9A%E4%B9%89
-
-
-
-- 说说 JavaScript 中的事件模型
-
-https://vue3js.cn/interview/JavaScript/event_Model.html
+- https://vue3js.cn/interview/JavaScript/this.html#%E4%B8%80%E3%80%81%E5%AE%9A%E4%B9%89
 
 
 
+**说说 JavaScript 中的事件模型**
 
-- **typeof 与 instanceof 区别**
-
-https://vue3js.cn/interview/JavaScript/typeof_instanceof.html#%E4%B8%80%E3%80%81typeof
-
-
-
-- **说说你对事件循环的理解**
-
-同步任务、异步任务，宏任务、微任务
-
-https://vue3js.cn/interview/JavaScript/event_loop.html
+- https://vue3js.cn/interview/JavaScript/event_Model.html
 
 
 
-- **React hooks 的优点有哪些**
+**typeof 与 instanceof 区别**
 
-点击链接查看和 Kimi 智能助手的对话 https://kimi.moonshot.cn/share/co7a4l9hd0n1ufg6hfcg
-
-
-
-- **有哪些常见的 React Hooks**
-
-https://vue3js.cn/interview/React/React%20Hooks.html
+- https://vue3js.cn/interview/JavaScript/typeof_instanceof.html#%E4%B8%80%E3%80%81typeof
 
 
 
-- zustand 的优点
+**说说你对事件循环的理解，浏览器和 Node 环境有什么不同**
 
-https://kimi.moonshot.cn/share/co5aruhhmfr8ji71aqvg
+- 同步任务、异步任务，宏任务、微任务
+
+- https://vue3js.cn/interview/JavaScript/event_loop.html
 
 
+
+**有哪些常见的 React Hooks**
+
+- https://vue3js.cn/interview/React/React%20Hooks.html
 
 
 
@@ -485,87 +431,80 @@ https://vue3js.cn/interview/JavaScript/inherit.html
 
 ## 第八节
 
-- 常量枚举和 enum 枚举有什么区别
+**常量枚举和普通枚举有什么区别**
 
-顾名思义就是一个是常量一个是变量，并且常量枚举在编译 TypeScript 代码时会被直接替换到实际使用它们的地方，而不会创建一个真实的对象，减少了代码量。后者会产生一个真实的对象。
+- 普通枚举 `enum A {...}` 和常量枚举 `const enum A {...}` 之间的区别主要在于 `TS` 的编译结果上有所差别
 
-点击链接查看和 Kimi 智能助手的对话 https://kimi.moonshot.cn/share/coa9s6cudu6bkp82ar10
+- 普通枚举 `enum A {...}`, 会将其编译为一个 `JS` 对象, **对象内就是枚举成员和值的一个相互映射**
 
+- 常量枚举 `const enum A {...}`, 编译后不会生成任何代码, 会删除 `TS` 部分内容, 对于使用到的成员只会进行值的替换
 
-
-- Node 事件循环机制和浏览器的有什么不同
-
-点击链接查看和 Kimi 智能助手的对话 https://kimi.moonshot.cn/share/coaa7o017fmccaal69n0
-
-
-
-- 数组去重有哪些实现方法
-
-https://juejin.cn/post/7023906112843808804#heading-7
+- 由此可见, 使用 `常量枚举` 会有更好的性能, 避免额外的性能开销
+- https://juejin.cn/post/7305473943572643877
 
 
 
-- TS 中 interface和 type 区别
-
-当你需要描述对象的形状时，可以优先选择使用 `interface`。而对于其他类型定义，比如联合类型、交叉类型、函数类型等，可以考虑使用 `type` 创建一个类型变量并定义别名
-
-https://juejin.cn/post/7321542773076082699#heading-2
+**Node 事件循环机制和浏览器的有什么不同**
 
 
 
-- React 中 setState 到底是异步还是同步
-
-https://juejin.cn/post/7250357906712838205#heading-3
+**数组去重有哪些实现方法**
 
 
 
-- 说说对 Fiber 架构的理解，解决了什么问题
+**TS 中 interface和 type 区别**
 
-https://vue3js.cn/interview/React/Fiber.html
+- 总体来说，`interface` 更适合用于面向对象编程，特别是在类的设计和继承中。`type` 更加灵活，适用于更复杂的类型组合和类型别名的场景。在大多数项目中，`interface` 和 `type` 是可以互补使用的。
+
+- 根据多个层面和应用场景进行介绍：https://www.codecrack.cn/zh/typescript/type-and-interface-differences-in-typescript
+
+
+
+**React 中 setState 到底是异步还是同步**
+
+- 合成事件和生命周期里，setState 是异步的（因为 React 批量更新优化，等事件执行完后再更新）
+
+- 原生事件 和 setTimeout 里，setState 是同步的（没有批量更新）
+
+- 需要最新的 state，用 prevState 回调
+
+- https://juejin.cn/post/7250357906712838205#heading-3
+
+
+
+**说说对 Fiber 架构的理解，解决了什么问题**
+
+- https://vue3js.cn/interview/React/Fiber.html
 
 
 
 ## 第九节
 
-- React18 有什么新特性
+**React18 有什么新特性**
 
-https://juejin.cn/post/7290815534207189033
-
-
-
-- 为什么有时候⽤ translate 来改变位置⽽不是定位
-
-https://juejin.cn/post/6905539198107942919#heading-13
+- https://juejin.cn/post/7290815534207189033
 
 
 
-- SPA首屏加载速度慢的怎么解决
+**为什么有时候⽤ translate 来改变位置⽽不是 position 定位**
 
-https://vue3js.cn/interview/vue/first_page_time.html
-
-
-
-- SSR 解决了什么问题，有做过 SSR 吗
-
-https://vue3js.cn/interview/vue/ssr.html
+- https://juejin.cn/post/6905539198107942919#heading-13
 
 
 
-# 第二章 前端笔试题
+**SPA首屏加载速度慢的怎么解决**
 
- ## 第一节
-
-异步&事件循环：https://juejin.cn/post/6959043611161952269
+- https://vue3js.cn/interview/vue/first_page_time.html
 
 
 
-## 第二节
+**SSR 解决了什么问题，有做过 SSR 吗**
 
-this 指针问题：https://juejin.cn/post/6959043611161952269
+- https://vue3js.cn/interview/vue/ssr.html
 
 
 
-# 第三章 算法与手写
+# 第二章 算法与手写
 
 ## 第一节
 
@@ -625,7 +564,7 @@ https://www.hello-algo.com/chapter_sorting/quick_sort/
 
 
 
-# 第四章 难点与经验
+# 第三章 难点与经验
 
 ## 小智问卷
 
@@ -693,7 +632,7 @@ Vue3 项目由于电脑本地没有拉取代码，无法本地调试，具体代
 
 
 
-# 第五章 非技术面
+# 第四章 非技术面
 
 ## 自我介绍
 
@@ -776,7 +715,7 @@ Vue3 项目由于电脑本地没有拉取代码，无法本地调试，具体代
 
 
 
-# 第六章 面试记录
+# 第五章 面试记录
 
 - 大智慧（1000-9999）技术一面
 
@@ -784,7 +723,7 @@ Vue3 项目由于电脑本地没有拉取代码，无法本地调试，具体代
 // node事件循环机制和浏览器有什么不同
 // 数组去重有哪些实现方法
 // 判断一个对象（直接判断内部的值）是否相等
-// react 的useMemo和useCallback，useCallback传入多个依赖变量应该如何进行性能优化
+// react 的useMemo和useCallback传入多个依赖变量应该如何进行性能优化
 // React18有什么新特性
 // fiber 渲染机制，什么中断机制的概念
 // interface和type区别
@@ -867,7 +806,7 @@ Vue3 项目由于电脑本地没有拉取代码，无法本地调试，具体代
 // React的fiber机制是什么
 // React的合成事件是什么
 // URL从输入到页面渲染经历了哪些过程
-// 如何实现拖拽排序，底层原理是什么，哪个html标签支持拓展
+// 如何实现拖拽排序，底层原理是什么，哪些html标签支持拖拽
 // 什么是同源策略
 // 什么是回流和重绘
 // 什么是浏览器的缓存机制

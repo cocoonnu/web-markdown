@@ -8,6 +8,7 @@
 4. 在待发布列表中找到你的分支然后点击提交发布，当上面的部署按钮为空闲状态时点击部署即可
 5. 如果部署失败，说明待部署的分支里面有冲突。如果是你的分支有问题，那么在本地拉一下 publish/qa 分支
 6. 然后在本地手动一个一个合并待部署的分支，查看哪条分支有冲突，合并完之后再推一下远程，最后点部署即可
+7. 测试环境会根据代发布的分支列表进行更新，如果列表发生变化则会重新拉取 master 再依次合并每一条分支
 
 
 
@@ -82,6 +83,8 @@ desktopUtil.tabAdd({
 
 
 ### 1.1.2 微前端应用使用方式
+
+公司项目采用 Tab 型页面进行交互而不是路由导航系统，在实现单页面 WEB 应用上起到了很舒适的体验。Tab 型页面分为两种：Tab 栏页面和 Model 弹窗页面，这两个是页面的根挂载方式。另外在页面加载上使用了微前端技术，因此页面的集成上除了主项目还有其他业务项目，通过微前端技术实现了各个项目之间并不耦合但能够高效率通信。
 
 在主项目的索引页面中 `src/modules/main_v2/tab-frame-config.ts` 会映射多个 `iframe` 路由。路由映射方式：项目名 + 路由名，`moduleName` + `pageName`。例如 `contract-factory/supervison-editor.html` 就对应 `contract-factory` 中 `page`
 目录的 `supervison-editor` 组件
@@ -164,7 +167,7 @@ bridge.sendTabData(state?.key, { eventType: 'reload' });
 
 
 
-**onEvent、triggerEvent（新版本使用）**
+**Iframe、onEvent、triggerEvent（新版本使用）**
 
 如果要实现在微应用里触发主项目的函数，可以使用 onEvent 和 triggerEvent 来实现。案例：子应用：src/pages/template-wrapper/index.tsx 主应用：
 
@@ -214,11 +217,13 @@ import Iframe from "@/modules/iframe"
 bridge.triggerEvent('', { eventType: 'goBack' });
 ```
 
+Iframe 是对 MessengerFrame 组件的封装，MessengerFrame 算是只是一个毛坯房，通过这个组件引入的子页面无法调用前面列出的 API，运营平台有一个使用这个组件的实例：src/modules/metadataManage/components/datasource-data-view/index.tsx
+
 
 
 **从代办打开**
 
-如果从代办打开，这后端传递的数据在 bizParam 这个 JSOM 字符串里面，主项目的 src/modules/waitingWork/jump.js 这个文件将这个对象解析出来并放在 state.params 对象里，另外整条代办的数据会放在 state.record 对象里
+如果从代办打开，则后端传递的数据在 bizParam 这个 JSOM 字符串里面，主项目的 src/modules/waitingWork/jump.js 这个文件将这个对象解析出来并放在 state.params 对象里，另外整条代办的数据会放在 state.record 对象里
 
 ```jsx
 // 区分是从代办打开还是直接通过bridge.tabAdd打开
@@ -378,23 +383,20 @@ export const saveGeneralListSort = (params) =>
 **contract-factory 项目接口调用，通过 try catch 来捕获**
 
 ```jsx
-const handleConfirm = async () => {
+const { run: handleOnChangeColumn } = useThrottleFn(async (map) => {
   try {
-    await form.validateFields();
-    const values = form.getFieldsValue();
-    await dataSourceV3API.saveGeneralListSort({
-      userId,
-      objectId: state.appId,
-      type: state.appType,
-      sortJson: JSON.stringify(values.sortRules),
+    await dataSourceV3API.saveGeneralListShow({
+      appId,
+      postId,
+      dynamicId: dataId || dynamicId,
+      sysOperateType: JSON.stringify(map),
+      type: 1,
     });
-    setSortRules(values.sortRules);
-    setSortOpen(false);
-    initData();
+    setColumnsStateValue(JSON.stringify(map));
   } catch (error) {
-  	message.error(getErrorMsg(error));  
+    message.error(getErrorMsg(error));
   }
-};
+});
 ```
 
 
@@ -407,6 +409,12 @@ const handleConfirm = async () => {
 
 
 
+但如果是完全重构或者新的组件，下面是文件放置规范：主文件夹下包含：index.tsx、consts.ts、context.ts、utils.ts 等等，另外还有一个 components 文件夹用来存放子组件，在该文件夹下新建一个 index.ts 作为统一出口，方便后续对子组件进行重构、替换、重命名、测试等操作，不影响其他业务模块。子组件都用文件夹包裹，子组件内部的子组件放在 components 里面并单用一个文件维护。除非子组件的子组件也是大文件，那么就不要放在 components 里面，直接用文件夹包裹放在表层即可，和上面的例子一致。
+
+![image-20250313120026249](mark-img/image-20250313120026249.png)
+
+
+
 **类型及常量编写规范**
 
 不管，这个组件及其子组件用到的通用类型、枚举和常量都写在最外层文件夹里的 const.ts 里面，因为没有那么多精力去再对这些常量通过文件来进行区分！
@@ -414,16 +422,18 @@ const handleConfirm = async () => {
 ```md
 前端命名规范：https://developer.aliyun.com/article/951001
 
-1. 组件文件命名规范：大驼峰命名，公司用的是横杠命名
-2. 变量命名规范：无论是普通变量、对象、数组还是对象的键，都是小驼峰命名
-3. 常量命名规范：通过 const 定义一个常量，命名方式为 VAR_TYPE，字母全部大写
-4. 枚举命名规范：枚举名称为大驼峰，枚举的键为常量命名规范
+1. 组件文件命名规范：横杠命名
+2. 组件名称命名规范：大驼峰命名
+3. 变量命名规范：无论是普通变量、对象、数组还是对象的键，都是小驼峰命名
+4. 常量命名规范：全大写常量风格
+5. 枚举命名规范：无论是枚举的值还是键都是全大写常量风格
+6. 类型命名规范：大驼峰命名
 ```
 
 ```ts
 const ENTRY_POST_AUTO = 12324,
 
-export enum ExecutionEventType {
+export enum EXECUTION_EVENT {
   /** 入职 */
   ENTRY_POST = 10,
   /** 离职 */
@@ -455,6 +465,8 @@ export interface EventParamsConfig {
 - 梳理代码逻辑，整理所有业务场景
 - 着手开发，代码以新增为主，历史逻辑要兼容
 - 严格自测，设计到重构场景的业务都需要自测一遍
+
+
 
 
 
@@ -1488,8 +1500,6 @@ if (toolType === TOOL_TYPE.enum || toolType === TOOL_TYPE.bankBranches) {
 
 
 
-
-
 ## 1.3 组件使用技巧与总结
 
 ### 1.3.1 CustomForm 表单生成
@@ -2308,6 +2318,43 @@ const onClick = ({ key }) => {
 ```
 
 <img src="mark-img/CleanShot 2024-09-13 at 15.29.17.gif" alt="CleanShot 2024-09-13 at 15.29.17" style="zoom:50%;" align='left' />
+
+
+
+### 1.3.7 antd 表格表单整合开发
+
+当表格和表单整合开发时我通常用的到结构是：表格最外层套个 Form，Table 通过 components 自定义单元格。单元格根据 rowIndex 和 tagId 定位到，初始化时给 From 设置数据，数据结构严格按照 name 编写的方式设置，同时要维护 Table 的 dataSource 才能实现表格中既有输入值又有输入框。
+
+1. 基础版表格内存在输入框：contract-factory/src/pages/yypt-datasource-data-view/datasource-data-view/batch-edit-modal/index.tsx
+2. 进阶版表格表单整合开发：contract-factory/src/pages/onlyoffice-application-apply/dynamic-word-v3/data-split-modal/index.tsx
+
+```jsx
+<Form form={form} colon={false} scrollToFirstError>
+  <BatchEditModalContext.Provider
+    value={{
+      form,
+      tags,
+      orgId,
+      isAllDataScope: true,
+    }}
+  >
+    <TagTable
+      tags={tags}
+      dataSource={dataSource}
+      pagination={false}
+      scroll={{ x: 'max-content' }}
+      renderColumns={(cols) => cols.filter((col) => col.dataIndex !== 'index')}
+      components={{
+        body: {
+          cell: EditableCell,
+        },
+      }}
+    />
+  </BatchEditModalContext.Provider>
+</Form>
+```
+
+
 
 
 

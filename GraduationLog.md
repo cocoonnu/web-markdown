@@ -1,6 +1,6 @@
 # 第一章 前端问卷系统开发
 
-前端项目脚手架由某个公司前辈搭建，已具备代码检查、状态管理、路由导航、路由拦截、请求拦截、反向代理、全局弹窗配置、组件库初始化等基础配置，并且基于这些做了部分修改，而后端项目是自己简单搭建的。小智问卷本地启动：
+前端项目脚手架由一个公司前辈搭建，已具备代码检查、状态管理、路由导航、路由拦截、请求拦截、反向代理、全局弹窗配置、组件库初始化等基础配置，并且基于这些做了部分修改，而后端项目是自己简单搭建的。小智问卷本地启动：
 
 - 启动本地数据库，进入设置中开启即可
 - 启动本地 Redis，在终端中输入下面的命令：/Applications/Redis/src/redis-server
@@ -499,7 +499,7 @@ const res = await formRef?.current?.validateFields(['phone'])
 
 **响应失败：** axios 的响应拦截器会进行 `Promise.reject(err)`，因此不会走响应成功的代码。
 
-**响应成功：** 响应成功的化 axiso 的响应拦截器会得到一个 `response` 对象，里面的 `data` 属性就是后端返回的数据
+**响应成功：** 响应成功的话 axiso 的响应拦截器会得到一个 `response` 对象，里面的 `data` 属性就是后端返回的数据
 
 **数据规范：**data 中有三个属性：code：状态码、errMsg：错误信息、value：成功数据
 
@@ -2105,47 +2105,11 @@ onDragEnd: (oldIndex, newIndex) => {
 
 答卷 answer：单项框为 label，多选框为数组的 toString
 
-```js
-function countWords(str) {
-    // 将字符串按逗号和空格分割成单词数组
-    const words = str.split(/[,\s]+/);
-    
-    // 创建一个对象来存储单词计数
-    const wordCount = {};
-
-    // 统计每个单词出现的次数
-    words.forEach(word => {
-        // 去除逗号，如果单词不为空则更新计数
-        const cleanedWord = word.replace(/[,]/g, '').trim();
-        if (cleanedWord !== '') {
-            if (wordCount[cleanedWord]) {
-                wordCount[cleanedWord] += 1;
-            } else {
-                wordCount[cleanedWord] = 1;
-            }
-        }
-    });
-
-    // 计算词的总数
-    const totalWords = words.length;
-
-    return { totalWords, wordCount };
-}
-
-const inputString = "选项2,选项3,选项3,选项1";
-const { totalWords, wordCount } = countWords(inputString);
-
-console.log("词的总数:", totalWords);
-console.log("每个词出现的次数:", wordCount);
-```
-
-
-
 
 
 ### 1.5.2 答卷生成器重构方案
 
-不能使用 FormGenerator 表单生成器进行答卷表单的生成，只能定制化处理了。
+使用 FormGenerator 表单生成器进行答卷表单的生成，不过要加一层转化。
 
 
 

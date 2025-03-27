@@ -89,11 +89,9 @@ $ npm run eject
 
  
 
-## 1.2 JSX 语法规则
+## 1.2 JSX 语法与本质
 
-JSX 就是 Javascript 和 XML 结合的一种格式。React 发明了 JSX，可以方便的利用 HTML 语法来创建虚拟 DOM，当遇到 `<`，JSX 就当作 HTML 解析，遇到 `{` 就当 JavaScript 解析
-
-文档：https://www.yuque.com/fechaichai/qeamqf/xbai87#M1UW5
+JSX 就是 Javascript 和 XML 结合的一种格式。React 发明了 JSX，可以方便的利用 HTML 语法来创建虚拟 DOM
 
 
 
@@ -130,15 +128,15 @@ const name = '柴柴'
 
 ```jsx
 <div className="App">
-    {/* 数组渲染 */}
-    {list.map(item => (
-        <div key={ item } onClick={ clickMe }>{ item }</div>
-    ))}
-    
-    {/* 对象渲染 */}
-    {Object.entries(obj).map(([key, value], index) => {
-        return <li key={key}>{value}</li>
-    }) }     
+  {/* 数组渲染 */}
+  {list.map(item => (
+      <div key={ item } onClick={ clickMe }>{ item }</div>
+  ))}
+
+  {/* 对象渲染 */}
+  {Object.entries(obj).map(([key, value], index) => {
+      return <li key={key}>{value}</li>
+  }) }     
 </div>
 ```
 
@@ -192,70 +190,6 @@ function App() {
 
 
 
-**样式处理**
-
-多个 `class` 动态绑定需要安装插件
-
-```bash
-$ npm i classnames
-```
-
-```jsx
-import React, { Component } from 'react'
-import classNames from 'classnames'
- 
-const classObj = {
-    active: true,
-    testr: true
-}
-
-const flag = true
-
-function App() {
-    return (
-        <div className="App">
-
-            {/* 使用内联样式 */}
-            <div style={ {color: 'red', fontSize: '16px'} }></div>
-
-            {/* 单个动态绑定 */}
-            <div className={ flag ? 'avtive' : 'defalut' }></div>
-
-            {/* 多个动态绑定 */}
-            <div className={ classNames(classObj) }></div>
-            
-        </div>
-    )
-}
-```
-
-
-
-**幽灵节点**
-
-```jsx
-function App() {
-
-    return (
-        // 幽灵节点不会被渲染
-        <>
-        <div className="App">
-        </div>
-        
-        <div></div>
-        </>
-    )
-}
-```
-
-也可以使用 Fragment，类似于 Vue 里面的 Fragment，可以接收一个 key 属性
-
-参考文档：https://boboy.blog.csdn.net/article/details/104943812
-
-
-
-
-
 **lable 标签中的 `for` 要替换成 `htmlFor`**
 
 ```jsx
@@ -267,35 +201,29 @@ function App() {
 
 ## 1.3 React 组件化
 
-组件化分为两种写法：函数组件、类组件
+组件化分为两种写法：函数组件、类组件。本质上，JSX 只是 React.createElement(component, props, …children) 的语法糖。所有使用 JSX 语法书写的节点，都会被编译器转换，最终以 React.createElement(…) 的方式创建对应的 ReactElement 对象。下面例子中的 Component 是一个 React 组件，这是两种对该 React 组件的用法。
 
 ```jsx
-import React, { Component } from 'react'
-
-// 类组件
-class Test extends Component {
-    state = {  } 
-    render() { 
-        return (
-            <div>hello</div>
-        )
-    }
+// jsx写法
+const getQuestionComponent = (item: QuestionComInfo) => {
+  const { type, props } = item
+  const questionComConf = getQuestionComConfByType(type)
+  if (!questionComConf) return null
+  return <Component {...props} />
 }
-
-// 函数组件
-function App() {
-
-    return (
-        <div className="App">
-            <Test />
-        </div>
-    )
-}
-
-export default App
 ```
 
-函数组件在 React Hook 中再具体使用，后面的默认使用类组件
+```jsx
+// React.createElement
+const getQuestionComponent = (item: QuestionComInfo) => {
+  const { type, props } = item
+  const questionComConf = getQuestionComConfByType(type)
+  if (!questionComConf) return null
+  return React.createElement(Component, props)
+}
+```
+
+
 
 
 
@@ -2275,4 +2203,18 @@ useBoundStore.setState((state) => ({ count: state.count + 1 }))
 
 
 # 第五章 认识 NextJs
+
+## 5.1 NextJs 入门
+
+首先根据入门文档跟着做一个 demo：https://qufei1993.github.io/nextjs-learn-cn/，项目地址：Work/nextjs-dashboard
+
+教程整理如下，只做了一些书签之类的索引：
+
+1. 页面级导航，通过规范页面文件位置实现页面路由：https://qufei1993.github.io/nextjs-learn-cn/chapter4
+2. 编程式路由，在服务端可直接通 props 获取路由信息，在客户端通过路由 hooks (usePathname, useSearchParams) 获取：https://qufei1993.github.io/nextjs-learn-cn/chapter11
+3. 使用 Server Components 获取数据，直接在服务端组件中获取数据库数据，而无需使用 useEffect 再调用 API 层获取数据：https://qufei1993.github.io/nextjs-learn-cn/chapter7
+4. App Route 相较于 Page Route 的区别：https://yuanbao.tencent.com/bot/app/share/chat/61fca92bb3ffff5c18ea983f2b064480
+5. 错误处理反馈：https://qufei1993.github.io/nextjs-learn-cn/chapter13
+
+
 
