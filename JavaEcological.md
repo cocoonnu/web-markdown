@@ -61,7 +61,6 @@ Java中 JDK8（JDK1.8）、JDK11、JDK17，该怎么选择：https://cloud.tence
 ```java
 @SpringBootApplication
 public class SpringbootLearnApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(SpringbootLearnApplication.class, args);
         // 创建接口实例的两种方式

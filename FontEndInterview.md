@@ -3,7 +3,7 @@
 八股文和前端基础的话推荐这些专栏和网站进行学习：
 
 - https://vue3js.cn/interview/
-- https://juejin.cn/post/6905294475539513352
+- https://www.codecrack.cn/zh
 - https://juejin.cn/column/7243016090816905275
 - https://juejin.cn/post/7023906112843808804
 - https://github.com/pro-collection/interview-question
@@ -82,12 +82,40 @@
 
 
 
+**介绍一下 undefined 和 null 的区别**
+
+- 讲一下两者的定义，并且列举一下函数入参和解构赋值的时候设置默认值的例子
+- https://www.codecrack.cn/zh/javascript/difference-between-undefined-and-null
+
+
+
+**0.1 + 0.2 为什么不等于 0.3**
+
+- 根本原因是浮点数的二进制表示，许多看似简单的十进制小数在计算机中无法精确表示，导致计算时产生微小的误差
+- https://www.codecrack.cn/zh/javascript/why-decimal-addition-not-equal
+
+
+
 ## 第二节
 
 **介绍一下原型与原型链的概念**
 
 - 讲解构造函数和实例的对象的关系，隐式原型和原型对象的关系，共享字段和方法还有原型链的查找等等
 - https://juejin.cn/post/6844903989088092174
+- https://www.codecrack.cn/zh/javascript/prototype-chain#%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F
+
+
+
+**如何判定一个属性来自于对象本身， 还是来自于原型链**
+
+- https://github.com/pro-collection/interview-question/issues/1044
+
+
+
+**介绍一下 JavaScript 中的 new 操作符**
+
+- https://juejin.cn/post/7244335987575521336#heading-12
+- https://www.codecrack.cn/zh/javascript/prototype-chain#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0
 
 
 
@@ -107,7 +135,11 @@
 
 **谈谈你对 this 对象的理解**
 
+- new 绑定优先级 > 显示绑定优先级 > 隐式绑定优先级 > 默认绑定优先级
+
 - https://vue3js.cn/interview/JavaScript/this.html#%E4%B8%80%E3%80%81%E5%AE%9A%E4%B9%89
+
+- 跟深入理解：https://www.codecrack.cn/zh/javascript/this-binding
 
 
 
@@ -123,14 +155,6 @@
 
 
 
-**说说你对事件循环的理解，浏览器和 Node 环境有什么不同**
-
-- 同步任务、异步任务，宏任务、微任务
-
-- https://vue3js.cn/interview/JavaScript/event_loop.html
-
-
-
 **有哪些常见的 React Hooks**
 
 - https://vue3js.cn/interview/React/React%20Hooks.html
@@ -139,293 +163,297 @@
 
 ## 第三节
 
-- Vue 中常见的事件修饰符及其作用
+**谈谈 MVVM 架构**
 
-https://juejin.cn/post/7250012486992511033#heading-2
-
-
-
-- Vue 中 v-if 和 v-show 的区别
-
-https://juejin.cn/post/7250012486992511033#heading-3
+- https://juejin.cn/post/7250012486992511033#heading-6
 
 
 
-- Vue 选项配置中的 data 为什么是一个函数而不是对象
+**双向数据绑定的原理**
 
-https://juejin.cn/post/7250012486992511033#heading-4
-
-
-
-- **谈谈 MVVM 架构**
-
-https://juejin.cn/post/7250012486992511033#heading-6
+- https://juejin.cn/post/7250012486992511033#heading-24
 
 
 
-- **双向数据绑定的原理**
+**说一下 Vue 的生命周期**
 
-https://juejin.cn/post/7250012486992511033#heading-24
-
-
-
-- **说一下 Vue 的生命周期**
-
-https://juejin.cn/post/7250012486992511033#heading-8
+- https://juejin.cn/post/7250012486992511033#heading-8
 
 
 
-- **说一下 Reac 生命周期是怎样的**
+**说一下 Reac 生命周期是怎样的**
 
-https://juejin.cn/post/7250357906712838205#heading-0
-
-
-
-- **虚拟 DOM 实现原理，如何理解**
-
-https://juejin.cn/post/7250012486992511033#heading-22
+- https://juejin.cn/post/7250357906712838205#heading-0
 
 
 
-- 介绍一下 Rudex 的工作流程
+**虚拟 DOM 实现原理，如何理解**
 
-https://juejin.cn/post/7250357906712838205#heading-10
+- https://juejin.cn/post/7250012486992511033#heading-22
 
 
 
-- 介绍一下 Vuex 的工作流程
+**介绍一下 Rudex 的工作流程**
 
-https://juejin.cn/post/7250012486992511033#heading-16
+- https://juejin.cn/post/7250357906712838205#heading-10
 
 
 
 ## 第四节
-- **Vue3 有什么更新，和 Vue2 的区别是什么**
+**描述一下 React 中的 Diff 算法**
 
-https://vue3js.cn/interview/vue/vue3_vue2.html
-
-
-
-- **描述一下 Diff 算法**
-
-https://juejin.cn/post/7250012486992511033#heading-25
+- https://juejin.cn/post/7229598397250109497
 
 
 
-- Vue 和 React 为什么都要设置 key，为什么不建议用 index 作为 key
+**说说对 Fiber 架构的理解，解决了什么问题**
 
-https://juejin.cn/post/7250012486992511033#heading-26
-
-
-
-- React 合成事件是什么
-
-https://juejin.cn/post/7250357906712838205#heading-14
+- https://vue3js.cn/interview/React/Fiber.html
+- https://juejin.cn/post/7229552637229498405
 
 
 
-- React Hooks 原理以及核心是什么
+**Vue 和 React 为什么都要设置 key，为什么不建议用 index 作为 key**
 
-https://juejin.cn/post/7250357906712838205#heading-15
-
-
-
-- 普通函数和箭头函数的 this 指向问题
-
-https://juejin.cn/post/7310415386405765159
+- https://juejin.cn/post/7250012486992511033#heading-26
 
 
 
-- 为什么 typeof null 输出 object
+**React 合成事件是什么**
 
-https://juejin.cn/post/7244335987575521336#heading-7
-
-
-
-- **JS 的 new 操作符做了哪些事情**
-
-https://juejin.cn/post/7244335987575521336#heading-12
+- https://juejin.cn/post/7250357906712838205#heading-14
 
 
 
-- **垃圾回收机制是什么，哪些情况会导致内存泄漏**
+**React Hooks 原理以及核心是什么**
 
-https://juejin.cn/post/7244335987575521336#heading-26
+- https://juejin.cn/post/7250357906712838205#heading-15
+
+
+
+**垃圾回收机制是什么，哪些情况会导致内存泄漏**
+
+- https://juejin.cn/post/7244335987575521336#heading-26
 
 
 
 ## 第五节
 
-- React 中组件之间如何通信
+**React 中组件之间如何通信**
 
-https://vue3js.cn/interview/React/communication.html
+- https://vue3js.cn/interview/React/communication.html
 
 
 
-- **说说对 React 中类组件和函数组件的区别**
+**说说对 React 中类组件和函数组件的区别**
 
-https://vue3js.cn/interview/React/class_function%20component.html
+- https://vue3js.cn/interview/React/class_function%20component.html
 
 
 
-- **说说对高阶组件的理解和它的应用场景**
+**说说对高阶组件的理解和它的应用场景**
 
-把通用的逻辑放在高阶组件中，对组件实现一致的处理，从而实现代码的复用
+- 把通用的逻辑放在高阶组件中，对组件实现一致的处理，从而实现代码的复用
 
-所以，高阶组件的主要功能是封装并分离组件的通用逻辑，让通用逻辑在组件间更好地被复用
+- 所以，高阶组件的主要功能是封装并分离组件的通用逻辑，让通用逻辑在组件间更好地被复用
 
-https://vue3js.cn/interview/React/High%20order%20components.html
+- https://vue3js.cn/interview/React/High%20order%20components.html
 
 
 
+**说说你是如何提高组件的渲染效率的**
 
-- 说说你是如何提高组件的渲染效率的
+- 父组件渲染导致子组件渲染，子组件并没有发生任何改变，这时候就可以从避免无谓的渲染
 
-父组件渲染导致子组件渲染，子组件并没有发生任何改变，这时候就可以从避免无谓的渲染
+- https://vue3js.cn/interview/React/improve_render.html
 
-https://vue3js.cn/interview/React/improve_render.html
 
 
+**双向数据绑定是什么，如何简单的手动实现**
 
-- **Vue 组件之间的通信方式都有哪些**
+- 先讲一遍 MVVM 架构，再讲一下 Vue 是如何实现双向数据绑定的，手写双向数据绑定的原理
 
-https://vue3js.cn/interview/vue/communication.html
+- https://vue3js.cn/interview/vue/bind.html
 
 
 
-- Vue3.0 所采用的 Composition Api 与 Vue2.x 使用的 Options Api 有什么不同
+**说一说 Javascript 本地存储的方式有哪些，区别及应用场景**
 
-https://vue3js.cn/interview/vue3/composition.html
+- https://vue3js.cn/interview/JavaScript/cache.html
 
 
 
-- **双向数据绑定是什么，如何简单的手动实现**
+**说说 Javascript 数字精度丢失的问题，以及如何解决**
 
-先讲一遍 MVVM 架构，再讲一下 Vue 是如何实现双向数据绑定的，手写双向数据绑定的原理
+- 计算机存储双精度浮点数需要先把十进制数转换为二进制的科学记数法的形式，因为存储时有位数限制（64位），并且十进制的浮点数在转换为二进制数时会出现无限循环，会造成二进制的舍入操作(0舍1入)，当再转换为十进制时就造成了计算误差
 
-https://vue3js.cn/interview/vue/bind.html
+- https://vue3js.cn/interview/JavaScript/loss_accuracy.html
 
 
 
-- 说一说 Javascript 本地存储的方式有哪些，区别及应用场景
+**如何判断一个元素是否在可视区域中**
 
-https://vue3js.cn/interview/JavaScript/cache.html
+- https://vue3js.cn/interview/JavaScript/visible.html
 
 
 
-- **说说 Javascript 数字精度丢失的问题，以及如何解决**
+**什么是 CSRF 攻击**
 
-计算机存储双精度浮点数需要先把十进制数转换为二进制的科学记数法的形式，因为存储时有位数限制（64位），并且十进制的浮点数在转换为二进制数时会出现无限循环，会造成二进制的舍入操作(0舍1入)，当再转换为十进制时就造成了计算误差
+- https://juejin.cn/post/7256702654578409532#heading-0
 
-https://vue3js.cn/interview/JavaScript/loss_accuracy.html
 
 
+**进程与线程的概念**
 
-- 如何判断一个元素是否在可视区域中
+- 进程是操作系统对一个正在运行的程序的抽象表示，负责管理程序的执行和资源分配，它存在堆内存分配和栈内存分配
+- 在操作系统中，每个进程都有自己的地址空间、状态和控制信息。进程可以独立运行，与其他进程离开来，互不干扰
 
-https://vue3js.cn/interview/JavaScript/visible.html
+- 线程是进程中的一个执行路径，是进程的组成部分，**在同一个进程中的多个线程共享进程的资源，并且并行执行**
+- 每个进程至少包含一个主线程，主线程用于执行进程的主要业务逻辑，其他线程可以作为辅助线程来完成特定的任务
 
+- https://www.codecrack.cn/zh/javascript/event-loop#%E4%BB%80%E4%B9%88%E6%98%AF%E8%BF%9B%E7%A8%8B
 
 
-- 什么是 CSRF 攻击
 
-https://juejin.cn/post/7256702654578409532#heading-0
+**介绍一下浏览器的渲染过程**
 
+- Chrome 浏览器通过多进程的架构设计来加载多个网页，主要包括以下三个进程：网络进程、浏览器进程、渲染进程
+- 浏览器给渲染进程采用了多线程，它主要包含了以下线程：渲染主线程、合成线程、网络线程、定时器线程、事件处理线程
+- 渲染主线程负责解析 `HTML`、`CSS` 和 `JavaScript`，构建 `DOM` 树、`CSSOM` 树和渲染树，并进行页面布局和绘制，它还处理用户交互，执行 `JavaScript` 代码以及其他页面渲染相关的任务
 
+- http://codecrack.cn/zh/javascript/event-loop#%E6%B8%B2%E6%9F%93%E4%B8%BB%E7%BA%BF%E7%A8%8B%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84
 
-- 进程与线程的概念
 
-https://juejin.cn/post/7256702654578409532#heading-2
 
+**说说你对浏览器事件循环的理解**
 
+- 首先 JavaScript 是一门单线程语言，当渲染主线程执行一些 JavaScript 中的**事件处理、定时器和异步操作**等异步任务时，为了防止主线程阻塞，主线程会和其他线程通过消息队列进行通信来防止阻塞
 
-- **对浏览器的缓存机制的理解？强缓存和协商缓存？**
+- 比如当渲染主线程正在执行一个 `JavaScript` 函数，执行到一半的时候碰到了一个定时器，也就是 `setTimeout`。因为在我们的渲染进程里面是有定时器线程的，定时器线程监听到有这个定时器操作。**那么该线程会将 `setTimeout` 里面的回调函数作为一个异步任务放入消息队列中进行排队**
 
-https://juejin.cn/post/7256702654578409532#heading-3
+- 因此事件循环就是首先执行完成**主线程的同步任务**，再依次执行**消息队列中的异步任务**，如果在异步任务里面再碰到异步任务，那么按照前面的步骤依此循环，直到所有任务执行完成
 
+- 同步任务：变量和函数的声明和计算、普通函数调用、DOM 操作、for / while / if / switch 等语句
 
+- 异步任务：定时器相关、I/O 相关、事件监听、Promise 等语句 
 
-- 浏览器的渲染过程
+- http://codecrack.cn/zh/javascript/event-loop#%E6%B8%B2%E6%9F%93%E4%B8%BB%E7%BA%BF%E7%A8%8B%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84
 
-https://vue3js.cn/interview/http/after_url.html#%E9%A1%B5%E9%9D%A2%E6%B8%B2%E6%9F%93
 
 
+**Node.js 事件循环机制和浏览器的有什么不同**
 
-- **说说地址栏输入 URL 敲下回车后发生了什么**
+- 先介绍 Nodejs 的事件循环机制的理解，再介绍具体的区别
+- 区别一：process.nextTick 是 Node.js 中用于注册比其他所有异步任务还早执行的微任务
 
-URL 解析、DNS 查询、TCP 连接、HTTP 请求、响应请求、响应资源解析、页面渲染
+- 区别二：Nodejs 的事件循环分成多个阶段（timers, poll, check 等）
 
-https://vue3js.cn/interview/http/after_url.html
+- 区别三：Node.js 借助 libuv 实现复杂事件循环
+
+- https://vue3js.cn/interview/NodeJS/event_loop.html
+
+
+
+**谈谈你对异步的理解，并讲一下什么是宏任务和微任务**
+
+- 最简单的理解异步：`JavaScript` 是一门单线程的编程语言，意味着在一个特定的时间点，只能有一个代码块在执行。当执行一个同步任务时，如果任务需要很长时间才能完成，如网络请求、文件读取等，整个程序会被阻塞，导致用户界面无响应，甚至造成卡顿的问题。而异步编程使得我们可以在主线程执行同步代码的同时，处理耗时的异步操作，例如网络请求、文件读写等，以提高程序的性能和用户体验。在 `JavaScript` 中，通过事件循环机制，异步编程实现了一种非阻塞的执行方式，使得浏览器能够高效地处理各种任务，同时保持用户界面的响应性
+- 上一个问题我们讲到异步任务存储于消息队列中，消**息队列又分为宏任务队列和微任务队列。**微任务通常在一个宏任务执行完毕后立即执行，而不需要等待其他宏任务，这使得微任务的执行优先级比宏任务高
+- 宏任务：setTimeout 和 setInterval、I/O 操作、DOM 事件、requestAnimationFrame、**script 标签**
+- 微任务：Promise 的 resolve 和 reject 回调、async/await 中的异步函数、MutationObserver
+- 由于 script 标签是一个宏任务，因此整个浏览器循环应该是 先执行 `宏任务` -> `同步代码` -> `微任务`，直到当前宏任务中的微任务清理完毕，继续执行下一个宏任务，以此类推
+- https://www.codecrack.cn/zh/javascript/event-loop#%E4%BB%80%E4%B9%88%E6%98%AF%E5%BC%82%E6%AD%A5
+
+
+
+**说说地址栏输入 URL 敲下回车后发生了什么**
+
+- URL 解析、DNS 查询、TCP 连接、HTTP 请求、响应请求、响应资源解析、页面渲染
+
+- https://vue3js.cn/interview/http/after_url.html
+
+- 超详细版文档：https://juejin.cn/post/7316775422187061300
+
+
+
+**对浏览器的缓存机制的理解？强缓存和协商缓存？**
+
+- https://juejin.cn/post/7256702654578409532#heading-3
 
 
 
 ## 第六节
 
-- 说说 TCP 为什么需要三次握手和四次挥手
+**说说 TCP 为什么需要三次握手和四次挥手**
 
-https://vue3js.cn/interview/http/handshakes_waves.html
-
-
-
-- 说说 HTTP 常见的状态码有哪些，适用场景
-
-https://vue3js.cn/interview/http/status.html
+- https://vue3js.cn/interview/http/handshakes_waves.html
 
 
 
-- css 加载会造成阻塞吗
+**说说 HTTP 常见的状态码有哪些，适用场景**
 
-https://juejin.cn/post/7256702654578409532#heading-5
-
-
-
-- 重排（回流）和重绘有什么区别，什么会引发重排，什么会引发重绘
-
-https://juejin.cn/post/7256702654578409532#heading-6
+- https://vue3js.cn/interview/http/status.html
 
 
 
-- **什么是同源策略**
+**CSS 加载会造成阻塞吗**
 
-同源策略是一种规定，它是浏览器最核心也是最基本的安全功能，如果缺少了同源策略浏览器的安全功能将会受到影响。所谓同源是指：域名、协议、端口相同，同源策略又分为以下两种：XMLHttpRequest 同源策略、DOM 同源策略
-
-https://juejin.cn/post/7256702654578409532#heading-9
+- https://juejin.cn/post/7256702654578409532#heading-5
 
 
 
-- **如何解决跨域问题**
+**重排（回流）和重绘有什么区别，什么会引发重排，什么会引发重绘**
 
-CORS：跨域资源共享，只要服务端添加一个 `Access-Control-Allow-Origin` 请求头设置为我们的目标域名，这个 HTTP 头就决定浏览器允许我们获取跨域请求的响应
+- https://juejin.cn/post/7256702654578409532#heading-6
 
-JSONP：它的原理就是利用 `<script>` 标签没有跨域限制，通过 `<script>` 标签 src 属性，发送带有 `callback` 函数的 **GET请求**，服务端将接口返回数据拼凑到 `callback` 函数中，返回给浏览器，从而前端再利用 `callback` 函数拿到返回的数据
 
-Proxy：网络代理模式，有以下几种解决方案：1. 我们可以通过 `webpack` 为我们起一个本地服务器作为请求的代理对象，通过该服务器转发请求至目标服务器，得到结果再转发给前端 2. 此外还可通过一些 node 服务端比如 express 实现代理请求转发 3. 最后是直接可以在服务器上配置 Nginx 实现反向代理从而实现跨域
 
-https://juejin.cn/post/7256702654578409532#heading-10
+**什么是同源策略**
 
-https://vue3js.cn/interview/vue/cors.html
+- 同源策略是一种规定，它是浏览器最核心也是最基本的安全功能，如果缺少了同源策略浏览器的安全功能将会受到影响。所谓同源是指：域名、协议、端口相同，同源策略又分为以下两种：XMLHttpRequest 同源策略、DOM 同源策略
+
+- https://juejin.cn/post/7256702654578409532#heading-9
+
+
+
+**如何解决跨域问题**
+
+- CORS：跨域资源共享，只要服务端添加一个 `Access-Control-Allow-Origin` 请求头设置为我们的目标域名，这个 HTTP 头就决定浏览器允许我们获取跨域请求的响应
+
+- JSONP：它的原理就是利用 `<script>` 标签没有跨域限制，通过 `<script>` 标签 src 属性，发送带有 `callback` 函数的 **GET请求**，服务端将接口返回数据拼凑到 `callback` 函数中，返回给浏览器，从而前端再利用 `callback` 函数拿到返回的数据
+
+- Proxy：网络代理模式，有以下几种解决方案：1. 我们可以通过 `webpack` 为我们起一个本地服务器作为请求的代理对象，通过该服务器转发请求至目标服务器，得到结果再转发给前端 2. 此外还可通过一些 node 服务端比如 express 实现代理请求转发 3. 最后是直接可以在服务器上配置 Nginx 实现反向代理从而实现跨域
+
+- https://juejin.cn/post/7256702654578409532#heading-10
+
+- https://vue3js.cn/interview/vue/cors.html
 
 
 
 ## 第七节
 
-- async 与 await，`await` 会阻塞下面的代码（即加入微任务队列）
+**async await 原理以及如何捕捉错误**
 
-https://vue3js.cn/interview/JavaScript/event_loop.html#%E4%B8%89%E3%80%81async%E4%B8%8Eawait
-
-
-
-- git rebase 和 git merge 的区别？
-
-https://juejin.cn/post/7257441472458604599#heading-7
+- https://vue3js.cn/interview/JavaScript/event_loop.html#%E4%B8%89%E3%80%81async%E4%B8%8Eawait
 
 
 
-- JS 继承有哪些？有什么优缺点？
+**git rebase 和 git merge 的区别是什么**
 
-原型链继承、构造函数继承、组合继承、使用 `Object.create` 实现浅拷贝对象、寄生组合式继承（class 语法糖采用形式）
+- https://juejin.cn/post/7257441472458604599#heading-7
 
-https://vue3js.cn/interview/JavaScript/inherit.html
+
+
+**JS 继承有哪些？有什么优缺点？**
+
+- 原型链继承、构造函数继承、组合继承、使用 `Object.create` 实现浅拷贝对象、寄生组合式继承（class 语法糖采用形式）
+
+- https://vue3js.cn/interview/JavaScript/inherit.html
+
+
+
+**能不能从零开始搭建一套 webpack 工程化**
+
+- https://www.codecrack.cn/zh/engineer/what-webpack-does-when-importing-modules
 
 
 
@@ -444,11 +472,9 @@ https://vue3js.cn/interview/JavaScript/inherit.html
 
 
 
-**Node 事件循环机制和浏览器的有什么不同**
-
-
-
 **数组去重有哪些实现方法**
+
+- 使用 lodash 里面的 uniq 或者 uniqBy：https://www.lodashjs.com/docs/lodash.uniqBy
 
 
 
@@ -472,9 +498,22 @@ https://vue3js.cn/interview/JavaScript/inherit.html
 
 
 
-**说说对 Fiber 架构的理解，解决了什么问题**
+**说一说 `==`、`===` 和 `Object.is` 的区别**
 
-- https://vue3js.cn/interview/React/Fiber.html
+- `==`：会进行隐式类型转换
+
+- `===`：不会隐式转换，严格类型判断。但是 `+0 === -0`、`NaN !== NaN`
+
+- `Object.is`：解决了 `+0 === -0`、`NaN !== NaN` 的问题！更加标准化判断
+
+- https://blog.csdn.net/MRlaochen/article/details/118557765
+
+
+
+**什么是显式类型转换和隐式类型转换**
+
+- 学习文档里面有，复习顺序是显式类型转换->运算符->隐式类型转换
+- 简单文档：https://vue3js.cn/interview/JavaScript/type_conversion.html
 
 
 
@@ -544,26 +583,6 @@ https://vue3js.cn/interview/JavaScript/inherit.html
 
 
 
-- 冒泡排序
-
-https://www.hello-algo.com/chapter_sorting/bubble_sort/
-
-
-
-- 插入排序
-
-https://www.hello-algo.com/chapter_sorting/insertion_sort/#1141
-
-
-
-- 快速排序
-
-https://www.hello-algo.com/chapter_sorting/quick_sort/
-
-
-
-
-
 # 第三章 难点与经验
 
 ## 小智问卷
@@ -584,8 +603,6 @@ https://www.hello-algo.com/chapter_sorting/quick_sort/
 
 毕业设计、接触过问卷系统的使用、开发一套实用性网站系统、用到自己学过的技术栈、全栈开发、巩固编程能力
 
-点击链接查看和 Kimi 智能助手的对话 https://kimi.moonshot.cn/share/co6kvhhkqq4ojc0mpg90
-
 
 
 - 问卷编辑器开发
@@ -605,13 +622,9 @@ https://www.hello-algo.com/chapter_sorting/quick_sort/
 
 
 
-## Vue3 项目
-
-Vue3 项目由于电脑本地没有拉取代码，无法本地调试，具体代码设计可以查看 Github 上的项目，里面也有记录这个项目的开发笔记，Vue3 项目和小程序项目都是去年上半年写的，这边可能不太好做演示。这两个技术栈我这边入职前肯定会复习复习，再写个小项目练练手。
 
 
-
-## 公司项目
+## 合思档案
 
 关于公司项目能学到的经验就是：
 
@@ -624,11 +637,9 @@ Vue3 项目由于电脑本地没有拉取代码，无法本地调试，具体代
 
 
 
-实习难点 & 突破点
+## 公务云平台
 
 
-
-实习个人优势
 
 
 

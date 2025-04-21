@@ -1675,36 +1675,37 @@ export default function App() {
 - https://zh-hans.react.dev/reference/react-dom/components/common#ref-callback
 
 ```tsx
-const itemsRef = useRef(null);
-function getMap() {
-  if (!itemsRef.current) {
-    // 首次运行时初始化 Map。
-    itemsRef.current = new Map();
+// 动态报表组件实例map
+const dynamicTableNewMapRef = useRef(null);
+const getDynamicTableNewMapRef = () => {
+  if (!dynamicTableNewMapRef.current) {
+    dynamicTableNewMapRef.current = new Map();
   }
-  return itemsRef.current;
-}
+  return dynamicTableNewMapRef.current;
+};
 
-<ul>
-  {catList.map(cat => (
-    <li
-      key={cat.id}
-      ref={(node) => {
-        const map = getMap();
-        if (node) {
-          map.set(cat.id, node);
-        } else {
-          map.delete(cat.id);
-        }
-      }}
-    >
-......
+ref={(node) => {
+  const map = getDynamicTableNewMapRef();
+  if (node) {
+    map.set(dynamicFormId, node);
+  } else {
+    map.delete(dynamicFormId);
+  }
+}}
+
 ```
 
-> 这样 itemsRef.current 就存好了 `<li>` 组件的所有 DOM 实例，用一个 map 存储
+```jsx
+// 使用
+const dynamicTableNewMap = dynamicTableNewMapRef.current || new Map();
+const dynamicTableNew = dynamicTableNewMap.get(dynamicId) || {};
+const getTableData = dynamicTableNew?.getTableData;
+const records = getTableData?.() || [];
+```
 
 
 
-**跳过初始渲染执行**
+**使用 ref 跳过初始渲染执行**
 
 在某些情况下，当组件首次渲染时，我们不希望立即执行某些操作。这些操作可能包括发送网络请求、触发某些动画或其他任务。而是只有在某个值或依赖项发生变化后，我们才希望执行这些任务。
 

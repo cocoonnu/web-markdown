@@ -1859,9 +1859,7 @@ Widget build(BuildContext context) {
 
 之前小节介绍过的可滚动组件都有对应的 Sliver：SliverGrid、SliverAnimatedList、SliverFixedExtentList、SliverList，另外还有其他一些常用 Sliver：SliverPersistentHeader、SliverAppBar、SliverFadeTransition、SliverPadding......
 
-这一节主要是实现复杂的滚动效果，比如滚动组件套滚动组件、滚动组件里使用 RenderBox 组件等等，这里先存档！
-
-
+这一节主要是实现复杂的滚动效果，比如滚动组件套滚动组件、滚动组件里使用 RenderBox 组件等等，这里先存档！​
 
 
 

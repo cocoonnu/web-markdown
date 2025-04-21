@@ -239,61 +239,39 @@ const { contractUrl, fromTabId, status, userId, dataId, datasourceId, ruleId } =
 
 
 
-**允许弹窗拖动**
+**Model 弹窗页面支持拖动**
 
-当在主项目声明一个应用的时候，主项目里的应用默认支持拖拽，其他项目中的应用需要手动加一个 id：`contractConfirmDetail: "contract-confirm-detail.html"`，给应用构建的组件最外层添加一个 id 即可。
+主项目构建的 Model 弹窗页面直接支持拖拽，在其他项目中构建的 Model 弹窗页面需要手动添加一个 `id="submission-application"`
 
-
-
-### 1.1.3 数据元项目笔记记录
-
-组件位置在：contract-factory/src/pages/onlyoffice-application-view-manage/index.tsx
-
-通过在公务云-事务管理-我的应用中点击某个配置好的数据元应用来打开，渲染一个数据元动态表格。
-
-
-
-弹窗中获取入口传递的 appId 这个参数即可，调用 dataElementAPI.getAppViewDataList 获取表格数据，调用 dataElementAPI.getAppViewConfigs 获取表格列数据（标签数据）
-
-```tsx
-const getViewConfig = async () => {
-  const data = await dataElementAPI.getAppViewConfigs({
-    appId: state.appId,
-    approveId: state.isPreview ? state.approveId : '',
-  });
-  console.log('getViewConfig', data);
-  const { showTags, datasourceId } = data || {};
-  setTags(showTags || []);
-  setDatasourceId(datasourceId);
-};
-
-const data = await dataElementAPI.getAppViewDataList({
-  appId: state.appId,
-  pageSize,
-  currentPage: current,
-  approveId: state.isPreview ? state.approveId : '',
-});
-console.log('getDataSource', data);
-const { total, records } = data || {};
+```jsx
+<TabsHeaderNew
+  title={`${isCancel ? '取消模板收权' : '模板收权'}审批`}
+  needClose
+  onClose={close}
+  canDrag
+  id="submission-application"
+/>
 ```
 
 
 
-最后通过将标签和表格数据在 src/pages/onlyoffice-application-view-manage/data-element-view/tag-table.tsx 中通过映射对应获取到最终的 columns
+### 1.1.3 项目难点与任务调研
+
+**弹窗拖拽方案调研**
+
+
 
 
 
 ### 1.1.4 项目常用功能点记录
 
-**蓝色顶部弹窗样式**
+**Modal 弹窗添加圆角、实现拖拽**
 
-new-gwy-web/src/modules/organization/deptmentTree/DragTree/merge-dialog-new.tsx
+案例一：contract-factory/src/pages/onlyoffice-application-designer-v3/components/tabs-left/components/fields-libs-modal/index.tsx
 
+案例二：src/pages/onlyoffice-application-designer-v3/components/app-manage/other-company-create-modal/index.tsx
 
-
-**弹窗添加圆角、实现拖拽**
-
-contract-factory/src/pages/onlyoffice-application-designer-v3/components/tabs-left/components/fields-libs-modal/index.tsx
+案例三：new-gwy-web/src/modules/organization/deptmentTree/DragTree/merge-dialog-new.tsx
 
 ```js
 // 添加圆角需要加上
@@ -465,8 +443,6 @@ export interface EventParamsConfig {
 - 梳理代码逻辑，整理所有业务场景
 - 着手开发，代码以新增为主，历史逻辑要兼容
 - 严格自测，设计到重构场景的业务都需要自测一遍
-
-
 
 
 
@@ -1820,36 +1796,33 @@ const size = useSize(tableRef) || { width: 0, height: 0 }
 
 ### 1.3.3 antd@4 表单组件开发技巧
 
-**Form hooks**
+**Form.useForm**
 
-- Form.useForm：在函数组件中可直接使用这个钩子代替 `useRef`，通过创建表单实例 `form=useForm()` 实例拥有的属性以及函数如下：https://4x-ant-design.antgroup.com/components/form-cn/#FormInstance
+在函数组件中可直接使用这个钩子代替 `useRef`，通过创建表单实例 `form=useForm()` 实例拥有的属性以及函数如下：https://4x-ant-design.antgroup.com/components/form-cn/#FormInstance
 
-- Form.useFormInstance：用于深层次子组件获取到顶层 From 表单的实例，避免一个 form 不断渗透传递带来的麻烦：https://4x-ant-design.antgroup.com/components/form-cn/#Form.useFormInstance
 
-- Form.useWatch：通过这个钩子可实时获取表单对象的某个值，只需要传入 NamePath 即可。**通常用于计算属性的使用**，偶尔也可用作监听，**但是监听表单的交互建议还是使用表单内部的 onChange 事件**：https://4x-ant-design.antgroup.com/components/form-cn/#Form.useWatch
+
+**Form.useFormInstance**
+
+用于深层次子组件获取到顶层 From 表单的实例，避免一个 form 不断渗透传递带来的麻烦：https://4x-ant-design.antgroup.com/components/form-cn/#Form.useFormInstance
+
+
+
+**Form.useWatch**
+
+通过这个钩子可实时获取表单对象的某个值，只需要传入 NamePath 即可。**通常用于计算属性的使用**，偶尔也可用作监听，**但是监听表单的交互建议还是使用表单内部的 onChange 事件**：https://4x-ant-design.antgroup.com/components/form-cn/#Form.useWatch
 
 
 
 **Form.Item.name**
 
-单个 Form.Item 里面的 name 自动继承父级的 name，因此 Form 里面的控件 name 层级森严
+单个 Form.Item 里面的 name 自动继承父级的 name，因此 Form 里面的控件 name 层级森严，数据结构为 NamePath 对象
 
-**普通属性**
 
-定义 name 属性为了给表单对象添加一项属性，下面是最普通的一项直接在对象下添加字符串类型属性 nickname
 
-```tsx
- <Form.Item
-  {...formItemLayout}
-  name="nickname"
->
-  <Input placeholder="Please input your nickname" />
-</Form.Item>
-```
+**Form.Item 为对象属性**
 
-**对象属性**
-
-下面是在顶层对象下添加一个对象属性，使用方式是进行顶层使用无 name 的 Form.Item（也可以用其他 DOM 包裹，符合样式即可），内部使用 NamePath 进行对象的拼接，达到添加了一个对象属性的作用：`address: {province,street}`
+下面是在顶层对象下添加一个对象属性，使用方式是进行顶层使用无 name 的 Form.Item（也可以用其他 DOM 包裹，符合样式即可），内部使用 NamePath 进行对象的拼接，达到添加了一个对象属性的作用：`address: { province, street }`
 
 ```tsx
 <Form.Item label="Address">
@@ -1875,13 +1848,11 @@ const size = useSize(tableRef) || { width: 0, height: 0 }
 </Form.Item>
 ```
 
-**数组属性**
 
-在顶层对象添加一个数组属性肯定要用到 Form.List，`fields` 只用于数组的渲染、`field` 对象里面的 `key、name` 都是数组的索引、执行 `add` 函数即可在数组中添加一项、执行 `remove(field.name)` 即可删除指定的数组项
 
-数组内部每一项可以是一个普通属性，但通常是一个对象属性。 **NamePath 不用写顶层的 name：`[field.name, 'sight']`。**
+**Form.Item 为数组属性**
 
-因此得到一个数组属性：`sights: [{sight,price}]` 
+在顶层对象添加一个数组属性肯定要用到 Form.List，`fields` 只用于数组的渲染、`field` 对象里面的 `key、name` 都是数组的索引、执行 `add` 函数即可在数组中添加一项、执行 `remove(field.name)` 即可删除指定的数组项。数组内部每一项可以是一个普通属性，但通常是一个对象属性。 **NamePath 不用写顶层的 name：`[field.name, 'sight']`**，因此得到一个数组属性：`sights: [{ sight, price }]` 
 
 ```tsx
 <Form.List name="sights">
@@ -1919,7 +1890,7 @@ const size = useSize(tableRef) || { width: 0, height: 0 }
 
 
 
-**From 常用属性**
+**`<From />` 常用属性**
 
 - from：传入通过 `useForm` 创建表单实例，实现双向绑定
 - colon：配置 Form.Item 的 `colon` 的默认值。表示是否显示 label 后面的冒号
@@ -1943,25 +1914,15 @@ wrapperCol={{ span: 14 }}
 
 
 
- **Form.List**
-
-现有基础 Form.List 组件案例：contract-factory/src/pages/onlyoffice-application-view-manage-v3/data-element-view/components/sort-rules.tsx
-
-
-
 **onValuesChange**
 
-字段值更新时触发回调事件，每个控件 onChange 之后都会触发，`function(changedValues, allValues)`
-
-changedValues 为修改字段的一个对象，从根对象起需要 namepath 来逐层获取
-
-**另外手动的 setFieldsValue 无法触发这个回调**
+字段值更新时触发回调事件，每个控件 onChange 之后都会触发，`function(changedValues, allValues)`，changedValues 为修改字段的一个对象，从根对象起需要输入整个 NamePath 来逐层获取，**另外手动的 setFieldsValue 无法触发这个回调**
 
 ```jsx
 // namePath: ['orgList', 'orgListIndex', 'ruleRows', 'ruleRowsIndex' ...]
 // 如果是数组则需要判空取值
-onValuesChange={(values) => {
-  const ruleRows = (values?.orgList || []).filter((n) => n)[0]?.ruleRows || []; // 去除empty项
+onValuesChange={(value) => {
+  const ruleRows = (value?.orgList || []).filter((n) => n)[0]?.ruleRows || []; // 去除empty项
   if (isEmpty(ruleRows)) return;
   const multiRows = ruleRows?.filter((n) => n)[0]?.multiRows || []; // 去除empty项
   ......
@@ -1972,11 +1933,7 @@ onValuesChange={(values) => {
 
 **onFieldsChange**
 
-字段更新时触发回调事件，相对于 onValuesChange 这个回调不止字段的值变化会触发，只要字段的状态更新后就会触发。
-
-**另外手动的 setFieldsValue 无法触发这个回调**
-
-[为什么字段设置 `rules` 后更改值 `onFieldsChange` 会触发三次？](https://4x-ant-design.antgroup.com/components/form-cn/#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%AD%97%E6%AE%B5%E8%AE%BE%E7%BD%AE-rules-%E5%90%8E%E6%9B%B4%E6%94%B9%E5%80%BC-onFieldsChange-%E4%BC%9A%E8%A7%A6%E5%8F%91%E4%B8%89%E6%AC%A1%EF%BC%9F)
+字段更新时触发回调事件，相对于 onValuesChange 这个回调不止字段的值变化会触发，只要**字段的状态**更新后就会触发，**另外手动的 setFieldsValue 无法触发这个回调**，[为什么字段设置 `rules` 后更改值 `onFieldsChange` 会触发三次？](https://4x-ant-design.antgroup.com/components/form-cn/#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%AD%97%E6%AE%B5%E8%AE%BE%E7%BD%AE-rules-%E5%90%8E%E6%9B%B4%E6%94%B9%E5%80%BC-onFieldsChange-%E4%BC%9A%E8%A7%A6%E5%8F%91%E4%B8%89%E6%AC%A1%EF%BC%9F)
 
 ```jsx
 // 通过changeField获取更新的值的namePath
@@ -1992,6 +1949,24 @@ onFieldsChange={(changeField) => {
 **initialValues**
 
 初始化整个表单通常在组件初始化的时候搭配 setFieldsValue 设置表单的值。而 initialValues 或者表单单项的 initialValue 通常用来设置静态的值。
+
+
+
+**当表单项为 DatePicker 的处理**
+
+如果表单项为 DatePicker 时，value 存储的就是一个 moment 对象，但是我们通常需要字符串类型的值，因此我们需要两个属性来搭配实现自定义表单项传值：https://ant.design/components/form-cn#form-demo-getvalueprops-normalize
+
+```jsx
+<Form.Item
+  label="Date"
+  name="date"
+  rules={[{ required: true }]}
+  getValueProps={(value) => ({ value: value && dayjs(Number(value)) })}
+  normalize={(value) => value && `${dayjs(value).valueOf()}`}
+>
+  <DatePicker />
+</Form.Item>
+```
 
 
 

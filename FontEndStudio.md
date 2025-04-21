@@ -691,31 +691,40 @@ Date：https://juejin.cn/post/6996926386405376037
 
 - 构造函数和对象实例都是**对象**，只有构造函数有 `prototype`，任何对象都有 `__proto__`
 - **对象的 `__proto__` 指向其构造函数的 `prototype`**，构造函数的构造函数是 `Function`，`prototype` 的构造函数是 `Object`
-- 对象里面有一个属性 `constructor`，它直接指向其构造函数
+- 对象里面有一个属性 `constructor`，它直接指向其构造函数，下面是分类介绍
 
 ```js
 function Foo() {} // 构造函数Foo
 const foo = new Foo() // 对象实例foo
+foo.__proto__ == Foo.prototype // 实例的构造函数最好理解
 
-// 可以得到以下关系
-foo.__proto__ == Foo.prototype
+// 构造函数的构造函数均为Function
 Foo.__proto__ == Function.prototype
 Function.__proto__ == Function.prototype
+Object.__proto__ == Function.prototype
 
-Foo.prototype.__proto__ == Object.prototype // 原型对象也是一个对象，构造函数为Object
+// 除了Object，其余构造函数的原型对象的构造函数为Object
+Foo.prototype.__proto__ == Object.prototype
 Function.prototype.__proto__ == Object.prototype
 
-Object.__proto__ == Function.prototype // Object的构造函数为Function
-Object.prototype.__proto__ == null // 原型链的终点
+// 原型链的终点
+Object.prototype.__proto__ == null 
 ```
 
 ```js
+// 原型对象的constructor指向原型对象的拥有者
 Foo.prototype.constructor == Foo
+foo.__proto__.constructor == Foo
 Function.prototype.constructor == Function
 Object.prototype.constructor == Object
-```
 
-> null 和 undefined 没有原型对象
+// 构造函数的constructor指向Function
+Object.constructor == Function
+Function.constructor === Function
+
+// 普通实例的constructor指向其构造函数
+foo.constructor == Foo
+```
 
 
 
@@ -724,10 +733,6 @@ Object.prototype.constructor == Object
 - `__proto__` 为实例对象的隐式原型，指向其构造函数的 `prototype`
 - `prototype` 为构造函数的原型对象，包含该构造函数实例化后对象可以共享的属性和方法
 - 原型链就是多个对象通过 `__proto__` 属性形成的一条查找路径，当访问某个对象的属性或方法时，如果当前对象没有，就会沿着原型链向上查找，直到 `null` 为止
-
-
-
-**原型和原型链例题**
 
 ```js
 Object.prototype.foo = 'Object';
@@ -779,7 +784,7 @@ var obj={
 
 obj.foo(); // 2
 obj.bar(); // 1
-var foo = obj.foo;
+var foo = obj.foo; // 解构赋值和函数入参都是同样的效果，会创建一个新的变量引用
 foo(); // 1
 ```
 
@@ -826,6 +831,36 @@ const handelEffectiveCol = () => {
 ```
 
 > 解决方案有三个：1. 在第一个 titleData 定义的地方用一个深拷贝生成 2. 在 newItem 那里不能用浅拷贝，而是改用将 item 深拷贝 3. 在最后等于的地方将右边的地址进行的深拷贝
+
+
+
+**闭包实际应用案例**
+
+首先闭包函数的首要目的就是为了在不同作用域下进行复用，如果只是使用一次那就完全没必要使用闭包，另外闭包函数的也要一般带有返回值。闭包是指函数能够记住并访问它定义时的外部作用域，即使外部函数已经执行完毕。它使得内部函数能够访问外部函数的局部变量，即使外部函数已经返回。闭包常用于数据封装、保持状态和异步回调等场景。
+
+```jsx
+export function formatFormDataNewListRow(dynamic) {
+  return function (rowData) {
+    if (isEmpty(rowData)) return null;
+    const { tagAndFieldDTOS } = dynamic;
+    ......
+    const tagList = tagIdAndRuleIds.map((tagIdAndRuleId) => {
+      const [tagId, ruleId] = tagIdAndRuleId.split('|');
+      return {
+        ......
+        dataId: rowData[tagIdAndRuleId]?.ruleDataId,
+      };
+    });
+    return { tagList, dataId: get(rowData, [tagIdAndRuleIds[0], 'dataId']) };
+  };
+}
+```
+
+```jsx
+const formDataList = (dynamicFormValue?.formDataList || []).map(formatFormDataNewListRow(d))
+```
+
+> 这里闭包函数会被循环执行，并且保证了在每一个循环中都拥有同一个变量 dynamic
 
 
 
@@ -1303,15 +1338,7 @@ Math.floor(Math.random() * num)：// 返回0到num-1的整数
 
 
 
-**两个浮点数直接相减后不能直接用来判断结果**
-
-```js
-0.3 - 0.2 !== 0.1 // 会考虑到精度丢失的问题，部分浮点数计算也是如此 
-```
-
-
-
-**字符串**
+**字符串相关函数**
 
 增删改查基础方法：https://vue3js.cn/interview/JavaScript/string_api.html
 
@@ -1324,31 +1351,6 @@ Math.floor(Math.random() * num)：// 返回0到num-1的整数
 `[...new Set(string)].join('')`：字符串去重
 
 `replace(reg, str)`：指定字符替换，https://blog.csdn.net/qq_46658751/article/details
-
-
-
-**其他函数**
-
-```js
-navigator.clipboard.writeText(123); // 实现用户复制内容为123
-
-// 禁止打开右键
-document.oncontextmenu=new Function("event.returnValue=false");
-
-// 禁止滑动选中
-document.onselectstart=new Function("event.returnValue=false");
-
-document.onkeydown = function(event){    
-    if (event.ctrlKey && window.event.keyCode==67){	//禁用ctrl + c 功能
-        return false;
-    }
-    if (event.ctrlKey && window.event.keyCode==86){	//禁用ctrl + v 功能
-        return false;
-    }
-}
-
-((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0)
-```
 
 
 
@@ -1524,7 +1526,7 @@ https://cn.vuejs.org/guide/essentials/event-handling.html#event-modifiers
 
 
 
-## 3.6 正则表达式介绍
+## 3.6 正则表达式使用指南
 
 菜鸟教程：https://www.runoob.com/regexp/regexp-tutorial.html
 
@@ -1715,14 +1717,63 @@ console.log(foo.n);        //实参foo的指向还是原来的内存空间，里
 
 
 
+**JavaScript 连续赋值的执行顺序问题**
+
+1. 多次赋值与顺序无关，是同时进行赋值的
+2. 每个节点的变量最终赋值的值取决去最后一个等号的右边值
+3. 如果赋值是引用类型，则最终指向的是同一个对象
+
+4. https://blog.csdn.net/gdutRex/article/details/99731550
 
 
-## 3.9 隐式转换与运算符
+
+## 3.9 类型转换与运算符
+
+**显式类型转换**
+
+1. 显式类型转换就是将各种对象类型转换为 Boolean、Number、String，下面是三大类型的显式类型转换的方法：https://vue3js.cn/interview/JavaScript/type_conversion.html#%E4%BA%8C%E3%80%81%E6%98%BE%E7%A4%BA%E8%BD%AC%E6%8D%A2
+
+2. 上面的文档中漏了 parseInt、parseFloat、一元加号、双重否定等方式，另外这里记录一些常见的显式类型转换
+
+3. 注意 Symbol.toPrimitive 直接定义了对象如何转换为原始值，如果没有自定义则无需考虑，直接用下面的规则
+
+```js
+Number('') // 0
+Number(true) // 1
+Number(false) // 0
+Number(undefined) // NaN
+Number(null) // 0
+Number({a: 1}) // NaN
+Number([1, 2, 3]) // NaN
+Number([5]) // 5
++"123" // 123
++true  // 1
++null  // 0
+
+String(true) // "true"
+String(undefined) // "undefined"
+String(null) // "null"
+String({a: 1}) // "[object Object]"
+String([1, 2, 3]) // "1,2,3"
+
+Boolean(undefined) // false
+Boolean(null) // false
+Boolean(0) // false
+Boolean(NaN) // false
+Boolean('') // false
+Boolean({}) // true
+Boolean([]) // true
+Boolean(new Boolean(false)) // true
+!!"hello" // true
+!!0       // false
+```
+
+
 
 **运算符介绍**
 
 1. 基本运算符：https://juejin.cn/post/6993711769281626119
-2. `&& 、|| 、??、?.`：https://www.cnblogs.com/jimyking/p/16225335.html
+2. `&& 、|| 、??`（逻辑运算符）：https://www.cnblogs.com/jimyking/p/16225335.html
 
 3. `&、|、^、~`（位运算，转换为二进制）：https://blog.csdn.net/qq_34205932/article/details/106481876
 
@@ -1738,33 +1789,26 @@ console.log(foo.n);        //实参foo的指向还是原来的内存空间，里
 
 **隐式类型转换**
 
-1. 在执行运算符时，某些变量会进行隐式类型转换 `Boolean()、Number()、String()`，转换规则如下
-2. 遇到等于号会转布尔值，字符串和加号转字符串，其他运算符通常会转数字类型
-3. https://vue3js.cn/interview/JavaScript/type_conversion.html
+隐式类型转换就是当我们进行比较运算和算术运算时，两边的操作数不是同一类型的情况下， JS 会自动将两边的操作数进行类型转换，从而进行下一步的运算 。其中内部的类型转换规则可以参考显式类型转换的规则，另外不同运算符要求转换类型不同：
+
+1. 加号运算符：优先转换为字符串进行比较、其次是数字
+2. 比较运算符：优先转换为数字进行比较、其次是布尔值再是字符串
+3. 逻辑运算符：直接转换为布尔值进行判断
+4. **前面的前提都是没有对象和数组参与的情况，如果有他们的参与则再分一下情况：**
+   1. 对象参与运算时都会转换为原始值，三个转为原始值的方法优先级一次递减：Symbol.toPrimitive、valueOf、toString
+   2. **前两个方法都需要对象自定义，因此对象参与运算是默认就是调用 toString 方法**
+   3. https://www.codecrack.cn/zh/javascript/class-type-conversion
+5. 下面是一些常见的面试题，并含有推导教程
+
+```js
+[] == false // 有数组则toString一下：'' == false，根据比较运算符规则没有数字则都转为布尔值：false == false 所以为true
+
+[] + {} // 两个都toString后：'' + 'object Object' = ‘object Object’
+
+{} + [] // 如果再代码块执行则{}作为一个代码快表达式变成了+[]=0，如果是语句内则和上一条一样还是‘object Object’
+```
 
 
-
-**实例类型转换记录**
-
-1. 只有 `0，-0，NaN，""，null，undefined` 可以直接作为 false 判断，**但是像 `[]、{}`  而是返回 true**
-2. 一些特殊转换记录：Number([]) = 0, Number(null) = 0, Number(undefined) = NaN
-
-
-
-**`==`、`===`、`Object.is` 的区别**
-
-1. `==`：会进行隐式类型转换
-
-2. `===`：不会隐式转换，严格类型判断。但是 `+0 === -0`、`NaN !== NaN`
-
-3. `Object.is`：解决了 `+0 === -0`、`NaN !== NaN` 的问题！更加标准化判断
-4. https://blog.csdn.net/MRlaochen/article/details/118557765
-
-
-
-**JavaScript 连续赋值的执行顺序问题**
-
-https://blog.csdn.net/gdutRex/article/details/99731550
 
 
 
@@ -1814,8 +1858,6 @@ console.count('Click'); // Logs "Click: 2"
 // dirxml() 方法在控制台中显示指定 JavaScript 对象的 XML 表示形式。该方法在处理 XML 数据或可表示为 XML 的对象时特别有用。
 console.dirxml(document);
 ```
-
-
 
 
 
