@@ -1,99 +1,21 @@
-# 第一章 认识 React
+# 第一章 React 开发与学习
 
-React 的官方英文网站：https://reactjs.org  React 的中文网站：https://zh-hans.reactjs.org
-
-直接看 React API 文档：https://zh-hans.react.dev/reference/react
-
-## 1.1 项目启动初始化
-
-React 组件文件可以用 `.jsx` 也可以用 `.js` 文件，两者没有区别
-
-主要参考文档：https://lanan.blog.csdn.net/article/details/126923270
-
-Create React App 中文文档：https://create-react-app.bootcss.com/
+1. React 的英文网站：https://reactjs.org  
+2. React 的中文网站：https://zh-hans.reactjs.org
+3. React API 文档：https://zh-hans.react.dev/reference/react
 
 
 
-使用脚手架 `create-react-app` 启动一个项目，默认情况下**脚手架搭建的项目配置文件都是隐藏的**
+## 1.1 React 项目初始化
 
-```bash
-$ npx create-react-app react-test
-```
+初学者搭建 React 入门项目主要使用 Create React App，使用脚手架 `create-react-app` 启动一个项目，默认情况下脚手架搭建的项目配置文件都是隐藏的：`npx create-react-app react-test`
 
-
-
-- **新建 `jsconfig.json` 使得 VScode 对项目的 JS 代码进行优化**
-
-如果没配置好 `jsconfig.json`，部分报错将无法识别！！目前没有找到解决办法
-
-```js
-{
-    "compilerOptions": {
-        "target": "es3",
-        "module": "esnext",
-        "baseUrl": "./",
-        "moduleResolution": "node",
-        "paths": {
-            "@/*": [
-                "src/*"
-            ]
-        },
-        "jsx": "preserve",
-        "lib": [
-            "esnext",
-            "dom",
-            "dom.iterable",
-            "scripthost"
-        ]
-    }
-}
-```
-
-> 通常 target 选项会报错，根据提示选择项目对应的版本
->
-> 参考：https://juejin.cn/post/7079769333471117343
+1. 搭建流程可以参考文档：https://lanan.blog.csdn.net/article/details/126923270
+2. Create React App 中文文档：https://create-react-app.bootcss.com/
 
 
 
-- **安装 VS code 插件**
-
-Simple React Snippets：快速生成代码
-
-```jsx
-imr 
-import React, { Component } from 'react';
-
-cc
-class rcom extends Component {
-    state = {  }
-    render() { 
-        return (  );
-    }
-}
-export default rcom;
-```
-
-
-
-- **显示 React 项目配置文件**
-
-```bash
-$ npm run eject
-```
-
-> 仓库必须 Git  初始化命令才会生效
-
-执行之后，会多出以下项目配置文件夹：scripts、config。
-
-通常不需要动这些文件，如果要实现某些配置的业务逻辑，直接现搜即可！！一般会有第三方解决方法
-
- 
-
-## 1.2 JSX 语法与本质
-
-JSX 就是 Javascript 和 XML 结合的一种格式。React 发明了 JSX，可以方便的利用 HTML 语法来创建虚拟 DOM
-
-
+JSX 就是 Javascript 和 XML 结合的一种格式，React 发明了 JSX，可以方便的利用 HTML 语法来创建虚拟 DOM：
 
 **{} 插入内容**
 
@@ -199,7 +121,7 @@ function App() {
 
 
 
-## 1.3 React 组件化
+## 1.2 React 组件化概念
 
 组件化分为两种写法：函数组件、类组件。本质上，JSX 只是 React.createElement(component, props, …children) 的语法糖。所有使用 JSX 语法书写的节点，都会被编译器转换，最终以 React.createElement(…) 的方式创建对应的 ReactElement 对象。下面例子中的 Component 是一个 React 组件，这是两种对该 React 组件的用法。
 
@@ -227,17 +149,11 @@ const getQuestionComponent = (item: QuestionComInfo) => {
 
 
 
-## 1.4 响应式和事件绑定
+## 1.3 React 实现响应式
 
 这里是 React18 之前的响应式实现方式，React18 之后使用函数组件，下面的 API 被 Hooks 替换了
 
-
-
-### 1.4.1 实现响应式数据
-
-初始化数据定义在类组件实例的 `state` 属性上
-
-React 是禁止直接操作 `state` 的！我们一般通过 `setState` 这个 API 进行状态修改
+初始化数据定义在类组件实例的 `state` 属性上，React 是禁止直接操作 `state` 的！我们一般通过 `setState` 这个 API 进行状态修改
 
 - `setState` 方法是从 `Component` 中继承过来的，所以可以直接 `this.setState`
 - `setState` 方法传入的该对象会和 `this.state` 的对象进行一个合并, **相同的属性会进行覆盖**
@@ -246,7 +162,7 @@ React 是禁止直接操作 `state` 的！我们一般通过 `setState` 这个 A
 
 
 
-**方式一：`setState` 直接传入一个对象**
+**`setState` 直接传入一个对象**
 
 ```jsx
 class Count extends Component {
@@ -274,30 +190,28 @@ class Count extends Component {
 
 
 
-**方式二：`setState` 传入一个回调函数，函数直接接收 `stete`、`props` 参数，然后返回一个对象即可**
+**`setState` 传入一个回调函数，函数直接接收 `stete`、`props` 参数，然后返回一个对象即可**
 
 ```jsx
 class Test extends Component {
+  state =  {
+    list: [1,2,4,5,6]
+  }
+  clickBtn() {
+    this.setState((state, props) => {
+        console.log(state, props)
+        const list = this.state.list.filter(item => item > 2)
 
-    state =  {
-        list: [1,2,4,5,6]
-    }
-    
-    clickBtn() {
-        this.setState((state, props) => {
-            console.log(state, props)
-            const list = this.state.list.filter(item => item > 2)
+        return {
+            list
+        }
+    })
+  }
 
-            return {
-                list
-            }
-        })
-    }
-
-    <button onClick={ () => this.clickBtn() }>
-        clickBtn
-    </button>
-    { this.state.list }
+  <button onClick={ () => this.clickBtn() }>
+      clickBtn
+  </button>
+  { this.state.list }
 }
 ```
 
@@ -307,144 +221,24 @@ class Test extends Component {
 
 ```jsx
 clickBtn() {
-    this.setState((state, props) => {
-        console.log(state, props)
-        const list = this.state.list.filter(item => item > 2)
+  this.setState((state, props) => {
+    console.log(state, props)
+    const list = this.state.list.filter(item => item > 2)
 
-        return {
-            list
-        }
-    }, () => {
-        console.log(this.state.list)
-    })
+    return {
+        list
+    }
+  }, () => {
+      console.log(this.state.list)
+  })
 }
 ```
 
 
 
+## 1.4 React 组件通信方式
 
-
-### 1.4.2 实现事件绑定
-
-**事件绑定就是事件名称 + 回调函数**
-
-- 首先要绑定事件时要指定 `this` 指向，事件参数默认接收 `e`
-- 普通成员函数建议使用箭头函数
-- 内置函数可以不适用箭头函数，里面的 this 已经被封装好了 
-- 事件绑定机制原理：https://blog.csdn.net/kelly0721/article/details/117259877
-
-```jsx
-// 类里面定义成员函数
-show = (e) => {
-    console.log(e)
-}
-```
-
-```jsx
-// 传入参数
-<Button type="primary" onClick={(e) => this.show(e, 其他参数)}>按钮</Button>
-
-// 无多余参数
-<Button type="primary" onClick={ this.show }>按钮</Button>
-```
-
-
-
-**事件里面的回调函数最好写成如下格式，不要简写图方便！**
-
-```jsx
-<Button onClick={ () => fun() }>按钮</Button>
-```
-
-
-
-**成员函数不使用箭头函数的后果：没有自己的 this 指向**，有两个方式修正
-
-```jsx
-class Test extends Component {
-    
-    constructor() {
-        super()
-        // 修正方式一
-        this.clickBtn = this.clickBtn.bind(this)
-    }
-
-    // 定义普通函数
-    clickBtn() {
-        console.log(1111)
-        console.log(this)
-    }
-
-    render() { 
-        return (
-            <div className="test">
-                // 修正方式二
-                <button onClick={ () => this.clickBtn() }>clickBtn</button>
-                
-                <button onClick={ this.clickBtn }>clickBtn</button>
-            </div>
-        )
-    }
-}
-```
-
-
-
-### 1.4.3 实现数据双向绑定 
-
-这里介绍一下受控组件和非受控组件，参考文档：https://juejin.cn/post/6858276396968951822
-
-
-
-受控组件：
-
-在HTML的表单元素中，它们通常自己维护一套`state`，并随着用户的输入自己进行`UI`上的更新，这种行为是不被我们程序所管控的。而如果将`React`里的`state`属性和表单元素的值建立依赖关系，再通过`onChange`事件与`setState()`结合更新`state`属性，就能达到控制用户输入过程中表单发生的操作。被`React`以这种方式控制取值的表单输入元素就叫做**受控组件**
-
-
-
-- input 受控组件
-
-```jsx
-class Test extends Component {
-
-    state =  {
-        inputValue: ''
-    }
-    
-    inputChange = (e) => {
-        this.setState({
-            inputValue: e.target.value
-        })
-    }
-
-    render() { 
-        return (
-            <div className="test">
-                <input 
-                    type="text" 
-                    value={ this.state.inputValue } 
-                    onChange={ this.inputChange } 
-                />
-                { this.state.inputValue }
-            </div>
-        )
-    }
-}
-```
-
-- 其他受控组件使用可以去看文档，比如多选select、单选select、textarea等
-
-
-
-非受控组件
-
-我们仅仅是想要获取某个表单元素的值，而不关心它是如何改变的。因此可以用获取`DOM`元素信息的方式来获取表单元素的值呢？也就是使用`ref`。
-
-
-
-## 1.5 React 组件通信方法
-
-### 1.5.1 Props 参数传递
+### 1.4.1 props 参数传递
 
 父子组件通信一切都基于 `props` 属性发展，props 可以传递数字、字符串、布尔值、数组、对象、JSX、函数等任意类型的数据，类组件 props 自动封装到了 this 里面。
 
@@ -558,11 +352,9 @@ function Test({ name = 'cocoon' }) {
 
 
 
-### 1.5.2 Context 嵌套传递
+### 1.4.2 Context 嵌套传递
 
-`Context` 提供了一种新的组件之间共享数据的方式，允许数据隔代传递，而不必显式的通过组件树逐层传递`props`，具体使用如下面所示。
-
-参考文档：https://blog.csdn.net/qq_34307801/article/details/109774612
+`Context` 提供了一种新的组件之间共享数据的方式，允许数据隔代传递，而不必显式的通过组件树逐层传递`props`，具体使用如下面所示。参考文档：https://blog.csdn.net/qq_34307801/article/details/109774612
 
 
 
@@ -680,9 +472,9 @@ class Test extends Component {
 
 
 
-## 1.6 React API 使用介绍
+## 1.5 React API 使用介绍
 
-### 1.6.1 createRef
+### 1.5.1 createRef
 
 React 使用 Ref 属性的使用方法：https://blog.csdn.net/weixin_44827418/article/details/121319268
 
@@ -727,7 +519,7 @@ class Test extends Component {
 
 
 
-### 1.6.2 lazyLoad
+### 1.5.2 lazyLoad
 
 代码分割能够创建多个包并在运行时动态加载，它能够帮助我们**懒加载**当前用户所需要的内容，能够显著地提高应用性能。尽管并没有减少应用整体的代码体积，但可以避免加载用户永远不需要的代码，并在初始加载的时候减少所需加载的代码量
 
@@ -751,7 +543,7 @@ const Home = lazy(() => import('./views/Home'))
 
 
 
-### 1.6.3 childrenProps
+### 1.5.3 childrenProps
 
 父组件使用子组件时，在子组件内部写的节点或数据会被封装到子组件 `props` 属性的`children` 当中
 
@@ -797,7 +589,7 @@ class Child extends React.Component {
 
 
 
-### 1.6.4 randerProps
+### 1.5.4 randerProps
 
 实现类似 Vue 中的作用域插槽，实现父子数据通信，父组件利用子组件的数据渲染元素
 
@@ -833,7 +625,7 @@ export default App
 
 
 
-### 1.6.5 PureComponent
+### 1.5.5 PureComponent
 
 在使用类组件式，会继承于React的Component组件，该组件存在两个问题：
 
@@ -977,7 +769,7 @@ this.setState({ arr })
 
 
 
-### 1.6.6 React.creatElement
+### 1.5.6 React.creatElement
 
 关于 React.createElement 官方介绍：https://zh-hans.react.dev/reference/react/createElement
 
@@ -1021,13 +813,13 @@ class App extends React.Component {
 
 
 
-## 1.7 React 生命周期记录
+## 1.6 React 生命周期记录
 
 组件的生命周期是指组件从被创建到挂载到页面中运行起来，再到组件不用时卸载的过程，**注意，只有类组件才有生命周期（类组件 实例化  函数组件 不需要实例化）**
 
 
 
-### 1.7.1 常用的生命周期
+### 1.6.1 常用的生命周期
 
 React 万能参考图：https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/
 
@@ -1062,7 +854,7 @@ React 万能参考图：https://projects.wojtekmaj.pl/react-lifecycle-methods-di
 
 
 
-### 1.7.2 生命周期详细讲解
+### 1.6.2 生命周期详细讲解
 
 参考文档：https://blog.csdn.net/p1967914901/article/details/123939017
 
@@ -1110,97 +902,9 @@ React 万能参考图：https://projects.wojtekmaj.pl/react-lifecycle-methods-di
 
 
 
-## 1.8 Craco 配置开发环境
+# 第二章 React 开发与进阶
 
-craco，一个对 create-react-app 进行自定义配置的社区解决方案，从而来代理 Webpack 的配置
-
-使用 `create-react-app` 创建的项目默认是无法修改其内部的 `webpack` 配置的，不像 `vue-cli ` 那样可以通过一个配置文件修改。 虽然有一个 `eject` 命令可以是将配置完全暴露出来，但这是一个不可逆的操作，同时也会失去`CRA` 带来的便利和后续升级。
-
-如果想要无 `eject` 重写 `CRA` 配置，目前成熟的是下面这几种方式
-
-- 通过 CRA 官方支持的 `--scripts-version` 参数，创建项目时使用自己重写过的 `react-scripts` 包
-- 使用 `react-app-rewired` + `customize-cra` 组合覆盖配置
-- **使用 `craco` 覆盖配置**
-
-
-
-更多项目配置可以查看掘金文档（待完成）：https://juejin.cn/post/6871148364919111688
-
-Craco Github：https://github.com/dilanx/craco
-
-
-
-### 1.8.1 配置项目根路径
-
-首先安装 Craco
-
-```bash
-$ npm i -D @craco/craco
-$ npm i @craco/craco@alpha -D // 最新版React兼容 
-```
-
-新建文件 `craco.config.js`
-
-```js
-const path = require('path')
-
-const reslove = pathname => path.resolve(__dirname, pathname)
-
-module.exports = {
-    webpack: {
-        alias: {
-            "@": reslove("src")
-        }
-    }
-}
-```
-
-替换启动命令
-
-```json
-"scripts": {
-  "start": "craco start",
-  "build": "craco build",
-  "test": "craco test",
-  "eject": "react-scripts eject",
-},
-```
-
-还要配置 `jsconfig.json`、`tsconfig.json`，VScode 支持根路径引用
-
-```json
-"compilerOptions": {
-    ......
-    "baseUrl": "./",
-    "paths": {
-        "@/*": [
-            "src/*"
-        ]
-    },    
-}
-```
-
-
-
-参考文档：https://lanan.blog.csdn.net/article/details/126923270
-
-
-
-### 1.8.2 webpack 构建优化
-
-参考文档：https://blog.csdn.net/guxin_duyin/article/details/127247755
-
-
-
-### 1.8.3 配置 ESlint/Prettier
-
- https://blog.csdn.net/guxin_duyin/article/details/127048203
-
-
-
-# 第二章 认识 React Hooks
-
-Hook 是 React 16.8 的新增特性，它可以让我们在不编写 class 的情况下, 使用 state 以及其他的 React 特性
+本章引入 React Hooks， Hooks 是 React 16.8 的新增特性，它可以让我们在不编写 class 的情况下, 使用 state 以及其他的 React 特性
 
 类组件存在的问题：
 
@@ -1209,11 +913,11 @@ Hook 是 React 16.8 的新增特性，它可以让我们在不编写 class 的�
 - 复杂组件变得难以理解等
 - **函数组件废弃 state 和生命周期函数**，利用其他 Hooks 代替实现
 
-Hooks 可以让我们在不编写 class 的情况下, 使用 state 以及其他的 React 特性(意味着不学习class关键字和this指向依然可以编写 React )，我们可以由此延伸出非常多的用法，来让我们前面所提到的问题得到解决
+Hooks 可以让我们在不编写 class 的情况下，使用 state 以及其他的 React 特性。这意味着不学习 class 关键字和 this 指向依然可以编写 React，我们可以由此延伸出非常多的用法，来让我们前面所提到的问题得到解决
 
 
 
-Hook 的一些局限：
+Hooks 的一些局限：
 
 - **只能在函数最外层调用 Hook。**不要在循环、条件判断或者嵌套函数（子函数）中调用
 - **只能在 React 的函数组件中调用 Hook。不要在其他 JavaScript 函数中调用**
@@ -1848,8 +1552,6 @@ const { name } = useDContext()
 
 
 
-
-
 ### 2.2.5 useReducer
 
 `useReducer` 是 `useState` 的替代方案，通常用于处理修改逻辑更复杂的数据。和 Redux 中的 reducer 很类似！
@@ -1966,7 +1668,9 @@ export default React.memo(Child,areEqual)
 
 
 
-## 2.4 ahooks 常用Hook
+## 2.4 React 业务开发场景
+
+### 2.4.1 ahooks 常用Hook
 
 **useEventEmitter**
 
@@ -2023,32 +1727,7 @@ const { data, loading, loadMore, loadingMore } = useInfiniteScroll((d) => getLoa
 
 
 
-
-
-#  第三章 React 进阶知识点
-
-推荐文档专栏：
-
-- 夏安的 React 笔记：https://blog.csdn.net/p1967914901/category_10164640.html
-- React 点滴知识点：https://blog.csdn.net/sinat_17775997/category_6352631.html
-
-
-
-## 3.1 React 高阶组件
-
-https://vue3js.cn/interview/React/High%20order%20components.html
-
-
-
-## 3.2 React 实现路由守卫
-
-V5：https://blog.csdn.net/zhangqling/article/details/127451166
-
-V6：https://blog.csdn.net/m0_69838795/article/details/129557342
-
-
-
-## 3.3 React 实现组件异步加载
+### 2.4.2 React 异步加载组件
 
 参考文档：https://juejin.cn/post/7239244337539219514
 
@@ -2072,7 +1751,7 @@ export default App;
 
 
 
-## 3.4 React 实现组件缓存
+### 2.4.3 React 实现组件缓存
 
 使用到一个库：`react-activation`，通常用于当页面组件缓存（状态缓存）
 
@@ -2080,132 +1759,25 @@ export default App;
 
 
 
-## 3.5 React 实现状态管理
+### 2.4.4 React 实现状态管理
 
 Redux 和 Mobx：https://github.com/cocoonnu/web-projects/blob/main/Markdown/React%20ecology/React-Redux.md
 
+Zustand：https://docs.pmnd.rs/zustand/getting-started/introduction
 
 
-## 3.7 React 实现传送门
+
+
+### 2.4.5 React 实现传送门
 
 React.createPortal：https://zh-hans.react.dev/reference/react-dom/createPortal
+实际案例：/Users/cocoon/IdeaLink/new-gwy-web/src/component/common/exception-appeal/index.tsx
 
 
 
-# 第四章 认识 Zustand
+## 2.5 React 企业级框架学习
 
-Zustand（德语）：React 全新轻量级状态管理库
-
-可以直接啃英文文档：https://docs.pmnd.rs/zustand/getting-started/introduction
-
-可参考文档：https://blog.csdn.net/qq_53931766/article/details/124632268
-
-官网文档翻译：https://zhuanlan.zhihu.com/p/475571377（推荐）
-
-
-
-## 4.1 如何更新状态&set
-
-设置状态初始值和重置状态的方式：https://docs.pmnd.rs/zustand/guides/how-to-reset-state
-
-
-
-zustand 采用不可变数据状态，简单数据类型可以直接使用 set 函数进行合并，它只会合并 state 最外层的数据
-
-https://docs.pmnd.rs/zustand/guides/updating-state
-
-
-
-复杂数据类型推荐使用 immer，可以使用原生 immer，也可以使用中间件
-
-**如果复杂类型使用 setState，那么需要考虑数据不可变性，同 React 里的 useState**
-
-https://docs.pmnd.rs/zustand/guides/updating-state#with-immer
-
-https://docs.pmnd.rs/zustand/integrations/immer-middleware
-
-
-
-Map、Set 类型也可以支持更新：https://docs.pmnd.rs/zustand/guides/maps-and-sets-usage
-
-
-
-另外附上 set 函数介绍：https://docs.pmnd.rs/zustand/guides/immutable-state-and-merging
-
-
-
-## 4.2 如何使用状态
-
-可以直接引入仓库之后通过 state 索引使用，也可以在内部封装一个函数 createSelectors 简化使用
-
-```ts
-import { shallow } from 'zustand/shallow'
-
-// 这样引入的话仓库每个属性改变都会引起组件的重新渲染（推荐使用）
-const { topMenuGroup } = useLayoutStore()
-
-// 只有topMenuGroup改变才会引起组件的重新渲染
-const topMenuGroup = useLayoutStore((state) => state.topMenuGroup)  
-
-// 只有nuts或honey改变才会引起组件的重新渲染
-const [nuts, honey] = useStore((state) => [state.nuts, state.honey], shallow)
-```
-
-> 注意：如果属性是引用类型，那么要考虑数据不可变原则！！可能无法监听到数据的改变
-
-
-
-为了对重新渲染进行更多控制，你可以提供自定义的比较函数。
-
-```js
-const treats = useStore(
-  (state) => state.treats,
-  (oldTreats, newTreats) => compare(oldTreats, newTreats)
-);
-```
-
-https://docs.pmnd.rs/zustand/guides/auto-generating-selectors
-
-
-
-## 4.3 适配 Typescript
-
-**针对状态的 TS 适配**
-
-基础使用：将状态定义为一个 type，在 create 的时候传入即可，在内部、外部使用状态时已经支持 TS
-
-简化使用：不用自己定义状态，而是使用中间件 combine 使其自行推断状态
-
-https://docs.pmnd.rs/zustand/guides/typescript#basic-usage
-
-
-
-## 4.4 外部使用仓库
-
-在函数组件中作为 hook 使用：
-
-```ts
-const { usernameFormRef, submit } = useLoginStore((state) => state)
-```
-
-
-
-在普通函数中作为仓库使用，**这样获取的不是响应式数据**
-
-```ts
-// 获取仓库属性
-const { resetUserInfo } = useAccountStore.getState()
-
-// 设置仓库属性
-useAccountStore.setState({ roles: ['123'] })
-useBoundStore.setState((state) => ({ count: state.count + 1 }))
-```
-
-
-
-# 第五章 认识 NextJs
-
-## 5.1 NextJs 入门
+### 2.5.1 NextJs 开发与学习
 
 首先根据入门文档跟着做一个 demo：https://qufei1993.github.io/nextjs-learn-cn/，项目地址：Work/nextjs-dashboard
 
@@ -2216,6 +1788,22 @@ useBoundStore.setState((state) => ({ count: state.count + 1 }))
 3. 使用 Server Components 获取数据，直接在服务端组件中获取数据库数据，而无需使用 useEffect 再调用 API 层获取数据：https://qufei1993.github.io/nextjs-learn-cn/chapter7
 4. App Route 相较于 Page Route 的区别：https://yuanbao.tencent.com/bot/app/share/chat/61fca92bb3ffff5c18ea983f2b064480
 5. 错误处理反馈：https://qufei1993.github.io/nextjs-learn-cn/chapter13
+
+
+
+### 2.5.2 UmiJs 开发与学习
+
+UmiJs 是一个基于 React 的企业级前端框架，支持约定式路由、插件化扩展和开箱即用的开发体验，特别适合中后台项目开发。
+
+**路由系统：https://umijs.org/docs/guides/routes**
+
+学习 UmiJs 框架的第一步就是学习它路由系统的搭建。首先是可以通过在配置文件中声明路由，或者直接使用它的约定式路由的功能，就是不需要手写配置，文件系统即路由，通过目录和文件及其命名分析出路由配置。此外还有 layout、wrappers、redirect 和路由导航等功能，以此来构建一套完整的中后台前端项目的路由系统。
+
+
+
+**数据流：https://umijs.org/docs/max/data-flow**
+
+UmiJs 内置了基于 hooks 的全局状态管理，数据流管理插件依然采用约定式目录结构。我们约定可以在 `src/models` 下引入一个 Model 文件即定义了一个命名空间，当我们需要获取 Model 中的全局数据时，调用该命名空间即可。例如，对于 Model 文件 `model.ts`，它的命名空间为 `model`。如果要在某个组件中使用全局的 Model，只需要调用 `useModel` 这一钩子函数即可
 
 
 

@@ -92,6 +92,7 @@
 **0.1 + 0.2 为什么不等于 0.3**
 
 - 根本原因是浮点数的二进制表示，许多看似简单的十进制小数在计算机中无法精确表示，导致计算时产生微小的误差
+- 一般的浮点数的比较方法为：x - y == y  就是 true，x - y == z  就是 false  
 - https://www.codecrack.cn/zh/javascript/why-decimal-addition-not-equal
 
 
@@ -145,7 +146,21 @@
 
 **说说 JavaScript 中的事件模型**
 
+- 原生事件模型有两种：原始事件模型、标准事件模型
+- 原始事件模型只支持冒泡，实现方式为：`<input type="button" id="btn" onclick="fun1()">`
+- 标准事件模型支持冒泡或者捕获，实现方式为：`addEventListener(eventType, handler, useCapture)`
+- 一个事件流分为三个阶段：事件捕获阶段 - 处于目标阶段 - 事件冒泡阶段
+
 - https://vue3js.cn/interview/JavaScript/event_Model.html
+
+
+
+**React 合成事件是什么**
+
+- React 基于浏览器的事件机制自身实现了一套事件机制，包括事件注册、事件的合成、事件冒泡、事件派发等，这套事件机制被称之为合成事件，目的是为了更好的兼容性和跨平台、减少内存开销
+- React 上注册的事件最终会绑定在 document 这个 DOM 上，而不是 React 组件对应的 DOM
+
+- https://juejin.cn/post/7250357906712838205#heading-14
 
 
 
@@ -216,12 +231,6 @@
 **Vue 和 React 为什么都要设置 key，为什么不建议用 index 作为 key**
 
 - https://juejin.cn/post/7250012486992511033#heading-26
-
-
-
-**React 合成事件是什么**
-
-- https://juejin.cn/post/7250357906712838205#heading-14
 
 
 
@@ -457,6 +466,12 @@
 
 
 
+**什么是变量提升和函数提升**
+
+- https://www.cnblogs.com/liuhe688/p/5891273.html
+
+
+
 ## 第八节
 
 **常量枚举和普通枚举有什么区别**
@@ -540,6 +555,12 @@
 **SSR 解决了什么问题，有做过 SSR 吗**
 
 - https://vue3js.cn/interview/vue/ssr.html
+
+
+
+**讲一讲 Redux 的概念和使用**
+
+
 
 
 

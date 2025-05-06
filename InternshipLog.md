@@ -239,9 +239,9 @@ const { contractUrl, fromTabId, status, userId, dataId, datasourceId, ruleId } =
 
 
 
-**Model 弹窗页面支持拖动**
+**弹窗页面支持拖动**
 
-主项目构建的 Model 弹窗页面直接支持拖拽，在其他项目中构建的 Model 弹窗页面需要手动添加一个 `id="submission-application"`
+主项目构建的 Model 弹窗页面直接支持拖拽，在其他项目中构建的 Model 弹窗页面需要手动添加一个 `id="submission-application"`，硬性要求是使用 TabsHeaderNew 这个组件作为弹窗头部
 
 ```jsx
 <TabsHeaderNew
@@ -253,11 +253,37 @@ const { contractUrl, fromTabId, status, userId, dataId, datasourceId, ruleId } =
 />
 ```
 
+如果使用的是 LayoutPage 组件进行最外层的包裹，使用下面的写法
+
+```jsx
+<LayoutPage
+  title={(state?.currentTemplate || {})?.templateName || '制作模版'}
+  theme={ILayoutPageTheme.blue}
+  footer={renderFooter()}
+  footerAlign="right"
+  onBack={onClose}
+  headerExtra={headExtra()}
+  className={styles.container}
+  contentClassName={styles.layoutBg}
+  footerClassName={styles.layoutBg}
+  targetId="submission-application"
+  isExpand
+>
+```
+
+
+
 
 
 ### 1.1.3 项目难点与任务调研
 
 **弹窗拖拽方案调研**
+
+调查弹窗页面是如何实现拖拽的，另外有没有可以优化的地方
+
+
+
+**代办实时刷新调研**
 
 
 
@@ -265,24 +291,26 @@ const { contractUrl, fromTabId, status, userId, dataId, datasourceId, ruleId } =
 
 ### 1.1.4 项目常用功能点记录
 
-**Modal 弹窗添加圆角、实现拖拽**
+**Modal 弹窗组件添加圆角、实现拖拽**
 
-案例一：contract-factory/src/pages/onlyoffice-application-designer-v3/components/tabs-left/components/fields-libs-modal/index.tsx
+直接使用 antd 的 Modal 进行定义，**可支持圆角、拖拽、全屏、取消全屏、自定义底部**等。项目为进行封装通用弹窗样式，因此改弹窗的 head 和 body 的样式都是需要复用的，具体参考：src/pages/onlyoffice-application-designer-v3/components/tabs-left/components/add-dynamic-form-modal/index.tsx
 
-案例二：src/pages/onlyoffice-application-designer-v3/components/app-manage/other-company-create-modal/index.tsx
-
-案例三：new-gwy-web/src/modules/organization/deptmentTree/DragTree/merge-dialog-new.tsx
-
-```js
-// 添加圆角需要加上
-wrapClassName="modal-border-round" modal
-<TabsHeaderNew className={styles.tabsHeader} title="字段库" leftTitle onClose={onCancel} canDrag />
-```
-
-```css
-.tabsHeader {
-  border-radius: 6px 6px 0 0;
-}
+```jsx
+<Modal
+  open
+  closable={false}
+  maskClosable={false}
+  mask={false}
+  onCancel={handleCancel}
+  onOk={handleOk}
+  centered
+  width={isFull ? '100%' : '90%'}
+  bodyStyle={{
+    maxHeight: 'calc(100vh - 80px)',
+    height: isFull ? 'calc(100vh - 80px)' : 650,
+    padding: 0,
+  }}
+>
 ```
 
 
@@ -2365,3 +2393,6 @@ const onClick = ({ key }) => {
 
 
 
+### 1.4.2 用户注册与企业注册
+
+本期主要是完成注册的流程，前端交互不考虑，只对原型的信息做出展示即可。所以这期需求工作量主要在于对整个注册流程的掌握和每个页面具体联调的处理。

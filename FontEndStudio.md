@@ -685,6 +685,12 @@ Date：https://juejin.cn/post/6996926386405376037
 
 
 
+**严格模式限制**
+
+ES6 的模块自动采用严格模式，不管你是否有在模块头部加上 `'use strict'`，另外具体文档参考：https://tsejx.github.io/javascript-guidebook/core-modules/modularization/modularization#%E4%B8%A5%E6%A0%BC%E6%A8%A1%E5%BC%8F
+
+
+
 **对象与原型的概念**
 
 - 文档参考：https://juejin.cn/post/6844903989088092174
@@ -764,6 +770,7 @@ console.log(Animal.foo); // Function
 - 另外注意：`setTimeout`、`Promise` 里的内置函数作为全局函数（默认绑定）看待
 - 如果一个普通函数被调用 `apply`、`call`、`bind`（显示绑定），那等于是明确指定了 this 指向了
 - 然后箭头函数，就看两点：该箭头没有外层函数则 this 指向 window，有外层函数 this 就为外层函数的 this
+- 注：函数如果作为参数传递，则本身自带的 this 上下文失效
 - 注：浏览器的全局对象为 `window`，node 环境的全局对象为 `globalThis`，如果实在无法对应函数，则一般就是匿名函数
 - **注：this 绑定的优先级：new 绑定 > 显式绑定 > 隐式绑定 > 默认绑定**
 - https://juejin.cn/post/7310415386405765159
@@ -834,39 +841,8 @@ const handelEffectiveCol = () => {
 
 
 
-**闭包实际应用案例**
-
-首先闭包函数的首要目的就是为了在不同作用域下进行复用，如果只是使用一次那就完全没必要使用闭包，另外闭包函数的也要一般带有返回值。闭包是指函数能够记住并访问它定义时的外部作用域，即使外部函数已经执行完毕。它使得内部函数能够访问外部函数的局部变量，即使外部函数已经返回。闭包常用于数据封装、保持状态和异步回调等场景。
-
-```jsx
-export function formatFormDataNewListRow(dynamic) {
-  return function (rowData) {
-    if (isEmpty(rowData)) return null;
-    const { tagAndFieldDTOS } = dynamic;
-    ......
-    const tagList = tagIdAndRuleIds.map((tagIdAndRuleId) => {
-      const [tagId, ruleId] = tagIdAndRuleId.split('|');
-      return {
-        ......
-        dataId: rowData[tagIdAndRuleId]?.ruleDataId,
-      };
-    });
-    return { tagList, dataId: get(rowData, [tagIdAndRuleIds[0], 'dataId']) };
-  };
-}
-```
-
-```jsx
-const formDataList = (dynamicFormValue?.formDataList || []).map(formatFormDataNewListRow(d))
-```
-
-> 这里闭包函数会被循环执行，并且保证了在每一个循环中都拥有同一个变量 dynamic
-
-
 
 ## 3.2 对象常见函数
-
-这里记录 Object 原型对象所暴露的 API，通常在每个对象下都可以使用
 
 **Object.assign**
 
@@ -931,16 +907,14 @@ for (const key in target) {
 
 `Object.defineProperty(obj, prop, descriptor)`
 
-用于定义一个对象的新属性或修改对象已有属性的特性（如可写性、可枚举性等）,
+用于定义一个对象的新属性或修改对象已有属性的特性（如可写性、可枚举性等），一个对象属性默认可写、可读、可配置
 
-obj 是要定义属性的对象，prop 是要定义的属性名，descriptor 是一个包含属性特性的对象。
-
-descriptor 对象可以包含以下属性：
+obj 是要定义属性的对象，prop 是要定义的属性名，descriptor 是一个包含属性特性的对象，其中包含以下属性：
 
 - `value`：属性的值
-- `writable`：属性是否可写，默认为 `false`
-- `enumerable`：属性是否可枚举，默认为 `false`
-- `configurable`：属性是否可配置（delete），默认为 `false`
+- `writable`：属性是否可写，定义时不填写默认为 `false`
+- `enumerable`：属性是否可枚举，定义时不填写默认为 `false`
+- `configurable`：属性是否可配置（delete），定义时不填写默认为 `false`
 - `get`：获取属性值的函数
 - `set`：设置属性值的函数
 
@@ -948,10 +922,9 @@ descriptor 对象可以包含以下属性：
 
 **对象实例常用 API**
 
-- `delete obj.name`：删除对象属性
+- `delete obj.name`：删除对象本身的属性，但不能删除原型链上的属性
 - `obj.hasOwnProperty`：判断一个对象自身是否有某个属性，而不是原型链上的属性
-
-- 判断是否是空对象：`JSON.stringify(obj) === "{}"`
+- `Object.getOwnPropertyDescriptors(obj, 'name')`：参看一个对象已有属性的特性
 
 
 
@@ -963,309 +936,73 @@ https://blog.csdn.net/u011140116/article/details/121845262
 
 
 
+**valueOf()**
+
+返回指定对象的**原始值**，若对象没有原始值，则将返回对象本身
+
+https://blog.csdn.net/weixin_45242865/article/details/119798783
+
+
+
 ## 3.3 数组常见函数
+
+数组常见方法：https://vue3js.cn/interview/JavaScript/array_api.html
+
+数组方法大全：https://juejin.cn/post/7028018256266919973
+
+
 
 **数组使用经验总结**
 
-数组常见函数：https://vue3js.cn/interview/JavaScript/array_api.html
+1. 会直接改变原数组的方法：push、pop、splice、unshift、shift、sort、reverse
+2. `arr.length`：数组长度会自动延长到最后一个被赋值的位置，中间没有被赋值的都为 undefined
 
-Array 原型方法大全：https://juejin.cn/post/7028018256266919973
 
-> **会直接改变原数组的方法：push、pop、splice、unshift、shift、sort、reverse**
->
-> `arr.length`：数组长度会自动延长到最后一个被赋值的位置，中间没有被赋值的都为 undefined
 
-数组变量如果是要赋值，那么直接等于即可。如果需要拷贝，那么需要使用以下两个方法实现浅拷贝：`concat`、`[...]`
+**直接改变原数组的数组方法**
 
+1. arr.shift：删除数组的第一个元素，返回数组长度
+2. arr.unshift：插入数组第一个元素，返回数组长度
+3. arr.push：在数组尾部插入多个元素，返回数组的新长度
+4. arr.pop：删除数组的最后一个元素，返回被删除的元素
+5. arr.splice(i, n , ...)：数组值替换，可实现替换、添加、删除值等功能，返回被删除的值组成的一个数组
+6. arr.sort(compareFn(a,b))：自定义规则排序数组，返回排序后的数组，https://juejin.cn/post/7398480670458134582
+7. arr.reverse：用来将一个数组中的全部项顺序置反，返回反转后的数组
 
 
-**普通方法总结**
 
-```js
-1、arr.shift：删除数组的第一个元素   
+**不改变原数组，而是获取返回值的方法**
 
-2、arr.unshift：插入数组第一个元素
+1. arr.concat：直接将多个数组、多个数字拼接成一个数组，返回新数组，常用于浅拷贝
+2. arr.slice(a, b)：截取下标为 a ，到下标为 b（不包括 b）的区间，返回那个区间
+3. arr.indexOf(value)：数组存在 value 则返回其下标，不存在返回 -1
+4. arr.includes(value)：数组存在 value 则返回 true，否则返回 false
+5. arr.join(',')：数组转字符串，返回一个字符串
 
-3、arr.concat：直接将多个数组、多个数字拼接成一个数组 
-let a= [].concat(1,2,3,[4,5],[6,7])
 
-4、let newArr = arr.slice(a, b) 截取下标为 a ，到下标为 b（不包括 b）的区间
 
-5、arr.reverse()：用来将一个数组中的全部项顺序置反
+**数组常用迭代方法**
 
-6、arr.indexOf(value)：数组存在value则返回其下标 不存在返回-1
+1. arr.reduce：不改变原数组，使用方法：https://blog.csdn.net/hannah2233/article/details/128367223
 
-7、arr.includes(value)：数组存在value则返回true,否则返回false
+2. arr.some：这个方法会依次遍历数组的每个元素，如果有一个元素满足条件，则表达式返回 true , 剩余的元素不会再执行检测，如果没有满足条件的元素，则返回false
 
-8、arr.join(',')：数组转字符串
+3. arr.find：遍历查找数组，返回找到的值（只返回一个值），未找到返回 undefined
 
-9、arr.push(1, 2, 3)：只会push最后一项
-```
+4. arr.forEach：遍历操作数组，**没有返回值**，**该方法没有办法终止循环，除非抛出异常或者直接改变原数组**
 
+5. arr.map：遍历操作数组，将每次返回的结果作为一个新数组返回，https://blog.csdn.net/Anna0115/article/details/103696124
 
+6. arr.filter：遍历筛选数组，回调函数返回布尔类型，返回一个满足条件的新数组
+7. arr.flat：对多维数组进行扁平化处理
+8. arr.every：判断数组中是否所有元素都满足条件，所有都满足则返回 true，否则返回 false
 
-**数组常用内置函数**
 
-- **arr.push**
 
-向数组末尾添加元素的方法，支持添加单个或多个元素，并返回数组的新长度，**直接改变原数组**
+**数组常用业务方法**
 
-```js
-const arr = [1, 2, 3];
-arr.push(4, 5, 6); // 添加元素 4, 5, 6
-console.log(arr); // 输出: [1, 2, 3, 4, 5, 6]
-
-const arr1 = [1, 2, 3];
-const arr2 = [4, 5];
-arr1.push(...arr2); // 将 arr2 的元素逐个添加到 arr1
-console.log(arr1); // 输出: [1, 2, 3, 4, 5]
-```
-
-
-
-- **arr.concat**
-
-首先会创建一个当前数组的副本，然后再把它的参数添加到副本末尾，最后返回一个新数组，**不会影响原始数组**
-
-```js
-let colors = ["red", "green", "blue"];
-let colors2 = colors.concat("yellow", ["black", "brown"]);
-console.log(colors); // ["red", "green","blue"]
-console.log(colors2); // ["red", "green", "blue", "yellow", "black", "brown"]
-```
-
-
-
-
-- **arr.splice**
-
-arr.splice(下标，个数，替换的值)：数组值替换（可替换、添加、删除值），**该方法会改变原始数组**
-
-返回被删除的值组成一个数组
-
-```js
-// 删除下标为index的项
-arr.splice(index, 1)
-```
-
-
-
-- **arr.slice**
-
-截取数组某个区间并返回，**该方法不会改变原始数组**
-
-```ts
-const newArr = arr.slice(a,b) // 截取a-b区间，返回改变之后的数组（不包含b！！）
-const newArr = arr.slice() // 经典的浅拷贝！！
-```
-
-
-
-- **arr.split**
-
-`arr.split('str')`：将数组转化为字符串，以 str 间隔
-
-
-
-- **arr.reduce**
-
-不改变原数组，使用方法：https://blog.csdn.net/hannah2233/article/details/128367223
-
-```js
-// 不传入initialValue时，默认从index=1开始遍历，初始时prev=1，cur=2
-// 每次遍历，prev为上一个遍历的返回值，cur为当前数组的遍历值
-var arr = [1, 2, 3, 4];
-var sum = arr.reduce(function(prev, cur, index, arr) {
-    console.log(prev, cur, index);
-    return prev + cur;
-})
-console.log(arr, sum);
-// 结果：
-// 1 2 1
-// 3 3 2
-// 6 4 3
-// [1, 2, 3, 4] 10
-```
-
-```js
-// 这个例子index是从0开始的，第一次的prev的值是我们设置的初始值0，数组长度是4，reduce函数循环4次。
-var  arr = [1, 2, 3, 4];
-var sum = arr.reduce(function(prev, cur, index, arr) {
-    console.log(prev, cur, index);
-    return prev + cur;
-}，0) //注意这里设置了初始值
-console.log(arr, sum);
-//打印结果：
-//0 1 0
-//1 2 1
-//3 3 2
-//6 4 3
-//[1, 2, 3, 4] 10
-```
-
-
-
-- **arr.some**
-
-some() 方法会依次遍历数组的每个元素：
-
-如果有一个元素满足条件，则表达式返回 true , 剩余的元素不会再执行检测
-
-如果没有满足条件的元素，则返回false
-
-```js
-var arr = [3,6,9,12];
- 
-if(arr.some(function checknumber(number){return number == 12;})) {
-    console.log(true)
-}
-
-// 简写：arr.some(item => item == 12)
- 
-//因为arr数组中有12的值，所以代码块会执行，而函数checknumber中传的参数number是从数组arr中读取
-```
-
-
-
-
-- **arr.find**
-
-遍历查找数组，返回找到的值（只返回一个值），未找到返回 undefined
-
-```js
-let num = arr.find(item => item == 12)
-```
-
-
-
-- **arr.forEach**
-
-遍历操作数组，**没有返回值**，**该方法没有办法终止循环，除非抛出异常或者直接改变原数组**
-
-当数组为简单类型时，不会该变原数组，当为引用类型时，则会改变原数组！！
-
-```js
-arr.fonEach((item,index,arr) => {})
-```
-
-
-
-- **arr.map**
-
-遍历操作数组，将每次返回的结果作为一个新数组返回
-
-```js
-let newArr = arr.map((item,index,arr) => item + 1)
-```
-
-map 使用方法：https://blog.csdn.net/Anna0115/article/details/103696124
-
-
-
-- **arr.filter**
-
-遍历筛选数组，回调函数返回布尔类型，返回一个满足条件的新数组
-
-```js
-var newArr = arr.filter(function(item,index,arr) {
-    if (item > 4) return true;
-})
-```
-
-
-
-- **arr.flat**
-
-对多维数组进行扁平化处理
-
-```js
-// 按照一个可指定的深度递归遍历数组，并将所有元素与遍历到的子数组中的元素合并为一个新数组返回
-let newArr = arr.flat(Infinity)
-```
-
-
-
-- **for of 循环**（效率更高、使用 break 可终止循环）
-
-for...of 可以遍历一个**可迭代对象**，常见的可迭代对象有：`Map`、`Set`、`Array`、`String`、`arguments`、`arguments`
-
-```js
-for (let v of arr) {}
-```
-
-
-
-- **arr.sort(compareFn(a,b))**
-
-自定义规则排序数组：[MDN Array.prototype.sort()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)
-
-如果没有指定比较函数，那么数组按照转换后的字符串的各字符的[Unicode](https://so.csdn.net/so/search?q=Unicode&spm=1001.2101.3001.7020)位点进行排序。
-
-如果指明了比较函数，那么数组按照调用**该函数的返回值**进行排序。规则如下：
-
-- 函数遍历数组，a 和 b 为前一项和后一项
-
-- 如果 `compareFunction(a,b)` 小于0，那么`a`排`b`前面
-- 如果 `compareFunction(a,b)` 大于0，那么`a`排`b`后面
-- 如果 `compareFunction(a,b)` 等于0，那么`a,b`的相对位置不变
-
-```js
-// 默认排序从小到大
-arr.sort()
-
-// 自定义排序
-var items = [
-  { name: 'Edward', value: 21 },
-  { name: 'Sharpe', value: 37 },
-  { name: 'And', value: 45 },
-  { name: 'The', value: -12 },
-  { name: 'Magnetic' },
-  { name: 'Zeros', value: 37 }
-];
-
-items.sort((a, b) => {
-	const nameA = a.name.toUpperCase()[0]
-	const nameB = b.name.toUpperCase()[0]
-	if(nameA < nameB)	return -1
-	if(nameA > nameB)	return 1
-	return 0
-})
-```
-
-> 该方法会改变原数组
-
-
-
-- **arr.every**
-
-判断数组中是否所有元素都满足条件，所有都满足则返回 true，否则返回 false
-
-```ts
-const isOld = columns?.every((item, index) => {
-  const oldItem = oldPropsColumnsCurrent?.[index]
-  return item.key === oldItem?.key || item?.dataIndex === oldItem?.dataIndex
-})
-```
-
-
-
-- **二维数组去重**（数组为number类型）
-
-利用的是对象添加 `key - values` 时的特性，把数组作为对象的 `key` 值，达到去重的目的
-
-```ts
-const TwoDimArrayUnique = (arr) => {
-  const obj = {}
-  arr.forEach(item => obj[item] = item)
-  return Object.values(obj)
-}
-```
-
-
-
-- **Array.form**
-
-将类数组或者 Set 实例转化为数组，https://blog.csdn.net/qq_27674439/article/details/108793223
+1. for ... of：可以遍历一个**可迭代对象**，效率更高、使用 break 可终止循环，常见的可迭代对象有：`Map`、`Set`、`Array`、`String`、`arguments`
+2. Array.form：将类数组或者 Set 实例转化为数组，https://blog.csdn.net/qq_27674439/article/details/108793223
 
 
 
@@ -1299,14 +1036,6 @@ https://juejin.cn/post/7145036326373425159
 2. **JSON.parse** 再将 JSON 字符串转化为对象
 
 2. https://juejin.cn/post/7191712569394987065
-
-
-
-**valueOf()**
-
-返回指定对象的**原始值**，若对象没有原始值，则将返回对象本身
-
-https://blog.csdn.net/weixin_45242865/article/details/119798783
 
 
 
@@ -1599,13 +1328,26 @@ https://cn.vuejs.org/guide/essentials/event-handling.html#event-modifiers
 
 **变量提升和函数提升**
 
-1. var 定义的变量会在**作用域内最顶部**（不含块级作用作用域！）声明一个 `var a`，**但是赋值语句并不会提升**
-2. **函数提升是使用 function 定义的整个函数会被提升到最顶部（优先级最高）**
-3. 其次就是后面的赋值语句会覆盖同名变量：https://www.cnblogs.com/liuhe688/p/5891273.html
+1. var 定义的变量会在作用域内最顶部声明，**但是赋值语句并不会提升**
+2. 函数提升是使用 function 定义的整个函数会被提升到最顶部（**该变量赋值语句优先级最高）**
+3. JavaScript没有块作用域，只有全局作用域和函数作用域
+4. 参考文档：https://www.cnblogs.com/liuhe688/p/5891273.html
 
 
 
-例题一
+**JavaScript 连续赋值的执行顺序问题**
+
+1. 多次赋值与顺序无关，是同时进行赋值的
+2. 每个节点的变量最终赋值的值取决去最后一个等号的右边值
+3. 如果赋值是引用类型，则最终指向的是同一个对象
+
+4. var 声明的变量提升只针对第一个变量有效
+
+5. https://blog.csdn.net/gdutRex/article/details/99731550
+
+
+
+**变量提升笔试题**
 
 ```js
 function hoistFunction() {
@@ -1637,8 +1379,6 @@ function hoistFunction() {
 
 
 
-例题二
-
 ```js
 var a = 100;
 function a() {
@@ -1659,8 +1399,6 @@ a() // 报错
 
 
 
-例题三
-
 ```js
 var a = 1;
 function test() {
@@ -1671,26 +1409,56 @@ function test() {
 }
 test();
   
-//其实代码执行过程如下：
+//预编译
 var a ；
-a = 1;
-function test() { //函数会先去找自己内部的变量，内部有就不会往外面找，内部没有才去外面找
-    var a; //变量提升 var不分块级作用域
-    console.log(a);
-    if(false) { //因为false没有满足if的条件，所以不能进入if语句里进行赋值
-        a = 2;    //if语句的条件把false改成true，就可以进入if语句赋值
+function test() {
+    var a;
+    console.log(a); // undefined
+    if(false) {
+        a = 2;
     }
 }
+a = 1;
 test();
 ```
 
 
 
-**函数形参是局部变量同名时**
+```js
+var a,b;
+(function(){
+  alert(a);
+  alert(b);
+  var a=b=3;
+  alert(a);
+  alert(b);
+})();
+alert(a);
+alert(b);
+
+// 预编译
+var a,b;
+(function(){
+  var a;
+  alert(a); // undefined
+  alert(b); // undefined
+  a=b=3; // b使用的是外层变量，因为没有用var声明
+  alert(a); // 3
+  alert(b); // 3
+})();
+alert(a); // undefined
+alert(b); // 3
+```
+
+
+
+
+
+**函数形参引用笔试题**
 
 1. 首先是 var 变量提升，但函数内部再次声明 foo 是无效的，foo 还是那个形参（可以理解为形参优先级更高）
 
-2. 形参为引用类型时，和实参指向通一个地址。但如果被重新赋值则指向一片新地址
+2. 形参为引用类型时，和实参指向通一个地址，但如果被重新赋值则指向一片新地址，但是实参的地址不变
 
 ```js
 var foo = {n:1};
@@ -1705,8 +1473,8 @@ console.log(foo.n);
 
 ```js
 var foo = {n:1};
-(function(foo){            //形参foo同实参foo一样指向同一片内存空间，这个空间里的n的值为1
-    var foo;               //优先级低于形参，无效。
+(function(foo){            //这里实参和形参同名所以容易搞混，形参foo同实参foo一样指向同一片内存空间，这个空间里的n的值为1
+    var foo;               //优先级低于形参，无效
     console.log(foo.n);    //输出1
     foo.n = 3;             //形参与实参foo指向的内存空间里的n的值被改为3
     foo = {n:2};           //形参foo指向了新的内存空间，里面n的值为2
@@ -1714,16 +1482,6 @@ var foo = {n:1};
 })(foo);
 console.log(foo.n);        //实参foo的指向还是原来的内存空间，里面的n的值为3
 ```
-
-
-
-**JavaScript 连续赋值的执行顺序问题**
-
-1. 多次赋值与顺序无关，是同时进行赋值的
-2. 每个节点的变量最终赋值的值取决去最后一个等号的右边值
-3. 如果赋值是引用类型，则最终指向的是同一个对象
-
-4. https://blog.csdn.net/gdutRex/article/details/99731550
 
 
 
@@ -1791,14 +1549,16 @@ Boolean(new Boolean(false)) // true
 
 隐式类型转换就是当我们进行比较运算和算术运算时，两边的操作数不是同一类型的情况下， JS 会自动将两边的操作数进行类型转换，从而进行下一步的运算 。其中内部的类型转换规则可以参考显式类型转换的规则，另外不同运算符要求转换类型不同：
 
-1. 加号运算符：优先转换为字符串进行比较、其次是数字
-2. 比较运算符：优先转换为数字进行比较、其次是布尔值再是字符串
+1. 加号运算符：优先转换为字符串进行运算，其次是数值
+2. 比较运算符：优先转换为数值进行比较，其次是布尔值
 3. 逻辑运算符：直接转换为布尔值进行判断
-4. **前面的前提都是没有对象和数组参与的情况，如果有他们的参与则再分一下情况：**
+4. 注意点一：null 参与比较时它在半等时只和 undefined 相等，其余的不用考虑隐式类型转换直接不相等
+5. 注意点二：NaN 与任何值比较，包括它自身，结果都是 false
+6. **前面的前提都是没有对象和数组参与的情况，如果有他们的参与则再分一下情况：**
    1. 对象参与运算时都会转换为原始值，三个转为原始值的方法优先级一次递减：Symbol.toPrimitive、valueOf、toString
    2. **前两个方法都需要对象自定义，因此对象参与运算是默认就是调用 toString 方法**
    3. https://www.codecrack.cn/zh/javascript/class-type-conversion
-5. 下面是一些常见的面试题，并含有推导教程
+7. 下面是一些常见的面试题，并含有推导教程
 
 ```js
 [] == false // 有数组则toString一下：'' == false，根据比较运算符规则没有数字则都转为布尔值：false == false 所以为true
@@ -1806,31 +1566,63 @@ Boolean(new Boolean(false)) // true
 [] + {} // 两个都toString后：'' + 'object Object' = ‘object Object’
 
 {} + [] // 如果再代码块执行则{}作为一个代码快表达式变成了+[]=0，如果是语句内则和上一条一样还是‘object Object’
+
+'' == 0 // 转换为数值类型，Number('')=0，所以为true
+
+![] == '' // true
 ```
-
-
 
 
 
 ## 3.10 高阶函数与闭包
 
-首先最好了解一下什么是函数式编程：
+**首先最好了解一下什么是函数式编程：**
 
 https://juejin.cn/post/7231749591691132987?searchId=2023091715391335BD6ECC3FA03B3D4E11
 
 
 
-高阶函数：接收函数作为传参或者直接返回一个函数的函数称为高阶函数
+**高阶函数：接收函数作为传参或者直接返回一个函数的函数称为高阶函数**
 
 1. 高斯函数就是函数式编程的最佳体现
 2. 高阶函数具有闭包特性，外部函数可以访问到内部函数的变量和方法
 
 
 
-闭包：就是指可以在一个内层函数中访问到其外层函数的作用域
+**闭包：就是指可以在一个内层函数中访问到其外层函数的作用域**
 
 1. 重要的两个功能就是延长变量的生命周期和创建私有变量
 2. https://vue3js.cn/interview/JavaScript/closure.html
+
+
+
+**闭包实际应用案例**
+
+首先闭包函数的首要目的就是为了在不同作用域下进行复用，如果只是使用一次那就完全没必要使用闭包，另外闭包函数的也要一般带有返回值。闭包是指函数能够记住并访问它定义时的外部作用域，即使外部函数已经执行完毕。它使得内部函数能够访问外部函数的局部变量，即使外部函数已经返回。闭包常用于数据封装、保持状态和异步回调等场景。
+
+```jsx
+export function formatFormDataNewListRow(dynamic) {
+  return function (rowData) {
+    if (isEmpty(rowData)) return null;
+    const { tagAndFieldDTOS } = dynamic;
+    ......
+    const tagList = tagIdAndRuleIds.map((tagIdAndRuleId) => {
+      const [tagId, ruleId] = tagIdAndRuleId.split('|');
+      return {
+        ......
+        dataId: rowData[tagIdAndRuleId]?.ruleDataId,
+      };
+    });
+    return { tagList, dataId: get(rowData, [tagIdAndRuleIds[0], 'dataId']) };
+  };
+}
+```
+
+```jsx
+const formDataList = (dynamicFormValue?.formDataList || []).map(formatFormDataNewListRow(d))
+```
+
+> 这里闭包函数会被循环执行，并且保证了在每一个循环中都拥有同一个变量 dynamic
 
 
 
@@ -1861,7 +1653,7 @@ console.dirxml(document);
 
 
 
-## 3.12 异步函数处理与解析
+## 3.12 异步函数与异步任务
 
 **Promise 解析**
 
@@ -1895,13 +1687,7 @@ console.dirxml(document);
 
 
 
-**代码输出结果题型**
-
-1. https://juejin.cn/post/6959043611161952269#heading-2
-
-
-
-例题一
+**异步任务笔试题：https://juejin.cn/post/6959043611161952269#heading-2**
 
 ```js
 console.log(1)
@@ -1921,8 +1707,6 @@ console.log(3)
 
 
 
-例题二
-
 ```js
 let date = new Date()
 setTimeout(() => { // setTimeout 设置之后直接开始计时
@@ -1938,8 +1722,6 @@ while((new Date() - date) < 3000) {}
 > 因为第一个宏任务需要执行3s，等第二个宏任务执行时 setTimeout 全都准备完毕了，所以3s 之后同时输出 2、3、1
 
 
-
-例题三
 
 ```js
 Promise.resolve(1)
@@ -2402,9 +2184,9 @@ const statusCodes: Record<Status, number> = {
 
 
 
-# 第四章 Macbook Air M2 配置
+# 第四章 个人学习开发配置
 
-## 4.1 通用开发环境配置
+## 4.1 Mac 开发环境配置
 **brew**
 
 - 下载方式：https://zhuanlan.zhihu.com/p/111014448
@@ -2583,3 +2365,67 @@ const statusCodes: Record<Status, number> = {
 
 5. 自主配置可以参考：https://zhuanlan.zhihu.com/p/475137755
 
+
+
+## 4.4 Hexo 个人博客搭建
+
+### 4.4.1 初始化搭建与部署
+
+官网：https://hexo.io/zh-cn/docs/，下面手把手讲一讲初始化搭建过程：
+
+**使用 NodeV18 全局安装 Hexo**
+
+```bash
+$ npm install -g hexo-cli
+```
+
+**进入文档文件夹初始化一个项目**
+
+```bash
+$ hexo init <folder>
+$ cd <folder>
+$ npm install
+```
+
+**使用 Hexo 命令来本地预览**
+
+```bash
+$ hexo server
+$ hexo clean
+$ hexo generate
+```
+
+**通过 cocoonnu.github.io 一键部署**
+
+1. 在 Github 中新建一个名为 cocoonnu.github.io 的项目，确保项目的 Settings -> Pages 配置中选择的是 Deploy from a branch
+
+2. 在 Hexo 项目的根目录中对 _config.yml 文件添加以下内容，分支名和 Deploy from a branch 选择的一致为 main
+
+   ```yaml
+   deploy:
+     type: git
+     repo: git@github.com:cocoonnu/cocoonnu.github.io.git
+     branch: main
+   ```
+
+3. 下载自动部署工具
+
+   ```bash
+   $ npm install hexo-deployer-git --save
+   ```
+
+4. 最后使用命令进行一键部署即可，在 Github 项目中 Settings -> Actions 查看部署结果
+
+   ```bash
+   $ hexo clean # 清除旧页面
+   $ hexo deploy
+   ```
+
+5. 在这里预览页面：https://cocoonnu.github.io/
+
+**通过 GitHub Pages 一键部署**
+
+1. 在 Github 中新建一个同名的项目并同步 git，确保项目的 Settings -> Pages 配置中选择的是 GitHub Actions
+2. 在 Hexo 项目的根目录中新建 .github/workflows/pages.yml，填入：https://hexo.io/zh-cn/docs/github-pages
+3. 最后直接提交代码即可同步一键部署，在 Github 项目中 Settings -> Actions 查看部署结果
+4. 在这里预览页面：https://cocoonnu.github.io/hexo-blog-cocoon/
