@@ -303,8 +303,6 @@ $ git reset --mixed commitID
 ```
 
 
-
-
 ```bash
 # 回退到指定版本，并且前面提交的版本会被删除，工作区不变，暂存区将同步当前修改和指定版本的修改
 $ git reset --soft commitID

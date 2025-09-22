@@ -40,6 +40,34 @@ $ nvm alias default 14.10.0   # 设置环境默认node版本
 
 
 
+**根据项目自动切换版本**
+
+- 进入 `.zshrc` 添加以下脚本：
+
+  ```bash
+  autoload -U add-zsh-hook
+  load-nvmrc() {
+    local node_version="$(nvm version)"
+    local nvmrc_path="$(nvm_find_nvmrc)"
+    if [ -n "$nvmrc_path" ]; then
+      local nvmrc_node_version=$(cat "$nvmrc_path")
+      if [ "$nvmrc_node_version" != "$node_version" ]; then
+        nvm use --silent "$nvmrc_node_version"
+      fi
+    fi
+  }
+  add-zsh-hook chpwd load-nvmrc
+  load-nvmrc
+  ```
+
+- 在项目中添加 `.nvmrc` 文件即可打开终端是自动使用 NVM 切换指定的版本
+
+  ```
+  v18.16.0
+  ```
+
+
+
 **npm 常用命令：**
 
 - `npm init -y` ：初始化一个 package.json 文件
@@ -88,8 +116,9 @@ $ nrm ls # 列出所有镜像源
 
 
 
-## 1.3 使用 yarn 包管理工具
+## 1.3 常用的包管理工具
 
+### 1.3.1 YARN
 官网：https://chore-update--yarnpkg.netlify.app/zh-Hans/
 
 全局安装：`npm i yarn -g`，切换 Nodejs 版本之后需要另外再下载
@@ -141,6 +170,24 @@ $ yarn add file:/Users/cocoon/Downloads/enhance-layer-manager-7.0.3.tgz
 
 
 
+### 1.3.2 PNPM
+
+使用 pnpm 最少需要 node18.12 以上的版本，另外 pnpm 优点有很多，十分推荐！
+| 功能 | npm / yarn | pnpm |
+|------|------------|------|
+| 初始化项目 | `npm init` / `yarn init` | `pnpm init` |
+| 安装依赖（写入 dependencies） | `npm install xxx` / `yarn add xxx` | `pnpm add xxx` |
+| 安装依赖（写入 devDependencies） | `npm install xxx -D` / `yarn add xxx -D` | `pnpm add xxx -D` |
+| 安装全局依赖 | `npm install -g xxx` / `yarn global add xxx` | `pnpm add -g xxx` |
+| 卸载依赖 | `npm uninstall xxx` / `yarn remove xxx` | `pnpm remove xxx` |
+| 更新依赖 | `npm update xxx` / `yarn upgrade xxx` | `pnpm update xxx` |
+| 安装项目所有依赖 | `npm install` / `yarn install` | `pnpm install` |
+| 运行脚本 | `npm run dev` / `yarn dev` | `pnpm dev` |
+| 清缓存 | `npm cache clean --force` / `yarn cache clean` | `pnpm store prune` |
+| 查看全局依赖 | `npm list -g --depth=0` | `pnpm list -g --depth=0` |
+
+
+
 ## 1.4 Node 环境问题总结
 
 ### 1.4.1 JS 内存编译过载
@@ -170,6 +217,20 @@ npx create-react-app@latest my-project
 ```bash
 npm run dev
 ```
+
+
+
+### 1.4.3 Eslint 配置不生效
+
+在项目安装依赖的环节通常需要严格匹配 node 版本和装包软件，比如公司项目严格按照 node16 和 cnpm 下载依赖，cnpm 装包的时候会忽略各个依赖之间的冲突和兼容行，类似于强制安装了
+
+
+
+### 1.4.4 安装依赖需要注意的点
+
+首先确定自己的 node 版本和 react 版本，不能直接下载最新的包！
+
+当依赖下载完后如何要降版本则会出现很多奇怪的 bug，所以依赖只能升而不能降！
 
 
 

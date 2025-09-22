@@ -1587,8 +1587,6 @@ function Counter() {
 
 
 
-
-
 ## 2.3 性能优化 Hooks
 
 ### 2.3.1 useCallback
@@ -1727,6 +1725,36 @@ const { data, loading, loadMore, loadingMore } = useInfiniteScroll((d) => getLoa
 
 
 
+**useScroll**
+
+监听某个可滚动元素的滚动状态，获取它的 `{ top: number, left: number }`，下面是判断用户向上还是向下滚动的逻辑
+
+```js
+const layoutContentRef = useRef(null); // 可滚动元素Ref
+const scroll = useScroll(layoutContentRef);
+const lastTop = useRef(0);
+
+const { run: handleScrollDirection } = useThrottleFn(
+  (currentTop) => {
+    if (currentTop > lastTop.current) {
+      setScrollDirection({ scrollDirection: "down" })
+    } else if (currentTop < lastTop.current) {
+      setScrollDirection({ scrollDirection: "up" })
+    }
+    lastTop.current = currentTop;
+  },
+  { wait: 200 } // 节流处理
+);
+
+useEffect(() => {
+  if (scroll) {
+    handleScrollDirection(scroll.top);
+  }
+}, [scroll]);
+```
+
+
+
 ### 2.4.2 React 异步加载组件
 
 参考文档：https://juejin.cn/post/7239244337539219514
@@ -1775,23 +1803,43 @@ React.createPortal：https://zh-hans.react.dev/reference/react-dom/createPortal
 
 
 
-## 2.5 React 企业级框架学习
+# 第三章 React 企业级框架学习
 
-### 2.5.1 NextJs 开发与学习
+## 3.1 NextJs 全栈式框架开发
 
-首先根据入门文档跟着做一个 demo：https://qufei1993.github.io/nextjs-learn-cn/，项目地址：Work/nextjs-dashboard
-
-教程整理如下，只做了一些书签之类的索引：
-
-1. 页面级导航，通过规范页面文件位置实现页面路由：https://qufei1993.github.io/nextjs-learn-cn/chapter4
-2. 编程式路由，在服务端可直接通 props 获取路由信息，在客户端通过路由 hooks (usePathname, useSearchParams) 获取：https://qufei1993.github.io/nextjs-learn-cn/chapter11
-3. 使用 Server Components 获取数据，直接在服务端组件中获取数据库数据，而无需使用 useEffect 再调用 API 层获取数据：https://qufei1993.github.io/nextjs-learn-cn/chapter7
-4. App Route 相较于 Page Route 的区别：https://yuanbao.tencent.com/bot/app/share/chat/61fca92bb3ffff5c18ea983f2b064480
-5. 错误处理反馈：https://qufei1993.github.io/nextjs-learn-cn/chapter13
+NextJs 中文学习文档：https://next.nodejs.cn/
 
 
 
-### 2.5.2 UmiJs 开发与学习
+**Next 框架级配置**
+
+1. 顶层文件用于配置应用、管理依赖、运行中间件、集成监视工具以及定义环境变量：[top-level-files](https://next.nodejs.cn/docs/app/getting-started/project-structure#top-level-files)
+
+
+
+**路由导航规范**
+
+1. 最新的 Next 框架使用**应用路由**来构建页面；app 文件夹里面只存放路由页面的文件，网页路径严格对应文件路由路径：
+   - 路由页面文件夹里面包含的路由文件如下：`layout.tsx`、`page.tsx` ：[routing-files](https://next.nodejs.cn/docs/app/getting-started/project-structure#routing-files)
+   - 路由及文件夹也具有灵活性，其包含：嵌套路由、动态路由、路由组、并行拦截路由：[dynamic-routes](https://next.nodejs.cn/docs/app/building-your-application/routing/dynamic-routes)
+
+
+
+**组件编写规范**
+
+1. 和之前 React 项目不同，只有页面级组件使用默认导出，其他组件一致使用命名导出
+
+2. componets 文件夹和之前 React 项目不同，它存放的是 UI  原子化的组件，大致分为三大类：`common`、`ui`、`page`：
+
+   - `common`：存放不同页面之间通用的业务封装组件
+
+   - `ui`：提供可复用的基础 UI 组件库，通常针对第三方组件库进行统一的封装
+
+   - `page`：存放在页面级组件中抽离出来的业务组件，比如 `dashboard/background-beams/index.tsx`
+
+
+
+## 3.2 UmiJs 企业级前端应用
 
 UmiJs 是一个基于 React 的企业级前端框架，支持约定式路由、插件化扩展和开箱即用的开发体验，特别适合中后台项目开发。
 

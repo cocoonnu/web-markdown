@@ -22,17 +22,13 @@
 
 ## 1.1 项目主要功能集成
 
-### 1.1.1 桌面区域弹窗集成
+### 1.1.1 桌面区域弹窗组件
 
-在桌面区域可以显示多个弹窗模块（项目称为 Tabs），有些组件模块，有些是 iframe 模块。首先是通过 `Desktop` 这个组件进行对全局 `Redux Store` 中 `main` 仓库的 `state` 进行响应，监听 `tabs` 的变化进行弹窗的渲染。代码位置：src/modules/main_v2/desktop/index.jsx
-
-
-
-因此通过调用 `action` 和 `reducer` 更新 `tabs` 的数据即可实现弹窗的添加和删除。代码位置：src/reducer/main_v2/index.js、src/actions/main_v2/index.js
+在桌面区域可以显示多个弹窗组件（项目称为 Tabs），有些是组件模块（内置），有些是 iframe 模块（微前端）；首先是通过 `Desktop` 这个组件进行对全局 `Redux Store` 中 `main` 仓库的 `state` 进行响应，监听 `tabs` 的变化进行弹窗的渲染；代码位 src/modules/main_v2/desktop/index.jsx；因此通过调用 `action` 和 `reducer` 更新 `tabs` 的数据即可实现弹窗的添加和删除；代码位置：src/reducer/main_v2/index.js、src/actions/main_v2/index.js
 
 
 
-一般在任意代码中可以调用封装好的工具库来进行弹窗的添加或删除。代码位置：src/common/desktopUtil.js
+一般在任意代码中可以调用封装好的工具库 desktopUtil 来进行弹窗的添加或删除；代码位置：src/common/desktopUtil.js
 
 ```js
 /**
@@ -78,16 +74,18 @@ desktopUtil.tabAdd({
 
 
 
-我们通过传入 `tabs` 中的 `tabName` 来决定打开哪个弹窗，具体的映射代码在这两个文件中：`src/modules/main_v2/tab-frame-config.ts`、`src/modules/main_v2/tabModules.js`。因此当我们打开一个弹窗模块时，首先看是不是 `iframe` 页面然后根据其路由查找对应项目及组件，否则的话就在主项目中查找。
+我们通过传入 `tabs` 中的 `tabName` 来决定打开哪个弹窗，具体的映射代码在这两个文件中：`src/modules/main_v2/tab-frame-config.ts`、`src/modules/main_v2/tabModules.js`；因此当我们打开一个弹窗模块时，首先看是不是 `iframe` 页面然后根据其路由查找对应项目及组件，否则的话就在主项目中查找
 
 
 
 ### 1.1.2 微前端应用使用方式
 
-公司项目采用 Tab 型页面进行交互而不是路由导航系统，在实现单页面 WEB 应用上起到了很舒适的体验。Tab 型页面分为两种：Tab 栏页面和 Model 弹窗页面，这两个是页面的根挂载方式。另外在页面加载上使用了微前端技术，因此页面的集成上除了主项目还有其他业务项目，通过微前端技术实现了各个项目之间并不耦合但能够高效率通信。
+公司项目采用 Tab 型页面进行交互而不是路由导航系统，在实现单页面 WEB 应用上起到了很舒适的体验。Tab 型页面分为两种：Tab 栏页面和 Model 弹窗页面，这两个是页面的根挂载方式。另外在页面加载上使用了微前端技术，因此页面的集成上除了主项目还有其他业务项目，通过微前端技术实现了各个项目之间并不耦合但能够高效率通信
 
-在主项目的索引页面中 `src/modules/main_v2/tab-frame-config.ts` 会映射多个 `iframe` 路由。路由映射方式：项目名 + 路由名，`moduleName` + `pageName`。例如 `contract-factory/supervison-editor.html` 就对应 `contract-factory` 中 `page`
-目录的 `supervison-editor` 组件
+
+
+在主项目的索引页面中 `src/modules/main_v2/tab-frame-config.ts` 会映射多个 `iframe` 路由；路由映射方式：项目名 + 路由名，`moduleName` + `pageName`；例如 `contract-factory/supervison-editor.html` 就对应 `contract-factory` 中 `page`
+目录的 `supervison-editor` 组件，下面是项目中微前端使用到的 API：
 
 
 
@@ -108,15 +106,25 @@ const bridge = useBridge({
 
 
 
+**bridge**
+
+微前端应用核心对象，具体参数可以查阅：node_modules/@gwy/ui-biz-form-lib/lib/hooks/bridge.d.ts
+
+
+
 **getTabInfo(tabId?: string)**
 
 获取当前 tab 的信息，也可以指定 tabId
 
-```js
-key: string;
-title?: string;
-tabName: string;
-state?: Record<string, any>;
+```ts
+interface TabInfo {
+  key: string;
+  title?: string;
+  tabName: string;
+  state?: Record<string, any>;
+}
+
+const tabInfo: TabInfo = await bridge.getTabInfo()
 ```
 
 
@@ -125,17 +133,30 @@ state?: Record<string, any>;
 
 获取当前 tab 的 state 数据，通常是由入口传入
 
+```js
+const tabState = await bridge.getTabState()
+```
+
 
 
 **onReady**
 
-在同一个弹窗中，如果一个弹窗已被打开，但是通过另一个操作也打开了该弹窗，那么 useBridge 重新会被触发 onReady 钩子，直接引起组件的重新渲染。
+在同一个弹窗中，如果一个弹窗已被打开，但是通过另一个操作也打开了该弹窗，那么 useBridge 重新会被触发 onReady 钩子，直接引起组件的重新渲染
+
+```ts
+const bridge = useBridge({
+  onReady: async () => {
+    // 通过bridge.tabAdd存入的state获取
+    const { appId, postId } = await bridge.getTabState();
+  }
+});
+```
 
 
 
-**onTabData、sendTabData（旧版本使用）**
+**onTabData、sendTabData（旧）**
 
-当其他应用调用 sendTabData 时并且传入的 tabId 为当前应用时，则会触发此回调函数。
+通过 bridge 打开的弹窗页面，父子应用通信可以使用这两个 API，通过在父应用进行监听，在子应用调用即可
 
 ```js
 // 父应用
@@ -161,17 +182,18 @@ const toTopic = async (item) => {
 ```
 
 ```js
-// 子应用，不传入
+// 子应用
 bridge.sendTabData(state?.key, { eventType: 'reload' });
 ```
 
 
 
-**Iframe、onEvent、triggerEvent（新版本使用）**
+**onEvent、triggerEvent（新）**
 
-如果要实现在微应用里触发主项目的函数，可以使用 onEvent 和 triggerEvent 来实现。案例：子应用：src/pages/template-wrapper/index.tsx 主应用：
+微前端父子应用通信可以使用这两个 API，通过在父应用进行监听，在子应用调用即可
 
 ```js
+// 父应用
 const bridge = useBridge({
   onReady: async () => {},
   onEvent: ({ eventType }) => {
@@ -198,10 +220,47 @@ bridge.tabAdd({
     },
   },
 });
+```
 
+```js
+// 子应用
 const { fromTabId } = await bridge.getTabState();
 fromTabId && bridge.triggerEvent(fromTabId, { eventType: 'reload' });
 ```
+
+
+
+**MessengerFrame**
+
+微前端原装 iframe 组件，支持在一个页面中嵌套一层 iframe 的子页面；目前只有 methods 属性可支持父子组件通信，通信函数需要自己手动封装，由于运营平台没有内置弹窗 API，所以只能使用这个组件来实现微前端
+
+运营平台实例：src/modules/metadataManage/components/datasource-data-view/index.tsx
+
+```tsx
+const methods = {
+  getTabState: (args, callback) => { callback({...}) },
+  closePlatformModal: () => {}
+}
+
+<MessengerFrame
+  src="/contract-factory/onlyoffice-application-designer-v3.html"
+  methods={methods}
+  className={styles.iframe}
+/>
+```
+
+```tsx
+const tabState = await bridge.getTabState(); // getTabState由于TS已支持所以可以直接调用
+await bridge.execute({ methodName: 'closePlatformModal' }); // 未内置的需要用execute调用
+```
+
+
+
+**iframe**
+
+Iframe 组件是对 MessengerFrame 组件的封装，实现了通过页面嵌入的方式打开一个微前端应用并且内置了和 bridge 一致的很多功能；MessengerFrame 只是一个毛坯房，通过这个组件引入的子页面无法调用前面列出的 API，像父子页面通信常用的几个回调：getTabState、tabAdd、tabReload、tabRemove 等全部都封装好了
+
+Iframe 主项目地址：src/modules/iframe/index.tsx
 
 ```jsx
 import Iframe from "@/modules/iframe"
@@ -217,13 +276,11 @@ import Iframe from "@/modules/iframe"
 bridge.triggerEvent('', { eventType: 'goBack' });
 ```
 
-Iframe 是对 MessengerFrame 组件的封装，MessengerFrame 算是只是一个毛坯房，通过这个组件引入的子页面无法调用前面列出的 API，运营平台有一个使用这个组件的实例：src/modules/metadataManage/components/datasource-data-view/index.tsx
 
 
+**从代办打开弹窗页面**
 
-**从代办打开**
-
-如果从代办打开，则后端传递的数据在 bizParam 这个 JSOM 字符串里面，主项目的 src/modules/waitingWork/jump.js 这个文件将这个对象解析出来并放在 state.params 对象里，另外整条代办的数据会放在 state.record 对象里
+如果从代办打开，则后端传递的数据在 bizParam 这个 JSOM 字符串里面，主项目的 src/modules/waitingWork/jump.js 这个文件会将这个对象解析出来并放在 state.params 对象里传递过来
 
 ```jsx
 // 区分是从代办打开还是直接通过bridge.tabAdd打开
@@ -273,13 +330,9 @@ const { contractUrl, fromTabId, status, userId, dataId, datasourceId, ruleId } =
 
 
 
-
-
 ### 1.1.3 项目难点与任务调研
 
 **弹窗拖拽方案调研**
-
-调查弹窗页面是如何实现拖拽的，另外有没有可以优化的地方
 
 
 
@@ -287,13 +340,15 @@ const { contractUrl, fromTabId, status, userId, dataId, datasourceId, ruleId } =
 
 
 
-
-
 ### 1.1.4 项目常用功能点记录
 
-**Modal 弹窗组件添加圆角、实现拖拽**
+**Modal 组件添加圆角、实现拖拽**
 
-直接使用 antd 的 Modal 进行定义，**可支持圆角、拖拽、全屏、取消全屏、自定义底部**等。项目为进行封装通用弹窗样式，因此改弹窗的 head 和 body 的样式都是需要复用的，具体参考：src/pages/onlyoffice-application-designer-v3/components/tabs-left/components/add-dynamic-form-modal/index.tsx
+直接使用 antd 的 Modal 进行定义，**自定义头部、可支持圆角、拖拽、全屏、取消全屏、自定义底部**等；
+
+制表工场：src/pages/onlyoffice-application-designer-v3/components/tabs-left/components/add-dynamic-form-modal/index.tsx
+
+运营平台：src/modules/metadataManage/components/postFormManage/components/previewModal/index.tsx
 
 ```jsx
 <Modal
@@ -303,14 +358,32 @@ const { contractUrl, fromTabId, status, userId, dataId, datasourceId, ruleId } =
   mask={false}
   onCancel={handleCancel}
   onOk={handleOk}
+  footer={isPlatform ? null : undefined}
   centered
   width={isFull ? '100%' : '90%'}
   bodyStyle={{
-    maxHeight: 'calc(100vh - 80px)',
+    maxHeight: 'calc(100vh - 80px)', // 这个一定不能漏了
     height: isFull ? 'calc(100vh - 80px)' : 650,
     padding: 0,
   }}
 >
+```
+
+```jsx
+<div className={styles.container}>
+  <div className={styles.header}>
+    <TabsHeaderNew
+      leftTitle
+      title={'动态报表'}
+      onClose={handleCancel}
+      canDrag // 实现拖拽
+      canToggleFull // 实现全屏
+      onFullScreenChange={setIsFull}
+    />
+  </div>
+  <div className={styles.body}>
+  </div>
+</div>
 ```
 
 
@@ -321,11 +394,50 @@ const { contractUrl, fromTabId, status, userId, dataId, datasourceId, ruleId } =
 
 src/pages/onlyoffice-application-designer-v3/components/control-panel/button-options-modal/components/event-params.tsx
 
+```jsx
+<Form.Item {...field} noStyle>
+  <EventParams
+    form={form}
+    layout={layout}
+    preName={name}
+    name={field.name}
+    item={item ?? {}}
+    isPlatform={isPlatform}
+    invitePostTemplates={invitePostTemplates}
+/>
+</Form.Item>
+```
 
 
-**拖拽排序列表**
 
-contract-factory/src/pages/onlyoffice-application-designer-v3/components/app-manage/sort-columns/index.tsx
+**拖拽排序组件 SortHanle **
+
+基础案例：只需维护一个 list，拖拽和列表样式都使用组件默认的
+
+src/pages/onlyoffice-application-designer-v3/components/app-manage/sort-columns/index.tsx
+
+复杂案例：搭配 Form.List 使用，另外去取去除原生样式，封装自己的样式
+
+src/pages/onlyoffice-application-designer-v3/components/control-panel/button-options-modal/components/salary-send/index.tsx
+
+```jsx
+<SortHanle
+  // @ts-ignore
+  onChangeDataSource={(newList, oldIndex, newIndex) => {
+    move(oldIndex, newIndex);
+  }}
+  shouldAllDisabled={isPlatform}
+  shouldUseDragHandle
+  items={fields}
+  useDragHandle
+  className={styles.noticeTemplateList} // 最外层list
+  itemClass={styles.itemClass} // 最外层item
+  itemRenderClass={styles.itemRenderClass} // 内层item
+  getDragHandleClass={() => styles.dragHandleClass} // drag元素样式
+  iconRender={() => <MenuOutlined />} // drag元素
+  renderItem={({ key: templateKey, name: templateName }) => ()}
+/>
+```
 
 
 
@@ -368,46 +480,67 @@ customWatcher.dispatchEvent(customWatcher.actions.getBankBranchesAction, { data 
 
 
 
-### 1.1.5 项目接口编写规范
+**CustomForm 表单生成**
 
-**contract-factory 项目接口定义**
-
-```jsx
-/**
- * 获取表单应用列表通用排序设置
- */
-export const getGeneralListSort = (params) =>
-  dataWrapper(requestUtil.get('ideal-new-datasource/api/datasource/generalListSort/get', { params }));
-
-/**
- * 保存表单应用列表通用排序设置
- */
-export const saveGeneralListSort = (params) =>
-  dataWrapper(requestUtil.post('ideal-new-datasource/api/datasource/generalListSort/save', params));
-```
-
-**contract-factory 项目接口调用，通过 try catch 来捕获**
+主项目的部分旧表单使用的是 CustomForm 组件进行生成的，也是通过传入配置项实现的；使用方法具体可参考组件：src/modules/attendanceRule/attendGroupSet/addAttendGroup.jsx，通过配置项的 type 类型决定是什么类型的表单项
 
 ```jsx
-const { run: handleOnChangeColumn } = useThrottleFn(async (map) => {
-  try {
-    await dataSourceV3API.saveGeneralListShow({
-      appId,
-      postId,
-      dynamicId: dataId || dynamicId,
-      sysOperateType: JSON.stringify(map),
-      type: 1,
-    });
-    setColumnsStateValue(JSON.stringify(map));
-  } catch (error) {
-    message.error(getErrorMsg(error));
-  }
-});
+{
+  label: "考勤组名称",
+  key: "name",
+  type: "input",
+  span: 24,
+  props: {
+    placeholder: "请输入考勤组名称，支持中文/英文/数字 ≤10字符"
+  },
+  rules: [
+    { required: true, message: "请输入考勤组名称" },
+    { max: 10, message: "限制输入10个字符" }
+  ]
+},
 ```
 
 
 
-### 1.1.6 项目代码编写规范
+**CustomForm 表单样式**
+
+通过直接传入 formItemLayout 属性对象可定制 From 的样式
+
+```jsx
+formItemLayout: {
+  colon: false,
+  hideRequiredMark: false,
+  labelAlign: "left",
+  labelCol: { span: 4 },
+  wrapperCol: { span: 20 }
+},
+```
+
+当表单为垂直布局时，默认一个表单项占据一行，如果要使几个表单项并排显示则只需要规定相邻的几个配置项 span 相加等于 24 即可，另外再控制 labelCol 和 wrapperCol 以适应行内的布局
+
+```jsx
+{
+  label: "单次可排天数",
+  key: "applyDayLimit",
+  type: "input",
+  span: 12,
+  labelCol: { span: 8 },
+  wrapperCol: { span: 16 },
+},
+{
+  label: "休息时段申请加班",
+  key: "ifOvertimeResttime",
+  type: "radio",
+  initialValue: "1",
+  span: 12,
+  labelCol: { span: 10 },
+  wrapperCol: { span: 14 },
+},
+```
+
+
+
+### 1.1.5 项目代码编写规范
 
 **项目目录创建规范**
 
@@ -474,6 +607,155 @@ export interface EventParamsConfig {
 
 
 
+**项目接口编写规范**
+
+```jsx
+export const getGeneralListSort = (params) =>
+  dataWrapper(requestUtil.get('ideal-new-datasource/api/datasource/generalListSort/get', { params }));
+
+export const saveGeneralListSort = (params) =>
+  dataWrapper(requestUtil.post('ideal-new-datasource/api/datasource/generalListSort/save', params));
+```
+
+```jsx
+const { run: handleOnChangeColumn } = useThrottleFn(async (map) => {
+  try {
+    await dataSourceV3API.saveGeneralListShow({......});
+    setColumnsStateValue(JSON.stringify(map));
+  } catch (error) {
+    message.error(getErrorMsg(error));
+  }
+});
+```
+
+
+
+### 1.1.6 项目状态管理规范
+
+**Redux 数据仓库构建**
+
+1. 使用 Redux 管理的数据都是全局的数据，因为创建的仓库是全局的；Redux 数据仓库创建流程较为复杂，下面是详细解析步骤
+
+2. 首先我们在 reducer 文件夹下定义一个数据仓库：src/reducer/financeTable/index.js
+
+   ```js
+   import Type from "@/actions/type/index"
+   
+   const defaultState = {
+     loading: false,
+     initData: {},
+   }
+   
+   export default function onAction(state = defaultState, action) {
+     switch (action && action.Type) {
+       case Type.FINANCE_GET_INITDATA:
+         return { ...state, loading: true }
+       case Type.FINANCE_GET_INITDATA_SUCCESS:
+         return { ...state, initData: action.data, loading: false }
+       default:
+         return state
+     }
+   }
+   ```
+
+3. 然后创建 Action 常量：src/actions/type/financeTable.js
+
+   ```js
+   export default {
+     FINANCE_GET_INITDATA: "FINANCE_GET_INITDATA",
+     FINANCE_GET_INITDATA_SUCCESS: "FINANCE_GET_INITDATA_SUCCESS",
+   }
+   ```
+
+4. 然后创建 Action，由于用到了异步函数所以需要 sagas 支持，一个 Action 文件导出普通 Actions 和 sagasActions
+
+   ```js
+   import type from "../type"
+   import { takeEvery, takeLatest, put, call } from "redux-saga/effects"
+   
+   import { createAction, createRequestAction } from "../../common/reduxUtil"
+   import axios from "../../common/axios"
+   
+   export const getTableInitData = createAction(type.FINANCE_GET_INITDATA, "params", "callback")
+   const doGetTableInitData = createRequestAction(
+     params => axios.get("ideal-new-journal/api/journal/cost/getInitData", { params }),
+     type.FINANCE_GET_INITDATA_SUCCESS
+   )
+   
+   export default function* () {
+     yield takeLatest(type.FINANCE_GET_INITDATA, doGetTableInitData)
+   }
+   ```
+
+5. 最后在 store 创建的时候注入写好的 reducer、actions：src/reducer/index.js、src/actions/index.js、src/store/index.js
+
+
+
+**组件层注入 Redux 数据**
+
+1. 首先在项目入口文件全局注入 Redux：src/page/index.jsx
+
+   ```jsx
+   const router = (
+     <ReduxProvider store={store}>
+       {process.env.NODE_ENV === "production" ? <CatchErrorComponent>{App}</CatchErrorComponent> : App}
+     </ReduxProvider>
+   )
+   ```
+
+2. 在类组件里面注入并使用 Redux 数据示例如下，数据都会注入进 `this.props` 对象中
+
+   ```jsx
+   import { connect } from "react-redux"
+   import actions from "@/actions/index"
+   
+   const pageMapStateToProps = state => {
+     return {
+       loading: state.financeTable.loading,
+       initData: state.financeTable.initData
+     }
+   }
+   
+   const mapDispatchToProps = (dispatch, props) => {
+     return {
+       getTableInitData: (params, callback) => {
+         dispatch(actions.financeTable.getTableInitData(params, callback))
+       }
+     }
+   }
+   
+   export default connect(pageMapStateToProps, mapDispatchToProps)(Index)
+   ```
+
+3. 在函数组件里面注入并使用 Redux 数据示例如下：
+
+   ```jsx
+   import { useSelector, useDispatch } from "react-redux"
+   import actions from "@/actions"
+   
+   const AttendanceRuleModal = props => {
+     const dispatch = useDispatch()
+     const userInfo = useSelector(state => state.user.userInfo)
+     
+     const tabRemove = () => {
+       dispatch(actions.main.tabRemove(props.location.openId))
+     }
+   }
+   ```
+
+
+
+### 1.1.7 项目难点技术栈归纳
+
+拖拽基座组件的使用 SortHanle
+
+面试技术难点回答模板：**复杂交互实现、模块组件化**、**极限时间下的开发交付挑战**、**数据可视化、响应式交互、系统兼容性**
+
+开发思路总结：首先得一身心投入，不能看微信干其他的；将开发思路具象化，思考那个方案成本最低；时间充足的时候可以尝试多个方案，可以有容错率；时间紧张的时候只能选择最优的方案之后再着手开发，不然会浪费掉很多时间；
+
+组件开发思维：业务功能组件优先使用项目已有的组件，可拖拽优化已有组件；如果有没有设计到的功能再考虑使用第三方库，并自行封装和设计
+
+
 
 ## 1.2 开发任务列表梳理
 
@@ -484,12 +766,7 @@ export interface EventParamsConfig {
 1. 在 `container` 组件中渗透一个 `addDiffItem` 和 `removeDiffItem` 函数，在 `Item` 组件中通过是否 `showDiff` 触发这两个函数并传入该 `item` 组件绑定的节点和 `diff` 节点实例还有一些另外的绘制属性
 2. 然后在 `container` 组件维护一个 `diffList` 属性，并在全局渲染中保持不变。当 `addDiffItem` 和 `removeDiffItem` 函数设置 `diffList` 的值，并触发一个防抖函数 `drawLink` 开始绘制连线
 3. 绘制函数 `drawLink` 中首先清除画布，然后遍历 `diffList` 列表绘制每一条连线
-
-
-
-组件位置：
-
-`new-gwy-web/src/component/approve-diff-container/index.tsx`
+4. 组件位置：`new-gwy-web/src/component/approve-diff-container/index.tsx`
 
 
 
@@ -1504,67 +1781,82 @@ if (toolType === TOOL_TYPE.enum || toolType === TOOL_TYPE.bankBranches) {
 
 
 
+### 1.2.39 B0508薪资表发放到个人
+
+新增字段：openNoticeDetail、dynamicId、dynamicFormUserTag、openNoticeConfirm、noticeConfirmUser
+
+
+
+### 1.2.40 C0703过滤选择树封装
+
+现在的需求是：有一个可多选的树选择器，支持搜索；当搜索时，选中父节点只选择搜索出来的。纯组件内部交互需求，和业务无关，因此可以封装一个通用组件，分别用于用户、岗位、部门等下拉树形多选框。
+
+实现思路：根据原生 treeData 自行维护一个 filterTreeData，并且将过滤掉的节点都放在末尾并隐藏，因为 filterTreeData
+
+ 本质上还是全量的数据，所以已选择的项依然能够选择出来，但是因为是全量的数据所以当有搜索项时，开启虚拟滚动的组件内部并不能真实的计算过滤后数据的高度，因此需要同步一下过滤条件
+
+组件地址：contract-factory/src/components/filter-control-tree-select/index.tsx
+
+```jsx
+<TreeSelect
+  {...props}
+  showSearch
+  treeNodeFilterProp="title"
+  treeData={filterTreeData}
+  searchValue={searchValue}
+  onSearch={(val) => setSearchValue(val)}
+  filterTreeNode={(inputValue, treeNode) => {
+    return typeof treeNode?.title === 'string' && treeNode?.title.toLowerCase().includes(inputValue);
+  }}
+/>
+```
+
+
+
+
+
 ## 1.3 组件使用技巧与总结
 
-### 1.3.1 CustomForm 表单生成
+### 1.3.1 antd 通用组件开发
 
-**表单配置项**
+**Collapse 组件嵌套使用**
 
-主项目的旧表单使用的是 CustomForm 组件进行生成的，也是通过传入配置项实现的。使用方法具体可参考组件：src/modules/attendanceRule/attendGroupSet/addAttendGroup.jsx，通过配置项的 type 类型决定是什么类型的表单项。
+src/pages/onlyoffice-application-designer-v3/components/tabs-left/components/add-dynamic-form-modal/dynamic-table/components/tag-select-modal/index.tsx
+
+
+
+**Affix 组件开发技巧**
+
+Affix 可以实现组件的固定定位，内部有个 target 属性会默认获取子元素最近的一个可滚动的父级盒子，基于这个父盒子实现吸顶效果；如果想要制造通过交互实现动态吸顶效果，然后又不想重新渲染内部组件，可以采用下面的方式：
 
 ```jsx
-{
-  label: "考勤组名称",
-  key: "name",
-  type: "input",
-  span: 24,
-  props: {
-    placeholder: "请输入考勤组名称，支持中文/英文/数字 ≤10字符"
-  },
-  rules: [
-    { required: true, message: "请输入考勤组名称" },
-    { max: 10, message: "限制输入10个字符" }
-  ]
-},
+<Affix offsetTop={(selectCateRefSize.height || 185) - 2} className={ scrollDirection === "down" ? styles.select_cate_affix_none : styles.select_cate_affix }>
+  {sortContent}
+</Affix>
+```
+
+```less
+.select_cate_affix {
+  :global {
+    .ht-affix {
+      z-index: 12;
+    }
+  }
+}
+
+.select_cate_affix_none {
+  & > div[aria-hidden="true"] {
+    display: none;
+  }
+  :global {
+    .ht-affix {
+      position: static !important;
+    }
+  }
+}
 ```
 
 
-
-**表单样式**
-
-通过直接传入 formItemLayout 属性对象可定制 From 的样式
-
-```jsx
-formItemLayout: {
-  colon: false,
-  hideRequiredMark: false,
-  labelAlign: "left",
-  labelCol: { span: 4 },
-  wrapperCol: { span: 20 }
-},
-```
-
-当表单为垂直布局时，默认一个表单项占据一行，如果要使几个表单项并排显示则只需要规定相邻的几个配置项 span 相加等于 24 即可，另外再控制 labelCol 和 wrapperCol 以适应行内的布局
-
-```jsx
-{
-  label: "单次可排天数",
-  key: "applyDayLimit",
-  type: "input",
-  span: 12,
-  labelCol: { span: 8 },
-  wrapperCol: { span: 16 },
-},
-{
-  label: "休息时段申请加班",
-  key: "ifOvertimeResttime",
-  type: "radio",
-  initialValue: "1",
-  span: 12,
-  labelCol: { span: 10 },
-  wrapperCol: { span: 14 },
-},
-```
 
 
 
@@ -1572,7 +1864,9 @@ formItemLayout: {
 
 **onRow & onHeaderRow**
 
-表格组件属性，给表格某行或者表格头部行设置鼠标行为属性或者其他组件属性 className、key、id 等等 ，https://4x-ant-design.antgroup.com/components/table-cn/#onRow-%E7%94%A8%E6%B3%95
+表格组件属性，给表格某行或者表格头部行设置**鼠标行为属性**或者其他组件属性 className、key、id 等等，具体可参考 
+
+https://4x-ant-design.antgroup.com/components/table-cn/#onRow-%E7%94%A8%E6%B3%95
 
 ```tsx
 <Table
@@ -1595,20 +1889,21 @@ formItemLayout: {
 
 
 
-**onCell & onHeaderCell**
+**onCell & component.body.cell**
 
-表格 column 属性，给表格某个单元格或者头部单元格设置设置鼠标行为属性或者其他组件属性，具体可参考 https://4x-ant-design.antgroup.com/components/table-cn/#onRow-%E7%94%A8%E6%B3%95
+onCell 是在表格 column 中设置的属性，给表格单元格设置鼠标行为属性或者其他组件属性，具体可参考 
 
-当表格某个单元格或者头部单元格设置为自定义组件时，那么还可以作为组件参数传入，详细参考样例：https://4x-ant-design.antgroup.com/components/table-cn/#components-table-demo-edit-cell
+https://4x-ant-design.antgroup.com/components/table-cn/#onRow-%E7%94%A8%E6%B3%95
+
+component.body.cell 为当表格单元格需要自定义组件时传入的属性，具体可参考 
+
+https://4x-ant-design.antgroup.com/components/table-cn/#components-table-demo-edit-cell
 
 ```tsx
 const EditableCell: React.FC<EditableCellProps> = ({
   title, 
   editable,
   children, // 继承自EditableCellProps，就是column里面的render
-  dataIndex,
-  record,
-  handleSave,
   ...restProps
 }) => {...}
 
@@ -1618,15 +1913,10 @@ const columns = defaultColumns.map((col) => {
   }
   return {
     ...col,
-    onCell: (record: DataType) => ({
+    onCell: (record: DataType) => ({ // 单元格组件入参
       record,
       editable: col.editable,
-      dataIndex: col.dataIndex,
       title: col.title,
-      handleSave,
-      onClick: () => {
-        console.log("1111");
-      },
     }),
   };
 });
@@ -1634,19 +1924,31 @@ const columns = defaultColumns.map((col) => {
 <Table
   components={{
     body: {
-      cell: EditableCell,
+      cell: EditableCell, // 自定义单元格组件
     },
   }}
-  dataSource={dataSource}
-  columns={columns as ColumnTypes}
 />
 ```
 
 
 
+**onHeaderCell && components.header.cell**
+
+onHeaderCell 是在表格 column 中设置的属性，给表格列头设置鼠标行为属性或者其他组件属性，具体可参考
+
+https://4x-ant-design.antgroup.com/components/table-cn/#onRow-%E7%94%A8%E6%B3%95
+
+components.header.cell 为当表格列头需要自定义组件时传入的属性，具体可参考案例
+
+https://ant.design/components/table-cn#table-demo-resizable-column
+
+
+
 **表格表头列合并**
 
-下面表格配置中会将 Home phone 和 Phone 列合并成 Home phone 一个列头，通过分配 colSpan 来达到目的。参考示例：https://3x.ant.design/components/table-cn/#components-table-demo-colspan-rowspan
+下面表格配置中会将 Home phone 和 Phone 列合并成 Home phone 一个列头，通过分配 colSpan 来达到目的，具体可参考 
+
+https://3x.ant.design/components/table-cn/#components-table-demo-colspan-rowspan
 
 ![image-20240611165522921](mark-img/image-20240611165522921.png)
 
@@ -1763,7 +2065,10 @@ const columns = [
 
 **表格排序 sort**
 
-通过 sort 属性可以将当前传入 Table 组件的所有数据排序，可按升降序排序，通过自定义排序函数可以自定义规则：1. 当 `sortOrder === 'descend'` 为降序时，函数返回负数则当前项排后面 2. 当 `sortOrder === 'ascend'` 为升序时，函数返回正数则当前项排后面
+通过 sort 属性可以将当前传入 Table 组件的所有数据排序，可按升降序排序，通过自定义排序函数可以自定义规则：
+
+1. 当 `sortOrder === 'descend'` 为降序时，函数返回负数则当前项排后面
+2. 当 `sortOrder === 'ascend'` 为升序时，函数返回正数则当前项排后面
 
 ```jsx
 {
@@ -1796,29 +2101,53 @@ const columns = [
 
 
 
-**高宽度滚动条 scroll**
+**表格高度 scroll.y **
 
-当需要固定宽度高度时直接写死即可：`{ x: '100px' || 'max-content', y: '145px' }` 
+我们使用 scroll.y 控制**表格的整体高度**，当**表格内容**超过这个高度的时候就展示内部竖向滚动条，实现表头固定；无默认值。
 
-当需要自适应高度宽度时可以使用这样一个模板：`{ x: '100%', y: 'calc(100vh - 200px)' }`，其中 200px 是手动调出来的，可以实现自适应高度变化，前提是其他区域高度像素值固定。
-
-也可以根据外层盒子的高度来实现 table 响应式：
+1. 直接使用定死的高度：`scroll={{ y: 200 }}`
+2. 使用页面高度计算实现自适应：`scroll={{ y: '100vh - 50px' }}`
+3. 使用外部盒子高度计算实现自适应：`scroll={{ y: tableRefSize?.height - 77 }}`
 
 ```jsx
 const tableRef = useRef(null)
-const size = useSize(tableRef) || { width: 0, height: 0 }
+const tableRefSize = useSize(tableRef) || { width: 0, height: 0 }
 <div className={styles["account-box-table"]} ref={tableRef}>
   <Table
     size="small"
     dataSource={accountData}
     columns={accountColumns}
     pagination={false}
-    scroll={{ y: size?.height - 45 }}
+    scroll={{ y: tableRefSize?.height - 77 }} // 77为表头的高度，如果表头高度是动态的则也需要计算出来
   />
 </div>
 ```
 
-![image-20240827092950773](mark-img/image-20240827092950773.png)
+
+
+**表格宽度 scroll.x**
+
+我们使用 scroll.x 控制表格滚动条，如果没有设置则不会出现横向滚动条；**首先表格整体宽度取决于外部盒子的宽度**，当表格内容宽度超过表格整体宽度的时候就展示内部横向滚动条；表格内容宽度取决于表格每一列 column 定义的宽度，如果某一列没有指定宽度，则会根据 scroll.x 设置的内容宽度进行自适应；另外如果有固定的项，则 scroll.x 需要减去固定项的宽度：
+
+1. 当设置 `scroll={{ x: '100%' }}` 时，如果不是每列都设置了宽度，那么则不会产生滚动条，内容宽度等于整体宽度；否则的话内容宽度等于每列之和，如果超出了整体宽度则产生滚动条
+1. 当设置 `scroll={{ x: 1300 }}` 时，指定内容宽度为1300，超出表格整体宽度即可展示滚动条；如果每列都设置了宽度则内容宽度还是等于每列之和
+1. 使用最大内容显示：`scroll={{ x: 'max-content' }}`，内容的宽度为最长行内容的宽度，保证每行的内容一行显示
+1. 当不设置 `scroll.x` 时，如果每个列都设置了宽度，则当表格内容宽度超过表格整体宽度的时候就展示内部横向滚动条
+
+```jsx
+const columns: ColumnsType<DataType> = [
+  {
+    title: 'Full Name',
+    dataIndex: 'name',
+    key: 'name',
+    fixed: 'left',
+    className: styles.columnClass, // min-width: 120px;
+  }
+];
+<Table columns={columns} dataSource={data} scroll={{ x: 'max-content' }} />
+```
+
+> 设置表格最小宽度为 120px，宽度、最大宽度为行内容宽度，如果 max-content 不生效请检查原生 Table DOM 的 table-layout 属性是否为 auto，如果为 fixed 则不会生效
 
 
 
@@ -2220,7 +2549,7 @@ const renderAffairTypeOpt = currentKey => {
 
 
 
-### 1.3.5 Swiper 组件开发技巧
+### 1.3.5 swiper 组件开发技巧
 
 Swiper 可独立于框架开发，不同的 Swiper 版本或者不同的框架开发只是构建轮播图和调用 API 的方式不同。其核心配置和一些回调函数的用法都是相同的。下面会列出一些常用的 Swiper 案例，可供参考。
 
@@ -2324,12 +2653,41 @@ const onClick = ({ key }) => {
 
 
 
+
+
+**TreeSelect 搜索之后全选父节点只选中筛选后的子节点**
+
+Antd 原生不支持这个功能，个人实现：[1.2.40 C0703过滤选择树封装](#1.2.40 C0703过滤选择树封装)
+<img src="mark-img/CleanShot 2025-07-11 at 09.06.45.gif" alt="CleanShot 2025-07-11 at 09.06.45" style="zoom:50%;" align='left' />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### 1.3.7 antd 表格表单整合开发
 
 当表格和表单整合开发时我通常用的到结构是：表格最外层套个 Form，Table 通过 components 自定义单元格。单元格根据 rowIndex 和 tagId 定位到，初始化时给 From 设置数据，数据结构严格按照 name 编写的方式设置，同时要维护 Table 的 dataSource 才能实现表格中既有输入值又有输入框。
 
-1. 基础版表格内存在输入框：contract-factory/src/pages/yypt-datasource-data-view/datasource-data-view/batch-edit-modal/index.tsx
-2. 进阶版表格表单整合开发：contract-factory/src/pages/onlyoffice-application-apply/dynamic-word-v3/data-split-modal/index.tsx
+1. 基础版表格内存在输入框：src/pages/yypt-datasource-data-view/datasource-data-view/batch-edit-modal/index.tsx
+2. 进阶版表格表单整合开发：src/pages/onlyoffice-application-apply/dynamic-word-v3/data-split-modal/index.tsx
 
 ```jsx
 <Form form={form} colon={false} scrollToFirstError>
@@ -2359,40 +2717,4 @@ const onClick = ({ key }) => {
 
 
 
-
-
-## 1.4 平台重构项目需求
-
-### 1.4.1 公司企业基本信息
-
-原项目组件地址：
-
-1. 原集团信息查看弹窗：src/modules/organization/organizationManagerNew/company-base-info-modal/index.tsx
-2. 原公司信息查看弹窗：src/modules/organization/organizationManagerNew/bloc-base-info-modal/index.tsx
-
-
-
-左侧架构树梳理：
-
-1. 架构树顶层节点梳理：根节点、标题节点，根节点下只有标题节点，标题节点起到分类效果
-2. 架构树标题节点梳理：标题节点分为 **分公司、副级部门、下级运营部门、下级附建组织** 四大类
-3. 分公司标题节点包含：只有一级，各个分公司部门（部门节点）可点击，点击右侧信息栏展示对应的分公司信息
-4. 副级部门标题节点包含：只有一级，各个副级部门（部门节点）不可点击，只做展示
-5. 下级运营部门标题节点包含：只有一级，各个运营部门（部门节点）不可点击，只做展示
-6. 下级附建组织标题节点包含：有两级，第一级为各个附建组织总部（集团节点），可点击，点击右侧信息栏展示对应的附建组织总部信息。可展开，第二级为附建组织总部展开后的各个附建组织（部门节点），可点击，点击右侧信息栏展示对应的附建组织信息
-
-![image-20241029114634846](mark-img/image-20241029114634846.png)
-
-
-
-可点击节点梳理：
-
-1. 根节点（企业信息节点）：右侧展示企业信息包含以下字段：基本信息、营业执照、组织关系、董监高信息、分公司、副级部门、下级运营部门、下级附建组织等
-2. 分公司部门节点：右侧展示分公司信息包含以下字段：基本信息、平台登记信息
-3. 附建组织总部节点：右侧展示附建组织总部信息包含以下字段：基本信息、组织关系、附建组织信息、副级部门、下级部门
-
-
-
-### 1.4.2 用户注册与企业注册
-
-本期主要是完成注册的流程，前端交互不考虑，只对原型的信息做出展示即可。所以这期需求工作量主要在于对整个注册流程的掌握和每个页面具体联调的处理。
+前面的是表单项为动态的情况下 使用 components 实现表格和表单整合开发，如果表单项是固定的那么可以直接在 columns 里面进行表单项的配置，实例如下所示：contract-factory/src/pages/performance-maintenance-list/index.tsx

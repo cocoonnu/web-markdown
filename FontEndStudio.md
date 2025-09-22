@@ -121,6 +121,10 @@ index.html
 
 
 
+on
+
+
+
 ## 1.3 静态资源路径
 
 React 脚手架中使用 `%PUBLIC_URL%` 则固定从服务器根路径 `http://localhost:3000` 的文件夹下获取资源
@@ -461,6 +465,26 @@ Grid 备忘清单：[https://wangchujiang.com/reference/docs/css.html#css-grid-�
 
 
 
+**space-around**
+
+实现每个元素的 **两侧间距相等**
+
+```
+|  A   B   C  |
+```
+
+
+
+**space-between**
+
+实现**首尾元素贴边**，中间元素平均分配剩余空间
+
+```
+|A    B    C|
+```
+
+
+
 **grid 布局技巧**
 
 响应式盒子布局：通过属性 `grid-template-columns: repeat(auto-fill, minmax(230px, 1fr))` 设置容器子元素宽度最小 230px，最大为容器宽度分配完 230px 后再将剩下的宽度均匀的分配给每个 230px
@@ -480,6 +504,46 @@ Grid 备忘清单：[https://wangchujiang.com/reference/docs/css.html#css-grid-�
   ......
 }
 ```
+
+
+
+**卡片两端对齐，间隙和宽度自适应，换行自适应**
+
+我想实现一个这样的布局：卡片的宽度有一个最小值，每行的卡片都两端对齐，当宽度缩小卡片中间的缝隙自动缩小，当宽度足够小时会自动换行，除了最后一行左对齐，其他每行都两端对齐
+
+核心代码是使用 grid 布局后再用一个盒子填充并自动加上 padding，实现内部盒子居中显示，盒子与盒子之间间距一致；另外最外层盒子宽度一定要贴近边缘，否则会有多余的两端间距；这个实际上间距还是不会变的，变的还是盒子的宽度
+
+```css
+.gift_wrap {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  // grid-auto-rows: 260px; 如果想每个卡片固定高度可以加上这个
+}
+```
+
+```jsx
+<div className={styles.gift_wrap}>
+  {giftList.map(({ imgUrl, points, title }, index) => {
+    return (
+      <div
+        className={styles.flex_center}
+        style={{ width: '100%', padding: 10 }} // 中间的缝隙大小取决于这个padding
+        key={index}
+      >
+        <div className={styles.flex_column} style={{ width: '100%', rowGap: 15 }}>
+          <CustomImage src={imgRootUrl + imgUrl} width={'100%'} />
+          ......
+          </div>
+        </div>
+      </div>
+    );
+  })}
+</div>
+```
+
+![image-20250910143218401](mark-img/image-20250910143218401.png)
+
+
 
 
 
@@ -541,6 +605,18 @@ https://blog.csdn.net/TwelveSpring/article/details/123253679
 
 https://juejin.cn/post/7027845262190051335
 
+```css
+div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  white-space: pre-wrap; // 保留空格和换行，配合其他属性用
+  word-break: break-all; // 强制任意位置断词，适合连续英文/数字
+}
+```
+
 
 
 **盒子宽度随着内容（字数）宽度动态变化**
@@ -567,6 +643,27 @@ https://juejin.cn/post/7027845262190051335
 **inherit,initial,unset,revert 是什么**
 
 https://juejin.cn/post/7035445933152141342
+
+
+
+**自定义默认组件的伪元素**
+
+小程序有一个这样的需求：将下拉菜单右侧默认的 icon 替换成自定义的；由于组件没有提供属性来进行替换，所以只能通过 CSS 手动替换掉，排查到它的 icon 是通过伪元素实现的，因此方案就是自定义一个伪元素样式替换掉之前的；将自定义的 icon 通过 base64 背景图片来进行占位，设置伪元素为 inline-block 即可实现
+
+```css
+.dropdown_menu_icon .van-dropdown-menu .van-dropdown-menu__title:after {
+  display: inline-block;
+  border: none;
+  width: 20rpx;
+  height: 20rpx;
+  right: 4rpx;
+  transform: rotate(180deg);
+  background-size: contain;
+  background-image: url('...');
+}
+```
+
+
 
 
 
@@ -1010,7 +1107,7 @@ https://blog.csdn.net/weixin_45242865/article/details/119798783
 
 **lodash 常用函数**
 
-1. isEmpty：如果一个值为 null、undefined、[]、{}、''，那么返回 true
+1. isEmpty：如果不是可枚举属性的对象直接返 true，如果是的话则查看其长度是否为空：www.lodashjs.com/docs/lodash.isEmpty
 2. omit：从一个对象中剔除出某几个属性并创建一个新对象：https://www.lodashjs.com/docs/lodash.omit
 3. pick：从一个对象中剔取出某几个属性并创建一个新对象：https://www.lodashjs.com/docs/lodash.pick
 4. groupBy：将一个数组根据某种规则返回一个组成聚合的对象：https://www.lodashjs.com/docs/lodash.groupBy
@@ -1022,11 +1119,11 @@ const ruleDatasMapByRowNum = groupBy(ruleDatas, 'rowNum')
 const arr = groupBy([6.1, 4.2, 6.3], Math.floor); // { '4': [4.2], '6': [6.1, 6.3] }
 ```
 
+5. isequal：将两个引用对象做深度比较判断是否相等
 
-
-**30 个常用函数**
-
-https://juejin.cn/post/7145036326373425159
+```js
+isEqual(nextProps.selectedKeys, this.props.selectedKeys)
+```
 
 
 
@@ -1041,21 +1138,12 @@ https://juejin.cn/post/7145036326373425159
 
 **Math 和 Number 的 API**
 
-```js
-Math.ceil() // 数字向上取整
-
-Math.round() // 整数四舍五入
-
-Math.abs() // 绝对值
-
-Math.floor() // 向下取整
-
-isNaN(value) // value会先被Number()隐式类型转换，转化后不是一个数字则返回true
-
-num.toFixed(n) // 保留n位小数，四舍五入
-
-Math.floor(Math.random() * num)：// 返回0到num-1的整数
-```
+1. Math.ceil:：数字向上取整
+2. Math.round：整数四舍五入
+3. Math.abs：绝对值
+4. Math.floor：向下取整
+5. isNaN(value)：value 会先被 Number() 隐式类型转换，转化后不是一个数字则返回 true
+6. num.toFixed(n)：保留 n 位小数，四舍五入
 
 
 
@@ -1071,7 +1159,7 @@ Math.floor(Math.random() * num)：// 返回0到num-1的整数
 
 增删改查基础方法：https://vue3js.cn/interview/JavaScript/string_api.html
 
-`str.split`：https://blog.csdn.net/weixin_52844244/article/details/122836185
+`str.split`：字符串转数组
 
 `String.fromCharCode(ASCII)`：通过 ASCII 码返回字符（A = 65）
 
@@ -2369,63 +2457,4 @@ const statusCodes: Record<Status, number> = {
 
 ## 4.4 Hexo 个人博客搭建
 
-### 4.4.1 初始化搭建与部署
-
-官网：https://hexo.io/zh-cn/docs/，下面手把手讲一讲初始化搭建过程：
-
-**使用 NodeV18 全局安装 Hexo**
-
-```bash
-$ npm install -g hexo-cli
-```
-
-**进入文档文件夹初始化一个项目**
-
-```bash
-$ hexo init <folder>
-$ cd <folder>
-$ npm install
-```
-
-**使用 Hexo 命令来本地预览**
-
-```bash
-$ hexo server
-$ hexo clean
-$ hexo generate
-```
-
-**通过 cocoonnu.github.io 一键部署**
-
-1. 在 Github 中新建一个名为 cocoonnu.github.io 的项目，确保项目的 Settings -> Pages 配置中选择的是 Deploy from a branch
-
-2. 在 Hexo 项目的根目录中对 _config.yml 文件添加以下内容，分支名和 Deploy from a branch 选择的一致为 main
-
-   ```yaml
-   deploy:
-     type: git
-     repo: git@github.com:cocoonnu/cocoonnu.github.io.git
-     branch: main
-   ```
-
-3. 下载自动部署工具
-
-   ```bash
-   $ npm install hexo-deployer-git --save
-   ```
-
-4. 最后使用命令进行一键部署即可，在 Github 项目中 Settings -> Actions 查看部署结果
-
-   ```bash
-   $ hexo clean # 清除旧页面
-   $ hexo deploy
-   ```
-
-5. 在这里预览页面：https://cocoonnu.github.io/
-
-**通过 GitHub Pages 一键部署**
-
-1. 在 Github 中新建一个同名的项目并同步 git，确保项目的 Settings -> Pages 配置中选择的是 GitHub Actions
-2. 在 Hexo 项目的根目录中新建 .github/workflows/pages.yml，填入：https://hexo.io/zh-cn/docs/github-pages
-3. 最后直接提交代码即可同步一键部署，在 Github 项目中 Settings -> Actions 查看部署结果
-4. 在这里预览页面：https://cocoonnu.github.io/hexo-blog-cocoon/
+https://cocoonnu.github.io/
